@@ -32,10 +32,13 @@ bash scripts/ci/test-guards.sh
 # [CI] Doc link integrity (broken repo-relative cross-references) — .github/workflows/docs-ci.yml, job `doc-links`, on any tracked *.md change.
 # Exceptions live in .claimignore, each one requires a `# reason`.
 bash scripts/ci/verify-doc-links.sh
+
+# [CI] Skill frontmatter (every tracked SKILL.md; warnings never fail) — .github/workflows/skills-ci.yml, job `validate-skills`, on any SKILL.md change.
+bash scripts/ci/validate-skills.sh
 ```
 
-`scripts/ci/validate-skill.sh` is `Optional hook`: it runs on changed skills from
-the pre-commit hook only, which requires `bash setup/install-git-hooks.sh --force`.
+The pre-commit hook also runs `scripts/ci/validate-skill.sh` on changed skills
+once installed with `bash setup/install-git-hooks.sh --force`.
 
 Run a single Rust test: `cd cli && cargo test --lib installer::registry::tests::registry_update_registers`.
 

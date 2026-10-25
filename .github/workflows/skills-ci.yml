@@ -1,0 +1,43 @@
+name: skills-ci
+
+# Promotes scripts/ci/validate-skill.sh from `Optional hook` to `CI` on the
+# ladder in docs/guides/patterns/encoding-invariants.md (issue #167, ADR 0017).
+# `**/SKILL.md` covers every skill root (skills/mono-mode, skills/{stages,reason,
+# tools,extras}/*) and any root added later. A green job here is not proof of
+# merge blocking.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "**/SKILL.md"
+      - "scripts/ci/validate-skill.sh"
+      - "scripts/ci/validate-skills.sh"
+      - "scripts/ci/fixtures/bad-skill/**"
+      - ".github/workflows/skills-ci.yml"
+  pull_request:
+    paths:
+      - "**/SKILL.md"
+      - "scripts/ci/validate-skill.sh"
+      - "scripts/ci/validate-skills.sh"
+      - "scripts/ci/fixtures/bad-skill/**"
+      - ".github/workflows/skills-ci.yml"
+
+jobs:
+  validate-skills:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate every tracked SKILL.md
+        run: bash scripts/ci/validate-skills.sh
+
+      - name: Bad fixture must fail the same entrypoint
+        run: |
+          if bash scripts/ci/validate-skills.sh scripts/ci/fixtures/bad-skill/SKILL.md; then
+            echo "::error::validate-skills.sh accepted scripts/ci/fixtures/bad-skill"
+            exit 1
+          fi
+
+      - name: Validation left the checkout untouched
+        run: test -z "$(git status --porcelain --ignored)"

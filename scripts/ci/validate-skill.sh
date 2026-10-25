@@ -115,7 +115,6 @@ SKILL_NAME="$(basename "$SKILL_DIR")"
 TEST_DIR="$SKILL_DIR/tests"
 SCRIPTS_DIR="$SKILL_DIR/scripts"
 EXAMPLES_REF_FILE="$SKILL_DIR/references/examples.md"
-REPORT_FILE="$SKILL_DIR/.validation-report.json"
 
 # Suppress output if JSON mode
 if [ -n "$JSON_OUTPUT" ]; then
@@ -487,8 +486,10 @@ else
   exit_code=1
 fi
 
-# Generate JSON report
-cat > "$REPORT_FILE" << EOF
+# JSON report goes to stdout only in JSON mode; nothing is written to disk,
+# so a CI run leaves the checkout untouched.
+if [ -n "$JSON_OUTPUT" ]; then
+  cat >&3 << EOF
 {
   "skill": "$SKILL_NAME",
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -512,10 +513,6 @@ cat > "$REPORT_FILE" << EOF
   "status": "$STATUS"
 }
 EOF
-
-# Output JSON if requested
-if [ -n "$JSON_OUTPUT" ]; then
-  cat "$REPORT_FILE" >&3
 fi
 
 exit $exit_code
