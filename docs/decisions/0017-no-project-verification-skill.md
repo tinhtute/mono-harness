@@ -29,6 +29,17 @@ The residual gap is a CI wiring question, not a skill. It is recorded here and n
 
 No new surface to maintain and no second description of the gates. The cost: the residual gap stays open until the owner chooses to wire the validator into CI, and a pull request that changes a skill outside `skills/stages/**` without the hook is validated only by review.
 
+## Non-goal: machine-enforced stop and escalation gates (issue #169)
+
+Decision (owner, 2026-10-25, reversible): prompt-level enforcement of `stop_if:` and `escalate_when:` is sufficient for the current risk model. The guarantee is the procedure in `work-full.md` step 4 (Stop gates); `zharness` has no task runtime and no hook observes task boundaries, so nothing checks at run time that an agent obeys it.
+
+Two kinds of test exist, and only one runs here:
+
+- **Instruction-contract test** — asserts the procedure text exists and has not drifted (`one_plan_playbook_contract` in `cli/src/embedded.rs`). It proves the agent is told the rule, not that the rule executes.
+- **Behavior test** — drives a real run to a matched and an unmatched condition and asserts it stops or continues. None exists for these gates.
+
+No document may claim runtime enforcement of these gates until a concrete host or execution boundary (host integration or wrapper) exists with positive and negative behavior tests.
+
 ## Authority
 
 `docs/research/pstack-concepts-audit.md:32`; commits `f5af8e8`, `4d0beb3`; `setup/install-git-hooks.sh:559`; `scripts/ci/test-guards.sh:944`; `.github/workflows/cli-ci.yml:9`; `AGENTS.md` Layout and Gate Commands; issue #155 (acceptance criteria resolved by this record).
