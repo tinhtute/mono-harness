@@ -352,6 +352,7 @@ mod tests {
                     "a normal blocker is an obstacle",
                     "a stop condition is a planned `stop_if:`",
                     "an owner escalation is a planned `escalate_when:`",
+                    "Enforcement is prompt-level: this procedure is the guarantee",
                 ],
                 forbidden: &[
                     "single-phase plan skips this gate and goes straight there","## Progress", "## Decisions", "task_status="],
@@ -394,7 +395,7 @@ mod tests {
                     "never appends to Validation",
                     "Durable `gate` runs automated checks",
                     "`full` includes the gate and adds the complete Security, Performance, Architecture, and Code Quality review",
-                    "`gate` does not perform that complete manual review",
+                    "`gate` does not perform manual review",
                     "depth: quick | standard | deep",
                     "read [check-durable.md](check-durable.md) now",
                     "read [check-review.md](check-review.md) now",
@@ -403,7 +404,7 @@ mod tests {
                     "## Lane Matrix",
                     "single source of truth for lane → proof, review depth, and judge",
                     "| `tiny` | `output` | `bounded` |",
-                    "| `normal` | `output`, `unit` | `gate` | gate plus scoped review of the diff |",
+                    "| `normal` | `output`, `unit` | `gate` | automated gate and plan alignment; no manual review |",
                     "| `high-risk` | `output`, `unit`, `integration` | `full` | complete four-area review | `independent` |",
                     "`full` IF the plan's lane is `high-risk` or the owner explicitly invoked `check full`",
                     "A plan's existence or its phase count never selects `full`",
@@ -566,6 +567,52 @@ mod tests {
                 );
             }
         }
+    }
+
+    /// #168: the Lane Matrix review-depth cell for each final check mode
+    /// must agree with step 5, which says whether that mode runs a manual
+    /// review. A mode step 5 excludes from manual review must not claim one
+    /// in the matrix, and a mode step 5 sends to check-review.md must.
+    #[test]
+    fn check_lane_matrix_agrees_with_manual_review_step() {
+        let data = fs::read_to_string(
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../skills/stages/check/references/check.md"),
+        )
+        .expect("check.md");
+        let step5 = data
+            .lines()
+            .find(|l| l.starts_with("5. **Manual review**"))
+            .expect("check.md step 5");
+        let body = step5.split_once(" — ").expect("step 5 body").1;
+        let (no_review, rest) = body
+            .split_once(". ")
+            .expect("step 5 first sentence names the mode without manual review");
+        let review = rest
+            .split_once(": read [check-review.md]")
+            .expect("step 5 names the modes that read check-review.md")
+            .0;
+        let mut rows = 0;
+        for row in data.lines().filter(|l| l.starts_with("| `")) {
+            let cells: Vec<&str> = row.split('|').map(str::trim).collect();
+            let (lane, mode, depth) = (cells[1], cells[3], cells[4]);
+            rows += 1;
+            if no_review.contains(&format!("{mode} does not perform")) {
+                assert!(
+                    depth.contains("no manual review"),
+                    "lane {lane}: step 5 says {mode} runs no manual review, matrix says {depth:?}"
+                );
+            } else {
+                assert!(
+                    review.contains(mode) && !depth.contains("no manual review"),
+                    "lane {lane}: matrix depth {depth:?} disagrees with step 5 for {mode}"
+                );
+            }
+        }
+        assert_eq!(
+            rows, 3,
+            "Lane Matrix must have tiny, normal, high-risk rows"
+        );
     }
 
     /// Live instructions must not route agents to the retired `.kit/`
