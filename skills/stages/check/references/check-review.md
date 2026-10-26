@@ -18,4 +18,6 @@ Off by default. Run it only when the owner asks for it by name and the mode is `
 - **Priority, not proof** — order by severity, then `agreed`. Agreement never raises severity or confirms a defect: validate every finding yourself against the repository and the proof output. Conflicting severities keep the higher until you validate it; a finding you cannot validate is listed as unverified and does not block.
 - **Fallback** — fewer than 2 valid reports (unavailable runner, timeout, over budget, rejected SHA) → finish as a single-agent review and print `panel: degraded (valid/N)`. The panel adds findings; it never replaces the `judge:` declaration or the evidence behind the verdict.
 
+Each reviewer writes one JSON report; merge them with this skill's `scripts/panel-merge.py --base <sha> --head <sha> [--diff-hash <h>] --budget <tokens> <report>...`, which applies the size, same-input, dedup, priority, and fallback rules above (report schema in its docstring). Validate its findings yourself; the script only orders them.
+
 Rationale and rejected alternatives: ADR 0018.
