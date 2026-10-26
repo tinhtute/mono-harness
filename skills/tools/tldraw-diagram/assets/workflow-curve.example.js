@@ -1,7 +1,7 @@
 const W=1760;
-card('entry',780,150,300,80,'You','light-red',['/mono-mode <task>']);
+card('entry',780,150,300,80,'You','light-red',['/mono <task>']);
 band('b1',290,'Router','blue',W);
-card('router',720,330,420,140,'mono-mode','blue',['Match one playbook','Copy its steps into a todo list','Call the skill each step names']);
+card('router',720,330,420,140,'mono','blue',['Match one playbook','Copy its steps into a todo list','Call the skill each step names']);
 band('b2',540,'Playbooks','green',W);
 const P=[['feature','green',['brainstorm → to-plan','work → check','git → handoff']],['bugfix','orange',['hunt → failing test','work bounded','check → git']],['invest','violet',['think or hunt','read-only','changes nothing']],['retro','yellow',['watzup → retro','save approved','lessons']],['pickup','light-blue',['watzup → reconcile','route to next','playbook']]];
 const names={feature:'feature',bugfix:'bug-fix',invest:'investigation',pickup:'session-pickup',retro:'retro'};

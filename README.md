@@ -33,7 +33,7 @@ Coding agents often fail for ordinary engineering reasons:
   open.
 
 zharness provides a compact entrypoint, a navigable repository map, durable
-plans only when work needs them, and mono-mode playbooks that stay reduced for
+plans only when work needs them, and mono playbooks that stay reduced for
 read-only and bounded work.
 
 ## Goals
@@ -83,10 +83,10 @@ read-only and bounded work.
 
 ## Default workflow
 
-Start a task with `/mono-mode <task>`. The router matches one playbook, copies
+Start a task with `/mono <task>`. The router matches one playbook, copies
 its steps into a todo list, and calls the skill each step names.
 
-![mono-mode routes a task to one of twelve playbooks, each a chain of skills](site/assets/workflow.png)
+![mono routes a task to one of twelve playbooks, each a chain of skills](site/assets/workflow.png)
 
 | Playbook | Steps |
 |---|---|
@@ -176,11 +176,11 @@ skills and can read their installed references. A missing dependency is unsuppor
 for workflow execution; retained legacy files are not a fallback. Other skills
 are optional extensions.
 
-`mono-mode` sits at `skills/mono-mode`; the other skills live in four groups: `stages`
+`mono` sits at `skills/mono`; the other skills live in four groups: `stages`
 (the six workflow skills plus retro), `reason` (think, hunt, arena, learn), `tools` (git,
 create-skill, librarian, prompt-leverage, read, tldraw-diagram, write) and `extras` (create-cli,
 turbo-mono-platform). `retro`, `create-cli` and
-`turbo-mono-platform` are gated: they run only from a mono-mode playbook step or
+`turbo-mono-platform` are gated: they run only from a mono playbook step or
 when the user names them.
 
 Skills are not part of `zharness install`. They live in this source repository,

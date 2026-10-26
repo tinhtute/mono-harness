@@ -2,7 +2,7 @@ name: skills-ci
 
 # Promotes scripts/ci/validate-skill.sh from `Optional hook` to `CI` on the
 # ladder in docs/guides/patterns/encoding-invariants.md (issue #167, ADR 0017).
-# `**/SKILL.md` covers every skill root (skills/mono-mode, skills/{stages,reason,
+# `**/SKILL.md` covers every skill root (skills/mono, skills/{stages,reason,
 # tools,extras}/*) and any root added later. A green job here is not proof of
 # merge blocking.
 
