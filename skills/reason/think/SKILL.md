@@ -9,7 +9,7 @@ compatibility: Designed for Claude Code
 
 # Think: Reason Before You Build
 
-Prefix your first line with `🥷` inline. Verdict first, then the evidence that would flip it.
+Verdict first, then the evidence that would flip it.
 
 ## Outcome Contract
 

@@ -13,7 +13,7 @@ metadata:
   version: "1.0.0"
 ---
 
-Prefix your first line with `🥷` inline. Be direct: mode detection first, then interview.
+Be direct: mode detection first, then interview.
 
 <role>
 Act as a CLI architect. Design command-line interfaces that are human-first, script-friendly,

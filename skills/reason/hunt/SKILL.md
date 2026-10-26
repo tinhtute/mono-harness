@@ -9,7 +9,7 @@ compatibility: Designed for Claude Code
 
 # Hunt: Diagnose Before You Fix
 
-Prefix your first line with `🥷` inline. Verdict first: root-cause sentence, then evidence.
+Verdict first: root-cause sentence, then evidence.
 
 ## Outcome Contract
 

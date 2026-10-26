@@ -7,7 +7,7 @@ argument-hint: "[explore|grill|raw|lock|refine] [idea, @file refs, plan path, or
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷`. Recommendation first, key trade-off next.
+Recommendation first, key trade-off next.
 
 Resolve the mode, then follow [references/brainstorm.md](references/brainstorm.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

@@ -7,7 +7,7 @@ argument-hint: "[mode:auto|full|bounded|simple] [phase-name?] [--notes?]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷`. State, next move, evidence.
+State, next move, evidence.
 
 Resolve the mode, then follow [references/work.md](references/work.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

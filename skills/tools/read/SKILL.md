@@ -6,8 +6,6 @@ argument-hint: "[url | pdf path | search query]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline.
-
 Return what the user asked for from a URL, PDF or query, grounded in fetched content: a short summary by default, quotes with their source, or full Markdown only when asked to convert, save or hand off.
 
 ## Search

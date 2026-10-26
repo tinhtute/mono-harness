@@ -6,7 +6,7 @@ argument-hint: "[what to draw] [output dir]"
 compatibility: Designed for Claude Code on macOS with tldraw offline running
 ---
 
-Prefix your first line with `🥷` inline. Be direct: the exported image path first.
+Be direct: the exported image path first.
 
 <security>
 - Send code only to the local tldraw server named in `~/Library/Application Support/tldraw/server.json`; never print its token.

@@ -1,27 +1,26 @@
-# NEVER Rules
+# Stack Conventions
 
-```
-NEVER use npm / yarn / pnpm                    → Bun only
-NEVER use ESLint / Prettier                    → Biome only
-NEVER use NextAuth or Clerk                    → Better Auth 1.4
-NEVER use Prisma                               → Drizzle 0.40.x (NOT v1.0)
-NEVER use Drizzle v1.0 with Better Auth        → use 0.40.x
-NEVER use @repo/ as package scope              → always @rp/
-NEVER import ../../packages/...                → always @rp/<n>
-NEVER use process.env.VAR directly             → env.VAR from @rp/env
-NEVER put secrets in NEXT_PUBLIC_*             → server-only vars
-NEVER run shadcn add without -c flag           → bunx shadcn@latest add <n> -c apps/web
-NEVER import @rp/ui/components/button          → import { Button } from '@rp/ui'
-NEVER use middleware.ts                        → proxy.ts (Next.js 16)
-NEVER use experimental.dynamicIO               → cacheComponents: true
-NEVER call revalidateTag(tag) alone            → revalidateTag(tag, "max")
-NEVER read params/cookies()/headers() sync     → always await
-NEVER write DB queries outside @rp/supabase    → always in the package
-NEVER write tRPC routers outside @rp/trpc      → always in the package
-NEVER use fetch() on client                    → tRPC + TanStack Query
-NEVER skip server-only in supabase/auth/kv     → must be first import
-NEVER use tailwind.config.js                   → CSS-first @theme directive
-NEVER use dependsOn: ["^lint"] for lint        → transit task pattern
-NEVER use space-x-* / space-y-* in UI         → flex + gap-*
-NEVER override component colors in className   → semantic tokens only
-```
+The stack is fixed; each row names the convention, what it replaces, and why. Breaking one splits the monorepo into two ways of doing the same thing.
+
+| Use | Instead of | Why |
+|---|---|---|
+| Bun | npm / yarn / pnpm | One lockfile and runtime across the repo |
+| Biome | ESLint / Prettier | One fast tool for lint and format |
+| Better Auth 1.4 | NextAuth / Clerk | Self-hosted auth that lives in `@rp/auth` |
+| Drizzle 0.40.x | Prisma, Drizzle v1.0 | Better Auth's adapter targets 0.40.x |
+| `@rp/` scope, `@rp/<n>` imports | `@repo/`, `../../packages/...` | Workspace resolution and Turbo graph rely on package names |
+| `env.VAR` from `@rp/env` | `process.env.VAR` | Validated, typed env in one place |
+| Server-only vars | Secrets in `NEXT_PUBLIC_*` | `NEXT_PUBLIC_*` ships to the browser |
+| `bunx shadcn@latest add <n> -c apps/web` | `shadcn add` without `-c` | Components land in the right workspace |
+| `import { Button } from '@rp/ui'` | `@rp/ui/components/button` | The package entry is the public API |
+| `proxy.ts` | `middleware.ts` | Next.js 16 renamed it |
+| `cacheComponents: true` | `experimental.dynamicIO` | Next.js 16 stable flag |
+| `revalidateTag(tag, "max")` | `revalidateTag(tag)` | Next.js 16 requires the cache profile |
+| `await params` / `cookies()` / `headers()` | Sync access | Async in Next.js 16 |
+| DB queries in `@rp/supabase`, routers in `@rp/trpc` | Queries or routers elsewhere | One owner per data path |
+| tRPC + TanStack Query on the client | Client `fetch()` | Typed calls with shared caching |
+| `server-only` as the first import in supabase/auth/kv | Omitting it | Fails the build if server code reaches the client |
+| CSS-first `@theme` | `tailwind.config.js` | Tailwind v4 configuration |
+| Transit task pattern for lint | `dependsOn: ["^lint"]` | Avoids rerunning lint for every dependent |
+| `flex` + `gap-*` | `space-x-*` / `space-y-*` | Gap handles wrapping and conditional children |
+| Semantic tokens | Color overrides in `className` | Keeps theming consistent |

@@ -8,7 +8,7 @@ compatibility: Designed for Claude Code
 
 # Arena: Build It Several Ways, Keep the Best
 
-Prefix your first line with `🥷` inline. Verdict first: the winning base and what was grafted onto it.
+Verdict first: the winning base and what was grafted onto it.
 
 ## Outcome Contract
 

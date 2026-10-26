@@ -6,7 +6,7 @@ argument-hint: "[context]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline. Be direct: branch, blocker, next action first. No filler.
+Be direct: branch, blocker, next action first.
 
 Follow [references/handoff.md](references/handoff.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

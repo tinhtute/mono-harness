@@ -6,7 +6,7 @@ argument-hint: "[mode:full|phase] [phase-name?]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline. Be direct: executable steps, not planning prose. No filler.
+Be direct: executable steps, not planning prose.
 
 Resolve the mode, then follow [references/to-plan.md](references/to-plan.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

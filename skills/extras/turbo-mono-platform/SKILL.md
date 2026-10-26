@@ -15,7 +15,7 @@ metadata:
   package-scope: "@rp/"
 ---
 
-Prefix your first line with `🥷` inline. Be direct: layer decision or next command first. No filler.
+Be direct: layer decision or next command first.
 
 <role>
 Act as a full-stack TypeScript monorepo specialist. Handle Turborepo 2.9, Next.js 16, Hono 4,
@@ -53,7 +53,7 @@ Check at load — see `references/companion-skills.md` for detection logic and r
 <instructions>
 ## Behavior Instructions
 
-- **Check NEVER rules first** before writing any code, config, or command
+- **Check the stack conventions first** before writing any code, config, or command
 - **Run runtime context** (`!cat package.json`, `!ls apps/ packages/`) on existing projects
 - **Check companion skills** at skill load — see Companion Skills section
 - **Never generate layer code without loading its reference file** — check routing table
@@ -82,7 +82,7 @@ See `references/output-format.md` for full spec.
 
 <references>
 Load as needed from `{baseDir}/references/`:
-- `never-rules.md` — NEVER rules with their replacements
+- `never-rules.md` — stack conventions, what each replaces, and why
 - `stack-versions.md` — Version matrix
 - `package-ownership.md` — Package responsibilities
 - `architecture.md` — Two-tier structure
@@ -100,25 +100,3 @@ Load as needed from `{baseDir}/references/`:
 - `turbo-tasks.md` — Turbo tasks
 - `ci.md` — CI/CD
 </references>
-
-## Examples
-
-### Example 1: Scaffold New Monorepo
-**Input**: "Scaffold monorepo for SaaS with auth and Stripe"
-**Output**: Ran Package Analyzer, confirmed Tier 1 (base) + Tier 2 (better-auth, stripe). Scaffolded apps/web, packages/db, packages/auth, packages/api. Configured Turborepo pipeline.
-
-### Example 2: Add New Package
-**Input**: "Add email package with Resend"
-**Output**: Created `packages/email/` with Resend SDK, React Email templates, tRPC procedures. Updated turbo.json dependencies. Added to workspace.
-
-### Example 3: Configure CI Pipeline
-**Input**: "Configure CI for type-check, lint, test"
-**Output**: Created `.github/workflows/ci.yml` with Turborepo remote cache, parallel jobs for type-check/lint/test, Vercel preview deployments.
-
-### Example 4: Add Supabase Integration
-**Input**: "Add Supabase with Drizzle"
-**Output**: Loaded `supabase-drizzle.md`, configured Drizzle with Supabase connection, created migration scripts, added auth helpers in `packages/auth/`.
-
-### Example 5: Deploy to Vercel
-**Input**: "Deploy web app to Vercel"
-**Output**: Configured `vercel.json` with root directory `apps/web`, set build command `cd ../.. && bun run build --filter=web`, added environment variables, deployed.

@@ -8,7 +8,7 @@ metadata:
   version: "3.0.0"
 ---
 
-Prefix your first line with `🥷` inline. Be direct: strongest skill-shaping move first. No filler.
+Be direct: strongest skill-shaping move first.
 
 <role>
 Act as a skill creation specialist. Create effective, benchmark-optimized Claude skills using
@@ -80,21 +80,3 @@ Load as needed from `{baseDir}/references/`:
 - `script-quality-criteria.md` — Script quality standards
 - `structure-organization-criteria.md` — Structure organization rules
 </references>
-
-## Examples
-
-### Example 1: Create New Skill
-**Input**: "Create a skill for managing database migrations"
-**Output**: Initialized `db-migrations/` with SKILL.md, security block, Prisma/Drizzle/TypeORM references, and migration scripts.
-
-### Example 2: Add References
-**Input**: "Add reference docs for FFmpeg encoding"
-**Output**: Created `references/ffmpeg-encoding.md`; updated SKILL.md to load it on demand.
-
-### Example 3: Optimize for Benchmarks
-**Input**: "Optimize reviewer skill for benchmarks"
-**Output**: Added standard terminology, numbered workflow steps, concrete file:line examples, and abbreviation expansions.
-
-### Example 4: Package for Distribution
-**Input**: "Package create-skill for distribution"
-**Output**: Ran `scripts/package_skill.py`, validated frontmatter/security, and generated `create-skill.zip`.

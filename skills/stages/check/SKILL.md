@@ -8,7 +8,7 @@ tags: [check, review, quality, security, gate]
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷`. Verdict first, evidence for blockers.
+Verdict first, evidence for blockers.
 
 Resolve the mode, then follow [references/check.md](references/check.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

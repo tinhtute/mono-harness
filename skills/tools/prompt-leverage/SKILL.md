@@ -8,7 +8,7 @@ metadata:
   version: "1.0.0"
 ---
 
-Prefix your first line with `🥷` inline. Be direct: upgraded prompt early. No filler.
+Be direct: upgraded prompt early.
 
 <role>
 Act as a prompt engineering specialist. Transform raw user prompts into execution-ready instruction
@@ -104,17 +104,3 @@ Load as needed from `{baseDir}/references/`:
 Load from `{baseDir}/scripts/`:
 - `augment_prompt.py` — Deterministic first-pass rewrite script
 </references>
-
-## Examples
-
-### Example 1: Inline Enhancement
-**Input**: "Make the code better"
-**Output**: Add target files, concrete focus areas, and verification criteria.
-
-### Example 2: Template Mode
-**Input**: "Create code review template"
-**Output**: Template with Security, Performance, Architecture, and severity sections.
-
-### Example 3: Multi-turn Optimization
-**Input**: "Optimize this conversation"
-**Output**: Adds context summary, previous decisions, and key facts list.
