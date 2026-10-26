@@ -14,6 +14,8 @@ on:
       - "scripts/ci/validate-skill.sh"
       - "scripts/ci/validate-skills.sh"
       - "scripts/ci/fixtures/bad-skill/**"
+      - "skills/stages/check/scripts/**"
+      - "scripts/ci/test-panel-merge.py"
       - ".github/workflows/skills-ci.yml"
   pull_request:
     paths:
@@ -21,6 +23,8 @@ on:
       - "scripts/ci/validate-skill.sh"
       - "scripts/ci/validate-skills.sh"
       - "scripts/ci/fixtures/bad-skill/**"
+      - "skills/stages/check/scripts/**"
+      - "scripts/ci/test-panel-merge.py"
       - ".github/workflows/skills-ci.yml"
 
 jobs:
@@ -41,3 +45,12 @@ jobs:
 
       - name: Validation left the checkout untouched
         run: test -z "$(git status --porcelain --ignored)"
+
+  panel-merge:
+    # Issue #156: fixture tests for the multi-model panel merge step.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Panel merge fixtures
+        run: python3 -I scripts/ci/test-panel-merge.py
