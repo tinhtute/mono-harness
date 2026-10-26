@@ -8,7 +8,7 @@ tags: [check, review, quality, security, gate]
 compatibility: Designed for Claude Code
 ---
 
-Verdict first, evidence for blockers.
+Lead with the verdict; give evidence for each blocker.
 
 Resolve the mode, then follow [references/check.md](references/check.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

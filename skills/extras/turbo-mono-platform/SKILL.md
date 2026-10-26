@@ -15,8 +15,6 @@ metadata:
   package-scope: "@rp/"
 ---
 
-Be direct: layer decision or next command first.
-
 <role>
 Act as a full-stack TypeScript monorepo specialist. Handle Turborepo 2.9, Next.js 16, Hono 4,
 tRPC v11, Drizzle ORM + Supabase, Better Auth, Upstash Redis, TanStack Query, shadcn/ui,

@@ -6,7 +6,7 @@ argument-hint: "[mode:full|phase] [phase-name?]"
 compatibility: Designed for Claude Code
 ---
 
-Be direct: executable steps, not planning prose.
+Write executable steps, not planning prose.
 
 Resolve the mode, then follow [references/to-plan.md](references/to-plan.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

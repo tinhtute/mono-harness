@@ -9,8 +9,6 @@ compatibility: Designed for Claude Code
 
 # Think: Reason Before You Build
 
-Verdict first, then the evidence that would flip it.
-
 ## Outcome Contract
 
 - Outcome: a rough question becomes one defensible recommendation whose weakest assumption is named.

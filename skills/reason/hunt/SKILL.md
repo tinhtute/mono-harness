@@ -9,8 +9,6 @@ compatibility: Designed for Claude Code
 
 # Hunt: Diagnose Before You Fix
 
-Verdict first: root-cause sentence, then evidence.
-
 ## Outcome Contract
 
 - Outcome: the root cause is proven before any fix.

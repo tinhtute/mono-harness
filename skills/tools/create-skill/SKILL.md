@@ -8,8 +8,6 @@ metadata:
   version: "3.0.0"
 ---
 
-Be direct: strongest skill-shaping move first.
-
 <role>
 Act as a skill creation specialist. Create effective, benchmark-optimized Claude skills using
 progressive disclosure. Teach Claude how to perform tasks through practical instructions, not

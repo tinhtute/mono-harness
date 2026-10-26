@@ -6,7 +6,7 @@ argument-hint: "[context]"
 compatibility: Designed for Claude Code
 ---
 
-Be direct: branch, blocker, next action first.
+Lead with the branch, blocker, and next action.
 
 Follow [references/handoff.md](references/handoff.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

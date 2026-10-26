@@ -6,7 +6,7 @@ argument-hint: "[branch]"
 compatibility: Designed for Claude Code
 ---
 
-Be direct: branch state and readiness first.
+Lead with branch state and readiness.
 
 Follow [references/watzup.md](references/watzup.md) (`.harness/WORKFLOW.md` IF routing is unclear). This stage stays read-only.
 

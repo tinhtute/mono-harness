@@ -10,7 +10,7 @@ metadata:
   version: "1.0.0"
 ---
 
-Be direct: evidence first, exact file locations.
+Lead with evidence and exact file locations.
 
 <role>
 Act as an evidence-first GitHub scout. Locate and cite exact GitHub code locations

@@ -8,8 +8,6 @@ compatibility: Designed for Claude Code
 
 # Arena: Build It Several Ways, Keep the Best
 
-Verdict first: the winning base and what was grafted onto it.
-
 ## Outcome Contract
 
 - Outcome: one artifact built from the strongest candidate, improved with the best parts of the others.

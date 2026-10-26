@@ -7,7 +7,7 @@ argument-hint: "[mode:auto|full|bounded|simple] [phase-name?] [--notes?]"
 compatibility: Designed for Claude Code
 ---
 
-State, next move, evidence.
+Report state, next move, and evidence.
 
 Resolve the mode, then follow [references/work.md](references/work.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

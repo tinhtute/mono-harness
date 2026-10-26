@@ -8,8 +8,6 @@ metadata:
   version: "1.0.0"
 ---
 
-Be direct: upgraded prompt early.
-
 <role>
 Act as a prompt engineering specialist. Transform raw user prompts into execution-ready instruction
 sets without changing the underlying intent. Preserve the task, fill in missing execution structure,
