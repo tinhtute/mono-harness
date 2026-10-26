@@ -52,7 +52,7 @@ See `script-quality-criteria.md` for full criteria.
 - Documentation loaded as-needed into context
 - Use cases: schemas, APIs, workflows, cheatsheets, domain knowledge
 - **Best practice:** Split >150 lines into multiple files
-- Include grep patterns in SKILL.md for discoverability
+- Point to each file from SKILL.md with its load trigger
 - Practical instructions, not educational documentation
 
 ## Assets (`assets/`)
@@ -63,14 +63,11 @@ See `script-quality-criteria.md` for full criteria.
 
 ## Progressive Disclosure
 
-Three-level loading for context efficiency:
-1. **Metadata** (~200 chars) — always in context
-2. **SKILL.md body** (<150 lines) — when skill triggers
-3. **Bundled resources** — as needed (scripts: unlimited, execute without loading)
+Loading levels, triggered pointers, and when to move a block out of the body are covered in `context-engineering.md`.
 
 ## Writing Style
 
 - **Imperative form:** "To accomplish X, do Y"
 - **Third-person metadata:** "This skill should be used when..."
-- **Concise:** Sacrifice grammar for brevity in references
+- **Lean:** no host boilerplate (persona, prefixes, question-tool wording); see `context-engineering.md`
 - **Practical:** Teach *how* to do tasks, not *what* tools are

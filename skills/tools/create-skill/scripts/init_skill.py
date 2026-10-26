@@ -64,8 +64,8 @@ Delete this entire "Structuring This Skill" section when done - it's just guidan
 [TODO: Add content here. See examples in existing skills:
 - Code samples for technical skills
 - Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+- Interfaces: inputs, outputs, commands, done criteria
+- A trigger-plus-file pointer for each reference, e.g. "For X, read references/x.md"]
 
 ## Resources
 
@@ -105,6 +105,8 @@ Files not intended to be loaded into context, but rather used within the output 
 ---
 
 **Any unneeded directories can be deleted.** Not every skill requires all three types of resources.
+
+Defer to: [TODO: sibling skills for nearby tasks, e.g. `check` (review)]
 """
 
 EXAMPLE_SCRIPT = '''#!/usr/bin/env python3

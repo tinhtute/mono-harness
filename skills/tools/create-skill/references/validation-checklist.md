@@ -14,6 +14,9 @@ Quick validation before packaging. Run `scripts/package_skill.py` for automated 
 - [ ] No info duplication between SKILL.md and references
 
 ### Structure
+- [ ] Every reference is pointed to with a load trigger
+- [ ] Ends with a `Defer to:` line naming sibling skills
+- [ ] No host boilerplate copied in (persona, prefixes, question-tool wording)
 - [ ] SKILL.md exists with valid YAML frontmatter
 - [ ] Unused example files deleted
 - [ ] File names: kebab-case, self-documenting
@@ -36,7 +39,8 @@ Quick validation before packaging. Run `scripts/package_skill.py` for automated 
 ### Practical Utility
 - [ ] Teaches *how* to do tasks, not *what* tools are
 - [ ] Based on real workflows
-- [ ] Includes concrete trigger phrases/examples
+- [ ] Description names concrete trigger phrases
+- [ ] Interfaces (inputs, outputs, done criteria) over sample transcripts
 
 ## Integration
 
