@@ -122,7 +122,14 @@ fi
 # Output
 printf "\033[38;5;208m👾 %s${reset}" "$model"
 [ -n "$effort" ] && printf "${sep}\033[35m%s${reset}" "$effort"
-printf "${sep}${ctx_color}%s %s%%${reset}" "$bar" "$used"
+# Token Weather icon: ☀ <25 ☁ <50 ☂ <75 ☇ <90 ↯ 90+
+if [ "$used" -ge 90 ]; then wx="↯"
+elif [ "$used" -ge 75 ]; then wx="☇"
+elif [ "$used" -ge 50 ]; then wx="☂"
+elif [ "$used" -ge 25 ]; then wx="☁"
+else wx="☀"
+fi
+printf "${sep}${ctx_color}%s  %s %s%%${reset}" "$wx" "$bar" "$used"
 if [ "$tpm" -gt 0 ]; then
   if [ "$tpm" -ge 10000 ]; then
     tpm_display="$((tpm / 1000))k"
