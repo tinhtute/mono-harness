@@ -65,8 +65,7 @@ No prediction → sharpen or discard. Covers only some symptoms → symptom-leve
 ### 4. Instrument, then confirm or discard
 
 - Every probe maps to one prediction; one variable at a time.
-- Debugger/REPL first, then targeted logs at hypothesis boundaries; tag every temporary log with a unique prefix (`[DEBUG-a4f2]`); never "log everything and grep"; playbook: `references/logging-techniques.md`.
-- By bug class: pure logic (off-by-one) → static reading; lifecycle/async/event-order → log while hypothesising; rendering → DevTools layers before logs; performance → before/after numbers: baseline, bisect, re-measure.
+- Debugger/REPL first, then targeted logs at hypothesis boundaries; tag every temporary log with a unique prefix (`[DEBUG-a4f2]`); never "log everything and grep"; playbook and per-bug-class tactics: `references/logging-techniques.md`.
 - Run the probe that would fail if the hypothesis were wrong. Contradicted → discard it and re-orient on what the probe showed. A log that changes the behavior is timing/lifecycle evidence, not noise.
 
 For a recurring or runtime-state symptom (caches, queues, generated output, PATH, locale, timeouts, entry points), read `## Gotchas` in `references/failure-patterns.md`, list its headings (`grep -n '^## '`), and read only the section matching the symptom before adding a second fix. Domain traps: `references/ime-unicode.md` (IME, cursor drift, emoji), `references/rendering-debug.md` (PDF, print, fonts).

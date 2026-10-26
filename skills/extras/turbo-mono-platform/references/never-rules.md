@@ -7,7 +7,7 @@ The stack is fixed; each row names the convention, what it replaces, and why. Br
 | Bun | npm / yarn / pnpm | One lockfile and runtime across the repo |
 | Biome | ESLint / Prettier | One fast tool for lint and format |
 | Better Auth 1.4 | NextAuth / Clerk | Self-hosted auth that lives in `@rp/auth` |
-| Drizzle 0.40.x | Prisma, Drizzle v1.0 | Better Auth's adapter targets 0.40.x |
+| Drizzle 0.40.x | Prisma, Drizzle v1.0 | Better Auth's Drizzle adapter does not support the v1 query syntax |
 | `@rp/` scope, `@rp/<n>` imports | `@repo/`, `../../packages/...` | Workspace resolution and Turbo graph rely on package names |
 | `env.VAR` from `@rp/env` | `process.env.VAR` | Validated, typed env in one place |
 | Server-only vars | Secrets in `NEXT_PUBLIC_*` | `NEXT_PUBLIC_*` ships to the browser |
