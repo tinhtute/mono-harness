@@ -7,9 +7,7 @@ argument-hint: "[explore|grill|raw|lock|refine] [idea, @file refs, plan path, or
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷`. Recommendation first, key trade-off next.
-
-Ask the user only through the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): ≤4 per call, recommended option first and labelled `(Recommended)`; plain text only without one.
+Lead with the recommendation, then the key trade-off.
 
 Resolve the mode, then follow [references/brainstorm.md](references/brainstorm.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

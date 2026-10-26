@@ -9,10 +9,6 @@ compatibility: Designed for Claude Code
 
 # Hunt: Diagnose Before You Fix
 
-Prefix your first line with `🥷` inline. Verdict first: root-cause sentence, then evidence.
-
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 ## Outcome Contract
 
 - Outcome: the root cause is proven before any fix.
@@ -69,8 +65,7 @@ No prediction → sharpen or discard. Covers only some symptoms → symptom-leve
 ### 4. Instrument, then confirm or discard
 
 - Every probe maps to one prediction; one variable at a time.
-- Debugger/REPL first, then targeted logs at hypothesis boundaries; tag every temporary log with a unique prefix (`[DEBUG-a4f2]`); never "log everything and grep"; playbook: `references/logging-techniques.md`.
-- By bug class: pure logic (off-by-one) → static reading; lifecycle/async/event-order → log while hypothesising; rendering → DevTools layers before logs; performance → before/after numbers: baseline, bisect, re-measure.
+- Debugger/REPL first, then targeted logs at hypothesis boundaries; tag every temporary log with a unique prefix (`[DEBUG-a4f2]`); never "log everything and grep"; playbook and per-bug-class tactics: `references/logging-techniques.md`.
 - Run the probe that would fail if the hypothesis were wrong. Contradicted → discard it and re-orient on what the probe showed. A log that changes the behavior is timing/lifecycle evidence, not noise.
 
 For a recurring or runtime-state symptom (caches, queues, generated output, PATH, locale, timeouts, entry points), read `## Gotchas` in `references/failure-patterns.md`, list its headings (`grep -n '^## '`), and read only the section matching the symptom before adding a second fix. Domain traps: `references/ime-unicode.md` (IME, cursor drift, emoji), `references/rendering-debug.md` (PDF, print, fonts).
@@ -79,19 +74,10 @@ For a recurring or runtime-state symptom (caches, queues, generated output, PATH
 
 `fix`, or `bisect`/`regression` with fix authorization: read `references/fix.md` and run steps 5–7.
 
-## Rationalization Smells
-
-- "Let me just try this" → no hypothesis; write one first.
-- "I'm confident" → run the proving probe.
-- "Probably the same issue" → re-read the execution path from scratch.
-- "Works on my machine" → list environment differences before dismissing.
-- "One more restart" → read the last error verbatim; never restart twice without new evidence.
-- "The log says it's fine" → trust the user's observation; the gap is an un-instrumented path.
-
 ## Hard Rules
 
 - **Same symptom after a fix: hard stop.** Re-read the execution path before touching code.
-- **Three failed hypotheses → stop**, Handoff format, ask how to proceed.
+- **Three failed hypotheses → stop**, report with the Handoff format in `references/output.md`, ask how to proceed.
 - **Measure the lower layer first** for system or tooling symptoms: OS capture vs post-processing, service vs UI, toolchain vs assertion, network vs client handling.
 - **External tool failure: diagnose before switching** (server up, key valid, config right).
 - **Magic number tuned three times: stop.** Unify into one named token; find the missing constraint.
@@ -100,19 +86,6 @@ For a recurring or runtime-state symptom (caches, queues, generated output, PATH
 
 ## Output
 
-Open with one plain line: the outcome and whether changes are committed.
-
-```
-Root cause:        [what was wrong, file:line]
-Loop:              [the red-capable command]
-Fix:               [what changed, file:line]  (diagnose mode: "not applied")
-Sibling sweep:     [N sites checked: N fixed / safe / unsure]  or  [not run, why]
-Confirmed:         [loop red → green, original scenario re-run]
-Regression guard:  [test file:line, red run shown]  or  [none: no correct seam, why]
-```
-
-Status: **resolved**, **resolved with caveats** (state them), **blocked**.
-
-**Handoff (blocked):** the symptom in one sentence; each hypothesis, its probe, and why it was ruled out; evidence (log excerpts, repro steps, versions, config); unknowns; next steps naming any tool, access, or context the user must supply.
+Report with the block and status in `references/output.md`; blocked → its Handoff format.
 
 Defer to: `check` (diff review, no symptom), `think` (is it worth it), `brainstorm` (product decision), `git` (commit).

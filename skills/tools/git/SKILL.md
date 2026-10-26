@@ -7,10 +7,6 @@ argument-hint: "cm|cp|pr|merge [args]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline. Be direct: result or blocker first. No filler.
-
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 `git` owns no harness entity; a missing, stale, or broken harness never blocks it, and no harness command gates it. `cm`/`cp` follow the steps below. `pr`/`merge`: read `{baseDir}/references/workflow.md` now and follow it. Load `{baseDir}/references/branch-management.md` or `gh-cli-guide.md` only when the task needs them.
 
 <security>

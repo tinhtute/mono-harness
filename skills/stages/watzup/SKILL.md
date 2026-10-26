@@ -6,9 +6,7 @@ argument-hint: "[branch]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline. Be direct: branch state and readiness first. No filler.
-
-Ask the user only through the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): ≤4 per call, recommended option first and labelled `(Recommended)`; plain text only without one.
+Lead with branch state and readiness.
 
 Follow [references/watzup.md](references/watzup.md) (`.harness/WORKFLOW.md` IF routing is unclear). This stage stays read-only.
 

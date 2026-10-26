@@ -6,9 +6,7 @@ argument-hint: "[context]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline. Be direct: branch, blocker, next action first. No filler.
-
-Ask the user only through the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): ≤4 per call, recommended option first and labelled `(Recommended)`; plain text only without one.
+Lead with the branch, blocker, and next action.
 
 Follow [references/handoff.md](references/handoff.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

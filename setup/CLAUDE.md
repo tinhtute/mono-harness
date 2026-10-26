@@ -11,10 +11,9 @@ guidance and work carried through verification.
 
 1. Prove completion with evidence (tests, output, logs), or say why verification
    was not possible.
-2. Read a file in this session before editing it.
-3. Keep changes scoped to the request; leave user changes in place unless asked
+2. Keep changes scoped to the request; leave user changes in place unless asked
    to revert them.
-4. Delete with `trash`, not `rm`; abort any delete loop whose target list is
+3. Delete with `trash`, not `rm`; abort any delete loop whose target list is
    empty. Run destructive commands only when the user asked for or approved them.
 
 # Working Style

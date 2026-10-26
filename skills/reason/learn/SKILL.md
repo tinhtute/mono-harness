@@ -6,8 +6,6 @@ argument-hint: "[quick|deep|write|canonical] [topic or source dir]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline.
-
 Support the user's thinking; do not replace it.
 
 ## Mode

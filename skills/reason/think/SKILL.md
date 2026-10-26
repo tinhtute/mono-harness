@@ -9,10 +9,6 @@ compatibility: Designed for Claude Code
 
 # Think: Reason Before You Build
 
-Prefix your first line with `🥷` inline. Verdict first, then the evidence that would flip it.
-
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 ## Outcome Contract
 
 - Outcome: a rough question becomes one defensible recommendation whose weakest assumption is named.
@@ -30,7 +26,7 @@ Resolve from a leading subcommand, else the request.
 | `evaluate` | "is it worth it", "keep/remove X", "có nên làm không", commercial or pivot judgment | `references/mode-evaluation.md`: one Kill/Keep/Pivot verdict |
 | `triage` | 3+ independent unbuilt asks or screenshots | `references/mode-triage.md`: per-item bucket table |
 | `twice` | Interface, module, or data-model shape | `references/design-it-twice.md`: 3+ radically different designs |
-| `lens <name>` | A named pattern ("pre-mortem this") | That lens only: Core Lenses below, else `references/lenses.md` |
+| `lens <name>` | A named pattern ("pre-mortem this") | That lens only, from `references/lenses.md` |
 
 An error, crash, failing test, or "why is this broken" → one line: it belongs to `hunt`; route there. Fuzzy intent → `brainstorm grill`.
 
@@ -40,53 +36,26 @@ An error, crash, failing test, or "why is this broken" → one line: it belongs 
 2. **Ground before opining.** Read `AGENTS.md`/`CLAUDE.md` and only the matching rule or ADR. Open the real config for any default, env var, or setting the answer depends on; never quote one from memory. Separate facts from decisions: find facts yourself (repo, docs, sub-agents for wide searches); put only decisions to the user.
 3. **Official and proven first.** Check built-ins and ecosystem standards in live primary docs; the official solution wins unless you can say why it falls short. For a hard or repeatedly-tuned problem, study 2–3 mature projects and name what you take from each.
 4. **Generate real alternatives.** Genuinely different, not variations, beside the brute-force option (simplicity-gate). Interface shape is the crux → switch to `twice`.
-5. **Run the lenses.** Pick 3–5 that fit; the Core Lenses almost always apply; load `references/lenses.md` for others (e.g. **attack angles** for external dependencies, scale, data migration; **deletion test**, **depth/seam** for module design; **entity delta** when the plan adds settings, flags, commands, or services). One sentence per lens finding; nothing found → one line.
+5. **Run the lenses.** Pick 3–5 that fit from `references/lenses.md`; its Core four almost always apply (e.g. **attack angles** for external dependencies, scale, data migration; **deletion test**, **depth/seam** for module design; **entity delta** when the plan adds settings, flags, commands, or services). One sentence per lens finding; nothing found → one line.
 6. **Deform or discard.** A lens finds a hole → change the design to survive it; it shatters the approach → drop it and say why. Never hide a failed lens.
 7. **Recommend.** One direction: effort, risk, and the existing code it builds on. Name one alternative only if the call is close (>40% the user would prefer it).
 
 A question only running something can settle (does this state model feel right?) → recommend a throwaway prototype answering exactly that; building it needs the user's go-ahead. A reversible call inside the approved scope is decided and reported, not asked.
 
-### Core Lenses
-
-**premise-collapse** — Which single assumption, if false, makes this plan wrong?
-- Output: "This assumes X. If X fails, Y happens." Always name it; fragile X → deform the design to survive it.
-
-**pre-mortem** — It is six months later and this failed. What is the most likely story?
-- Output: top 1–2 failure stories and the design change preventing each. Inversion variant: "how would we guarantee failure?", then avoid that.
-
-**reversibility** — One-way door or two-way door?
-- Output: the rollback path and its cost (data, public API, muscle memory). Two-way → decide fast on less evidence. One-way → slow down, demand evidence, prefer a reversible first step.
-
-**simplicity-gate** — Does the chosen plan beat the brute-force version?
-- Minimal path: the one-line brute-force option; the plan must beat it on risk, rollback, or latency, not elegance.
-- Defensive layers: every try/catch, retry, fallback, or flag maps to one named failure mode; delete layers that only "might" fail.
-- Surface delta: list new commands, env vars, flags, services; prefer +0.
-- Compensating complexity: workaround machinery bigger than the feature means the premise is wrong; name a route change.
-
 ## Grill-lite
 
-Decisions only the user can make go out as a **frontier**: every open decision whose prerequisites are settled, numbered, each with your recommended answer. Wait, recompute, repeat; a question depending on another open one waits a round.
-
-Ask with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended first, labelled `(Recommended)`. No tool → text:
-
-```
-❓ **Q1** — **<title>**: <question, options if any>
-➡️ <recommended answer + one-line why>
-```
+Decisions only the user can make → `references/grill-lite.md`.
 
 ## Hard Rules
 
 - **No placeholders.** "To be decided", "details later", "similar to step N" mean the thinking is unfinished.
 - **Zero-setup default.** Anything every user must install or configure (hook, MCP server, config key, new runtime or language) first says why a built-in or fixed default cannot do the job. A second language or runtime in a single-stack project needs explicit approval.
 - **Phases stand alone.** After phase N ships, the system works even if N+1 never lands; "Phase 0: investigate" belongs in this thinking, not the plan.
-- **Plain re-pitch on confusion.** "Wait, what?" → restate in short plain sentences in the project's terms, not more detail.
 
 ## Gotchas
 
 - Design rejected → ask what specifically failed; re-enter with narrowed constraints, never from scratch.
-- Before calling anything a missing feature, search for the existing affordance by concept.
 - A rework that would remove the product's differentiator → check docs for a deliberate choice; deliberate → Keep.
-- List regional or locale API differences before recommending an integration.
 
 ## Output
 

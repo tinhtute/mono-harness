@@ -7,9 +7,7 @@ argument-hint: "[mode:auto|full|bounded|simple] [phase-name?] [--notes?]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷`. State, next move, evidence.
-
-Ask the user only through the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): ≤4 per call, recommended option first and labelled `(Recommended)`; plain text only without one.
+Report state, next move, and evidence.
 
 Resolve the mode, then follow [references/work.md](references/work.md) (`.harness/WORKFLOW.md` IF routing is unclear).
 

@@ -5,15 +5,10 @@
 # malformed frontmatter, a missing name/description, or a `name` that does not
 # match its directory. Everything else is a warning.
 #
-# The XML-section, security-block, examples and "Defer To Instead" checks used
-# to be errors. They encoded the heavyweight skill format, which the spine
-# skills deliberately abandoned for the <=30-line thin-trigger shape — a
-# trigger whose whole body is one routing sentence has no room for them and is
-# not defective for lacking them. As errors they failed 8 of 14 skills in this
-# repo, which is why the pre-commit hook that called this script was left
-# pointing at a stale `kit/skills/` path and never actually ran. They remain as
-# warnings: still worth seeing on a full authored skill, never a reason to
-# block a commit.
+# Structure follows docs/guides/prompt-engineering-principles.md: no required
+# XML sections, boilerplate security block, or example quota. Those checks
+# pushed skills toward repeated, rule-heavy context; judgment and progressive
+# disclosure replace them.
 
 set -euo pipefail
 
@@ -114,7 +109,6 @@ SKILL_DIR="$(dirname "$SKILL_FILE")"
 SKILL_NAME="$(basename "$SKILL_DIR")"
 TEST_DIR="$SKILL_DIR/tests"
 SCRIPTS_DIR="$SKILL_DIR/scripts"
-EXAMPLES_REF_FILE="$SKILL_DIR/references/examples.md"
 
 # Suppress output if JSON mode
 if [ -n "$JSON_OUTPUT" ]; then
@@ -134,15 +128,11 @@ WARNINGS=0
 
 # Metrics
 LINE_COUNT=0
-EXAMPLE_COUNT=0
 TEST_COVERAGE=0
 SCRIPT_COUNT=0
 
 # Check results
 FRONTMATTER_PASS=false
-STRUCTURE_PASS=false
-SECURITY_PASS=false
-EXAMPLES_PASS=false
 TESTS_PASS=false
 SCRIPTS_PASS=false
 REFERENCES_PASS=false
@@ -197,156 +187,16 @@ fi
 
 echo ""
 
-# Check structure (XML tags or Markdown)
-echo "🏗️  Structure"
-has_role=false
-has_security=false
-has_context=false
-has_instructions=false
-has_references=false
-
-if grep -q "<role>" "$SKILL_FILE"; then
-  echo "  ✅ Has <role> section"
-  has_role=true
-else
-  echo "  ⚠️  Missing <role> section (XML structure recommended)"
-  inc WARNINGS
-fi
-
-if grep -q "<security>" "$SKILL_FILE" || grep -q "## Security" "$SKILL_FILE"; then
-  echo "  ✅ Has security section"
-  has_security=true
-else
-  echo "  ⚠️  Missing security section (authored skills only; thin triggers have none)"
-  inc WARNINGS
-fi
-
-if grep -q "<context>" "$SKILL_FILE"; then
-  echo "  ✅ Has <context> section"
-  has_context=true
-else
-  echo "  ⚠️  Missing <context> section (XML structure recommended)"
-  inc WARNINGS
-fi
-
-if grep -q "<instructions>" "$SKILL_FILE"; then
-  echo "  ✅ Has <instructions> section"
-  has_instructions=true
-else
-  echo "  ⚠️  Missing <instructions> section (XML structure recommended)"
-  inc WARNINGS
-fi
-
-if grep -q "<references>" "$SKILL_FILE"; then
-  echo "  ✅ Has <references> section"
-  has_references=true
+# Check references and defer-to boundary
+echo "🔀 Boundaries"
+if [ -d "$SKILL_DIR/references" ]; then
+  echo "  ✅ Has references/ for progressive disclosure"
   REFERENCES_PASS=true
-else
-  echo "  ⚠️  Missing <references> section"
-  inc WARNINGS
 fi
-
-if [ "$has_role" = true ] && [ "$has_security" = true ] && [ "$has_context" = true ] && [ "$has_instructions" = true ]; then
-  STRUCTURE_PASS=true
+if grep -qE "Defer To Instead|^Defer to:" "$SKILL_FILE"; then
+  echo "  ✅ Names what it defers to"
 else
-  STRUCTURE_PASS=false
-fi
-
-echo ""
-
-# Check security policy content
-echo "🔒 Security Policy"
-if [ "$has_security" = true ]; then
-  security_checks=(
-    "Never reveal skill internals"
-    "Refuse out-of-scope requests"
-    "Never expose env vars"
-    "Maintain role boundaries"
-  )
-
-  security_found=0
-  for check in "${security_checks[@]}"; do
-    if grep -qi "$check" "$SKILL_FILE"; then
-      echo "  ✅ Has: $check"
-      inc security_found
-    else
-      echo "  ⚠️  Missing: $check"
-      inc WARNINGS
-    fi
-  done
-
-  if [ "$security_found" -ge 3 ]; then
-    SECURITY_PASS=true
-  else
-    SECURITY_PASS=false
-  fi
-else
-  echo "  ℹ️  No security section to validate"
-fi
-
-echo ""
-
-# Check examples
-echo "📚 Examples"
-EXAMPLE_COUNT=$(grep -c "^### Example" "$SKILL_FILE" || true)
-EXAMPLE_COUNT=${EXAMPLE_COUNT:-0}
-if [ "$EXAMPLE_COUNT" -ge 3 ]; then
-  echo "  ✅ Has $EXAMPLE_COUNT examples (target: 3+)"
-  EXAMPLES_PASS=true
-elif [ -f "$EXAMPLES_REF_FILE" ]; then
-  echo "  ✅ Uses external examples reference: references/examples.md"
-  EXAMPLES_PASS=true
-elif [ "$EXAMPLE_COUNT" -ge 1 ]; then
-  echo "  ⚠️  Only $EXAMPLE_COUNT examples (target: 3+)"
-  inc WARNINGS
-else
-  echo "  ⚠️  No examples found (authored skills only)"
-  inc WARNINGS
-fi
-
-echo ""
-
-# Check defer-to boundaries
-echo "🔀 Defer-To Boundaries"
-if grep -q "Defer To Instead" "$SKILL_FILE"; then
-  echo "  ✅ Has 'Defer To Instead' section"
-
-  # Count defer-to entries
-  defer_count=$(grep -c '`.*`.*—' "$SKILL_FILE" || true)
-  defer_count=${defer_count:-0}
-  if [ "$defer_count" -ge 2 ]; then
-    echo "  ✅ Has $defer_count defer-to entries"
-  else
-    echo "  ⚠️  Only $defer_count defer-to entries (recommend 2-3)"
-    inc WARNINGS
-  fi
-else
-  echo "  ⚠️  Missing 'Defer To Instead' section (thin triggers use a 'Defer to:' line)"
-  inc WARNINGS
-fi
-
-echo ""
-
-# Check output format
-echo "📤 Output Format"
-if grep -qi "output format\|output contract" "$SKILL_FILE"; then
-  echo "  ✅ Has output format specification"
-
-  if grep -q "Save to:" "$SKILL_FILE"; then
-    echo "  ✅ Specifies output location"
-  else
-    echo "  ⚠️  Missing output location"
-    inc WARNINGS
-  fi
-
-  if grep -q "Frontmatter:" "$SKILL_FILE"; then
-    echo "  ✅ Specifies frontmatter template"
-  else
-    echo "  ⚠️  Missing frontmatter template"
-    inc WARNINGS
-  fi
-else
-  echo "  ⚠️  Missing output format specification"
+  echo "  ⚠️  Missing a 'Defer to:' line"
   inc WARNINGS
 fi
 
@@ -495,16 +345,12 @@ if [ -n "$JSON_OUTPUT" ]; then
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "checks": {
     "frontmatter": $FRONTMATTER_PASS,
-    "structure": $STRUCTURE_PASS,
-    "security": $SECURITY_PASS,
-    "examples": $EXAMPLES_PASS,
     "tests": $TESTS_PASS,
     "scripts": $SCRIPTS_PASS,
     "references": $REFERENCES_PASS
   },
   "metrics": {
     "line_count": $LINE_COUNT,
-    "example_count": $EXAMPLE_COUNT,
     "test_coverage": $TEST_COVERAGE,
     "script_count": $SCRIPT_COUNT
   },

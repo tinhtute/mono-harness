@@ -43,18 +43,19 @@ Context = all tokens the LLM sees at inference (system prompt + tools + examples
 | Content | Language | Rationale |
 |---------|----------|-----------|
 | Instructions, rules, constraints | English | Usually tokenizes compactly; keep one language per instruction set |
-| Few-shot example outputs | Target language | Model captures tone/style |
+| Example outputs | Target language | Model captures tone/style |
 | Data, documents | Original language | Don't translate — meaning loss |
 
 Non-Latin-script instructions often tokenize into more tokens for the same meaning; measure with the target model's tokenizer before assuming a ratio.
 
-## Few-Shot Patterns
+## Interfaces Before Examples
 
-- 3-4 diverse examples > 8 homogeneous (diversity > quantity)
-- Each example must cover a different facet or edge case
-- Use XML with `id` attributes: `<example id="1">...</example>`
-- Audit examples whenever instructions change — stale examples silently contradict new rules (contamination)
-- Token trade-off: each example costs context. Remove if budget is tight.
+Examples narrow exploration: the model copies their shape instead of using judgment. Design the interface first.
+
+- Behavior: express it through the tool or file shape (enum values, named parameters, one stated invariant) rather than sample calls.
+- Output format or tone: a single example is fine when a schema cannot carry it; use XML with `id` attributes.
+- Spec: prefer a reference in code (test suite, HTML mockup, function to port) over a prose description.
+- Audit any remaining example when instructions change: stale examples silently contradict new rules.
 
 ## System Prompt Altitude
 

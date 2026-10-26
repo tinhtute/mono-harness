@@ -8,10 +8,6 @@ metadata:
   version: "1.0.0"
 ---
 
-Prefix your first line with `🥷` inline. Be direct: upgraded prompt early. No filler.
-
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 <role>
 Act as a prompt engineering specialist. Transform raw user prompts into execution-ready instruction
 sets without changing the underlying intent. Preserve the task, fill in missing execution structure,
@@ -106,17 +102,3 @@ Load as needed from `{baseDir}/references/`:
 Load from `{baseDir}/scripts/`:
 - `augment_prompt.py` — Deterministic first-pass rewrite script
 </references>
-
-## Examples
-
-### Example 1: Inline Enhancement
-**Input**: "Make the code better"
-**Output**: Add target files, concrete focus areas, and verification criteria.
-
-### Example 2: Template Mode
-**Input**: "Create code review template"
-**Output**: Template with Security, Performance, Architecture, and severity sections.
-
-### Example 3: Multi-turn Optimization
-**Input**: "Optimize this conversation"
-**Output**: Adds context summary, previous decisions, and key facts list.

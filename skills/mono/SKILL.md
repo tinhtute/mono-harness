@@ -6,7 +6,7 @@ argument-hint: "[task]"
 compatibility: Designed for Claude Code
 ---
 
-Prefix your first line with `🥷` inline. Name the matched playbook first.
+Name the matched playbook first.
 
 Ask the user only through the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): ≤4 per call, recommended option first and labelled `(Recommended)`; plain text only without one.
 

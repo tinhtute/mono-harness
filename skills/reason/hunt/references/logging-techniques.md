@@ -2,6 +2,13 @@
 
 Every log answers a yes/no question about a hypothesis: "if this prints X before Y, hypothesis A holds; otherwise A is dead." A log that cannot rule a hypothesis in or out is noise.
 
+## By Bug Class
+
+- Pure logic (off-by-one) → static reading.
+- Lifecycle/async/event-order → log while hypothesising.
+- Rendering → DevTools layers before logs.
+- Performance → before/after numbers: baseline, bisect, re-measure.
+
 ## Discriminating Content
 
 Log what discriminates between hypotheses: ordering (sequence number or timestamp), input identity key, branch taken, old-vs-new state transition, and error code plus context. Place logs at boundaries where behavior should be predictable (handler entry/exit, cache hit or miss with key, state setter with old value and caller, async callback entry, external API result) rather than in tight-loop interiors. Never log credentials, PII, or full request/response bodies.
