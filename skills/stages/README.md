@@ -32,9 +32,9 @@ On the high-risk lane, `to-plan` writes the locked plan's Phases and Verificatio
 
 The workflow chain covers plan → code → verify → commit/PR, and the core lifecycle ends there: at a committed change, or an opened PR when the work calls for one. Deployment, release management, and production monitoring are explicitly **out of scope** for the chain: `check`'s automated gate and manual review end at a clean local verdict — nothing in `work`, `check`, or `git` merges to a release line, ships a build artifact, runs a release, or watches one in production. This is a declared non-goal, not an ambient gap (G1 of the SDLC gap analysis; see `docs/decisions/0004-docs-directory-deletion-655c6ac.md`).
 
-"Ship" means one thing in this repository: the optional `mono-mode` [ship playbook](../mono-mode/playbooks/ship.md), which lands already-verified PRs and then tags, publishes, or deploys, each step only on the owner's explicit request. It is an add-on that composes the skills above by name, not a stage of the chain and not a skill; preparing a branch or PR is `git`, not shipping. A real deploy target still needs its own agreed scope before the playbook grows past tag-and-publish.
+"Ship" means one thing in this repository: the optional `mono` [ship playbook](../mono/playbooks/ship.md), which lands already-verified PRs and then tags, publishes, or deploys, each step only on the owner's explicit request. It is an add-on that composes the skills above by name, not a stage of the chain and not a skill; preparing a branch or PR is `git`, not shipping. A real deploy target still needs its own agreed scope before the playbook grows past tag-and-publish.
 
-A single bounded change needs one branch and one PR (or just a commit). Stack PRs only when a later change depends on an earlier unmerged one, or when the layers are independently reviewable; see the playbook's [Stacked or not](../mono-mode/playbooks/ship.md#stacked-or-not) section.
+A single bounded change needs one branch and one PR (or just a commit). Stack PRs only when a later change depends on an earlier unmerged one, or when the layers are independently reviewable; see the playbook's [Stacked or not](../mono/playbooks/ship.md#stacked-or-not) section.
 
 ## No Version Gate
 
@@ -75,4 +75,4 @@ Defer to: {one line naming the skills this stage hands off to or resumes from}
 | `retro` | no plan sections, except an experiment-mode `.harness/plans/active/harness-improvement-{slug}.md` | non-spine; logic `skills/stages/retro/references/retro.md`, digest `skills/stages/retro/scripts/session-digest.py`, guard mode `skills/stages/retro/references/encoding-invariants.md`, experiment mode `skills/stages/retro/references/harness-improvement.md`; never blocking on a missing binary |
 | `hunt` | no plan sections | non-spine; loop and hypotheses in `skills/reason/hunt/SKILL.md`, fix/sweep `skills/reason/hunt/references/fix.md`, bisect/regression `skills/reason/hunt/references/bisect-regression.md`, triage mode `skills/reason/hunt/references/triage.md`; report-only unless a fix is requested |
 | `think` | no plan sections, zero writes | non-spine; lenses `skills/reason/think/references/lenses.md`; hands off to `brainstorm lock`, `to-plan`, or `hunt` |
-| `mono-mode` | no plan sections, zero writes | non-spine entry router; playbooks `skills/mono-mode/playbooks/*.md` compose the skills above by name |
+| `mono` | no plan sections, zero writes | non-spine entry router; playbooks `skills/mono/playbooks/*.md` compose the skills above by name |

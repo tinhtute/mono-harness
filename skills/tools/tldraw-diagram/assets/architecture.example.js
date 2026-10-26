@@ -4,7 +4,7 @@ card('skills',260,200,360,150,'skills/','green',['router · stages · reason','t
 card('zh',720,200,340,150,'zharness','blue',['install · update · uninstall','manages docs only','no lifecycle runtime']);
 card('guards',1140,200,340,150,'Guards','red',['pre-commit + CI','re-run proofs','independent judge']);
 band('b2',420,'Agent host','violet',W);
-card('host',260,470,380,140,'Claude Code · Codex','violet',['/mono-mode → playbook','stage skills run the work']);
+card('host',260,470,380,140,'Claude Code · Codex','violet',['/mono → playbook','stage skills run the work']);
 band('b3',680,'Consumer repo','orange',W);
 card('managed',700,740,380,200,'Managed set','blue',['AGENTS.md block','.harness/WORKFLOW.md','.harness/PROJECT.md','.zharness/base']);
 card('plans',1160,740,320,200,'Plans','orange',['.harness/plans/active','→ completed','one active at a time']);

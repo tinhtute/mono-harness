@@ -48,7 +48,7 @@ Output: one `.tldraw` source and one PNG per diagram, plus the PNG path in the r
 ## Examples
 
 ### Example 1: Workflow
-**Input**: "Vẽ workflow mono-mode → playbooks → skills bằng tldraw"
+**Input**: "Vẽ workflow mono → playbooks → skills bằng tldraw"
 **Output**: `site/assets/workflow.png` and `site/assets/diagrams/mono-harness-workflow.tldraw`: 3 bands, 7 cards, colored arrows per playbook.
 
 ### Example 2: Restyle

@@ -19,7 +19,7 @@ claude-code add-dir /path/to/your/local/skill
 
 ## Repository layout
 
-- `skills/` — installable agent skills, top-level `mono-mode/` plus groups `stages/`
+- `skills/` — installable agent skills, top-level `mono/` plus groups `stages/`
   (lifecycle chain), `reason/` (think, hunt), `tools/`, `extras/`. Each skill directory has a required `SKILL.md` and optional
   `references/` and `scripts/` subdirectories.
 - `setup/` — machine setup: `CLAUDE.md`, `rules/` (source of truth for global Claude Code rules

@@ -1,5 +1,5 @@
 ---
-name: mono-mode
+name: mono
 version: "1.0.0"
 description: "Entry router: match a task to one of twelve playbooks (feature, bug-fix, refactoring, perf, research, ship, ...) and run its skill steps as a todo list. Use when the route is unclear."
 argument-hint: "[task]"

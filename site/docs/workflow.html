@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Workflow — mono-harness</title>
-  <meta name="description" content="The mono-mode router, its twelve playbooks, the six stage skills, reduced execution modes, and append-only state model in mono-harness.">
+  <meta name="description" content="The mono router, its twelve playbooks, the six stage skills, reduced execution modes, and append-only state model in mono-harness.">
   <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,9 +46,9 @@
       <div class="prose reveal">
         <h2>Lifecycle Architecture<i>.</i></h2>
         <p>The workflow lifecycle requires no running daemon or database binary. <code>AGENTS.md</code> serves as the entry point, defining the shared workflow boundaries. Each stage is an installed skill whose procedure lives in its own <code>references/</code> directory, executing directly against the repository code and committed markdown plans.</p>
-        <h2>Start with mono-mode<i>.</i></h2>
-        <p>Run <code>/mono-mode &lt;task&gt;</code>. The router matches one of twelve playbooks &mdash; feature, bug-fix, refactoring, perf, prototype, investigation, research, babysit, ship, session-pickup, retro, fanout &mdash; copies its steps into a todo list, and calls the skill each step names. <code>retro</code>, <code>create-cli</code> and <code>turbo-mono-platform</code> are gated: they run only from a playbook step or when the user names them.</p>
-        <p><img src="../assets/workflow.png" alt="mono-mode routes a task to one of its playbooks, each a chain of skills" style="max-width:100%;height:auto;border-radius:8px" /></p>
+        <h2>Start with mono<i>.</i></h2>
+        <p>Run <code>/mono &lt;task&gt;</code>. The router matches one of twelve playbooks &mdash; feature, bug-fix, refactoring, perf, prototype, investigation, research, babysit, ship, session-pickup, retro, fanout &mdash; copies its steps into a todo list, and calls the skill each step names. <code>retro</code>, <code>create-cli</code> and <code>turbo-mono-platform</code> are gated: they run only from a playbook step or when the user names them.</p>
+        <p><img src="../assets/workflow.png" alt="mono routes a task to one of its playbooks, each a chain of skills" style="max-width:100%;height:auto;border-radius:8px" /></p>
       </div>
 
       <div class="routing reveal">

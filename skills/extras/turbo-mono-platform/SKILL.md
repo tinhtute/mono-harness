@@ -5,7 +5,7 @@ argument-hint: "[layer or feature]"
 description: >
   Full-stack TypeScript monorepo specialist: Turborepo, Next.js, Hono, tRPC, Drizzle,
   Postgres. Use when working on this stack or any layer (auth, db, trpc, ui, kv, api).
-  Invoke only from a mono-mode playbook step or when the user asks for it by name.
+  Invoke only from a mono playbook step or when the user asks for it by name.
 allowed-tools: "Bash Edit"
 compatibility: Designed for Claude Code
 metadata:
