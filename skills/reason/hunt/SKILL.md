@@ -80,7 +80,7 @@ For a recurring or runtime-state symptom (caches, queues, generated output, PATH
 ## Hard Rules
 
 - **Same symptom after a fix: hard stop.** Re-read the execution path before touching code.
-- **Three failed hypotheses → stop**, Handoff format, ask how to proceed.
+- **Three failed hypotheses → stop**, report with the Handoff format in `references/output.md`, ask how to proceed.
 - **Measure the lower layer first** for system or tooling symptoms: OS capture vs post-processing, service vs UI, toolchain vs assertion, network vs client handling.
 - **External tool failure: diagnose before switching** (server up, key valid, config right).
 - **Magic number tuned three times: stop.** Unify into one named token; find the missing constraint.
@@ -89,19 +89,6 @@ For a recurring or runtime-state symptom (caches, queues, generated output, PATH
 
 ## Output
 
-Open with one plain line: the outcome and whether changes are committed.
-
-```
-Root cause:        [what was wrong, file:line]
-Loop:              [the red-capable command]
-Fix:               [what changed, file:line]  (diagnose mode: "not applied")
-Sibling sweep:     [N sites checked: N fixed / safe / unsure]  or  [not run, why]
-Confirmed:         [loop red → green, original scenario re-run]
-Regression guard:  [test file:line, red run shown]  or  [none: no correct seam, why]
-```
-
-Status: **resolved**, **resolved with caveats** (state them), **blocked**.
-
-**Handoff (blocked):** the symptom in one sentence; each hypothesis, its probe, and why it was ruled out; evidence (log excerpts, repro steps, versions, config); unknowns; next steps naming any tool, access, or context the user must supply.
+Report with the block and status in `references/output.md`; blocked → its Handoff format.
 
 Defer to: `check` (diff review, no symptom), `think` (is it worth it), `brainstorm` (product decision), `git` (commit).
