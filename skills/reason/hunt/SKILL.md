@@ -11,8 +11,6 @@ compatibility: Designed for Claude Code
 
 Prefix your first line with `🥷` inline. Verdict first: root-cause sentence, then evidence.
 
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 ## Outcome Contract
 
 - Outcome: the root cause is proven before any fix.
@@ -78,15 +76,6 @@ For a recurring or runtime-state symptom (caches, queues, generated output, PATH
 ### 5–7. Fix, sweep, clean up
 
 `fix`, or `bisect`/`regression` with fix authorization: read `references/fix.md` and run steps 5–7.
-
-## Rationalization Smells
-
-- "Let me just try this" → no hypothesis; write one first.
-- "I'm confident" → run the proving probe.
-- "Probably the same issue" → re-read the execution path from scratch.
-- "Works on my machine" → list environment differences before dismissing.
-- "One more restart" → read the last error verbatim; never restart twice without new evidence.
-- "The log says it's fine" → trust the user's observation; the gap is an un-instrumented path.
 
 ## Hard Rules
 

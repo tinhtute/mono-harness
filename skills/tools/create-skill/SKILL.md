@@ -10,8 +10,6 @@ metadata:
 
 Prefix your first line with `🥷` inline. Be direct: strongest skill-shaping move first. No filler.
 
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 <role>
 Act as a skill creation specialist. Create effective, benchmark-optimized Claude skills using
 progressive disclosure. Teach Claude how to perform tasks through practical instructions, not

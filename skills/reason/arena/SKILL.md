@@ -10,8 +10,6 @@ compatibility: Designed for Claude Code
 
 Prefix your first line with `🥷` inline. Verdict first: the winning base and what was grafted onto it.
 
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 ## Outcome Contract
 
 - Outcome: one artifact built from the strongest candidate, improved with the best parts of the others.

@@ -44,7 +44,7 @@ Run a single Rust test: `cd cli && cargo test --lib installer::registry::tests::
 
 ## Architecture Notes
 
-- **Prompt engineering:** before writing or editing skills (SKILL.md), rules (setup/rules/*.md), or any agent instruction file, read `docs/guides/prompt-engineering-principles.md` — context engineering, formatting syntax, language rules, few-shot patterns, anti-patterns, cross-model awareness.
+- **Prompt engineering:** before writing or editing skills (SKILL.md), rules (setup/rules/*.md), or any agent instruction file, read `docs/guides/prompt-engineering-principles.md` — context engineering, formatting syntax, language rules, interfaces before examples, anti-patterns, cross-model awareness.
 - **Skill format:** All skills follow the `skills.sh` standard — YAML frontmatter with `name` and `description`, imperative instructions, optional `references/` and `scripts/` directories.
 - **setup/rules/ directory:** Source-of-truth for rules installed to `~/.claude/rules/`. Keep in sync with installed versions.
 - **`site/` is hand-authored, not generated.** A static GitHub Pages site (`.github/workflows/pages.yml` deploys on push to `site/**`) that narrates the same architecture/workflow story as `docs/`; it does not regenerate from `docs/*.md` and can drift — it was last brought in line with v0.24.0.

@@ -11,8 +11,6 @@ compatibility: Designed for Claude Code
 
 Prefix your first line with `🥷` inline. Verdict first, then the evidence that would flip it.
 
-Ask every question to the user with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended option first, labelled `(Recommended)`; plain text only when the agent has no such tool.
-
 ## Outcome Contract
 
 - Outcome: a rough question becomes one defensible recommendation whose weakest assumption is named.
@@ -67,7 +65,7 @@ A question only running something can settle (does this state model feel right?)
 
 Decisions only the user can make go out as a **frontier**: every open decision whose prerequisites are settled, numbered, each with your recommended answer. Wait, recompute, repeat; a question depending on another open one waits a round.
 
-Ask with the agent's question tool (Claude Code `AskUserQuestion`, Codex `request_user_input`, Pi `ask_user_question`, Gemini CLI `ask_user`, omp `ask`): at most 4 per call, recommended first, labelled `(Recommended)`. No tool → text:
+Ask with the agent's question tool; without one, use text:
 
 ```
 ❓ **Q1** — **<title>**: <question, options if any>
@@ -79,14 +77,11 @@ Ask with the agent's question tool (Claude Code `AskUserQuestion`, Codex `reques
 - **No placeholders.** "To be decided", "details later", "similar to step N" mean the thinking is unfinished.
 - **Zero-setup default.** Anything every user must install or configure (hook, MCP server, config key, new runtime or language) first says why a built-in or fixed default cannot do the job. A second language or runtime in a single-stack project needs explicit approval.
 - **Phases stand alone.** After phase N ships, the system works even if N+1 never lands; "Phase 0: investigate" belongs in this thinking, not the plan.
-- **Plain re-pitch on confusion.** "Wait, what?" → restate in short plain sentences in the project's terms, not more detail.
 
 ## Gotchas
 
 - Design rejected → ask what specifically failed; re-enter with narrowed constraints, never from scratch.
-- Before calling anything a missing feature, search for the existing affordance by concept.
 - A rework that would remove the product's differentiator → check docs for a deliberate choice; deliberate → Keep.
-- List regional or locale API differences before recommending an integration.
 
 ## Output
 
