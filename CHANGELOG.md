@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [v0.32.0] — 2026-10-26
+
+### Changed
+
+- **BREAKING:** the entry router skill is `mono` (`skills/mono/`, `/mono <task>`),
+  not `mono-mode`. Reinstall skills and remove any installed `mono-mode` copy.
+- The managed `WORKFLOW.md` names `check.md` § Lane Matrix as the only source
+  of lane → required proof, final check mode, and judge independence. Run
+  `zharness update` to refresh it.
+- `check`: the Lane Matrix is authoritative; normal plans no longer auto-run
+  `full`, and the normal-lane gate has no manual review. `work-full` gates
+  `stop_if` and `escalate_when` fail-closed.
+
+### Added
+
+- `check`: opt-in multi-model panel review (ADR 0018) with an executable merge
+  step, `scripts/panel-merge.py`, and fixture tests in CI (#156).
+- `read` and `learn` skills, plus `research`, `ship`, `babysit`, `fanout` and
+  the other pstack playbooks in the `mono` router.
+- Role agents (`lead`, `worker`, `verifier`, `test-runner`) pinned by
+  `setup/models.json`.
+- CI validates every tracked `SKILL.md` (#167).
+
+### Fixed
+
+- Secret-scan hook reads binary blobs in the C locale.
+
 ## [v0.31.0] — 2026-10-23
 
 ### Changed
