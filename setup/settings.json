@@ -13,7 +13,8 @@
     "ENABLE_TOOL_SEARCH": "true",
     "MAX_MCP_OUTPUT_TOKENS": "50000",
     "MAX_THINKING_TOKENS": "32000",
-    "USE_BUILTIN_RIPGREP": "0"
+    "USE_BUILTIN_RIPGREP": "0",
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/ninja-kit"
   },
   "attribution": {
     "commit": "🥷 - from therealTINHTUTE with love",
@@ -36,28 +37,6 @@
     "refreshInterval": 30
   },
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Read|Edit|Write|Grep",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.claude/hooks/privacy-guard.cjs",
-            "timeout": 10
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__plugin_tinyfish_tinyfish__.*|mcp__claude_ai_Firecrawl__.*|mcp__claude_ai_Exa__.*|WebFetch|WebSearch",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node ~/.claude/hooks/url-guard.cjs",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
@@ -65,18 +44,6 @@
             "type": "command",
             "command": "bash -c 'if echo \"$CLAUDE_LAST_MESSAGE\" | grep -qE \"\\?$\"; then echo \"REMINDER: Use AskUserQuestion tool for questions\" >&2; fi'",
             "statusMessage": "Checking for prose questions"
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "compact",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/post-compact-reminder.sh",
-            "timeout": 10
           }
         ]
       }
