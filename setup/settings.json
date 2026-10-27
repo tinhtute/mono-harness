@@ -36,30 +36,24 @@
     "refreshInterval": 30
   },
   "hooks": {
-    "PostCompact": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash ~/.claude/hooks/post-compact-reminder.sh",
-            "statusMessage": "Re-injecting Hard Rules after compaction"
-          }
-        ]
-      }
-    ],
     "PreToolUse": [
       {
-        "matcher": "Read|Edit|Write|Grep|Glob|Bash",
+        "matcher": "Read|Edit|Write|Grep",
         "hooks": [
           {
             "type": "command",
             "command": "node ~/.claude/hooks/privacy-guard.cjs",
-            "statusMessage": "Checking privacy guard"
-          },
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__plugin_tinyfish_tinyfish__.*|mcp__claude_ai_Firecrawl__.*|mcp__claude_ai_Exa__.*|WebFetch|WebSearch",
+        "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if echo \"$CLAUDE_TOOL_INPUT\" | grep -qE \"\\brm\\b\"; then echo \"ERROR: Use trash instead of rm\" >&2; exit 1; fi'",
-            "statusMessage": "Blocking rm commands"
+            "command": "node ~/.claude/hooks/url-guard.cjs",
+            "timeout": 10
           }
         ]
       }
@@ -71,6 +65,18 @@
             "type": "command",
             "command": "bash -c 'if echo \"$CLAUDE_LAST_MESSAGE\" | grep -qE \"\\?$\"; then echo \"REMINDER: Use AskUserQuestion tool for questions\" >&2; fi'",
             "statusMessage": "Checking for prose questions"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/post-compact-reminder.sh",
+            "timeout": 10
           }
         ]
       }
