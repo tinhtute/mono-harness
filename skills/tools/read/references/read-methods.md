@@ -41,3 +41,12 @@ No `pdftotext` → `python3 -c "import pypdf"` route, or Firecrawl `parsers: ["p
 ## Credit
 
 `scripts/fetch.sh` and `scripts/fetch_local.py` adapt `skills/read` from [tw93/Waza](https://github.com/tw93/Waza) (MIT); the DeepSeek, Feishu and WeChat paths are dropped.
+
+## Gotchas
+
+| What happened | Rule |
+|---|---|
+| Got a login, paywall, consent or bot-check page | Stop and say so; do not summarize or save the shell. |
+| Every tier failed | List each tier and its reason; suggest a browser or another source. Never fabricate content. |
+| Reader returned JSON | Extract the Markdown field; raw JSON is not an answer. |
+| Long page | Preview with `head -n 200`; state where output was cut. |

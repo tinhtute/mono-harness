@@ -35,14 +35,7 @@ Details, flags and fallbacks: [references/read-methods.md](references/read-metho
 
 Display only by default. Save Markdown with YAML frontmatter (`title`, `url`, `fetched`, `tier`) when the user asks to save or download, or when `learn` passes a source directory. No directory given → the session scratchpad. Never overwrite; append `-1`, `-2`. Report the full path.
 
-## Gotchas
-
-| What happened | Rule |
-|---|---|
-| Got a login, paywall, consent or bot-check page | Stop and say so; do not summarize or save the shell. |
-| Every tier failed | List each tier and its reason; suggest a browser or another source. Never fabricate content. |
-| Reader returned JSON | Extract the Markdown field; raw JSON is not an answer. |
-| Long page | Preview with `head -n 200`; state where output was cut. |
+Failure handling (login walls, all tiers failed, JSON, long pages): [references/read-methods.md](references/read-methods.md#gotchas).
 
 ## Output
 

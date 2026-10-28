@@ -284,3 +284,16 @@ representative examples for detailed citation.
 4. **State scope clearly** — "searched X with limit Y" prevents overconfidence
 5. **Include URLs** — GitHub blob links help readers verify
 6. **Use optional sections wisely** — only include Searched/Next Steps when needed
+
+## Saved Findings
+
+Report findings inline. Save to `docs/research/{topic}.md` only when a plan will cite them, with frontmatter:
+```yaml
+---
+title: {topic}
+description: {one-line summary}
+status: active
+created: {date}
+tags: [github, {repo-name}]
+---
+```
