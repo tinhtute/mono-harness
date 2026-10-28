@@ -84,7 +84,7 @@ At most 5 repos and 30 results per search; too broad → ask the user to narrow.
 
 <references>
 Load as needed from `{baseDir}/references/`:
-- `gh-patterns.md` — 7 known-good gh command templates
+- `gh-patterns.md` — 7 known-good gh command templates; cache, scope limits, anti-patterns
 - `citation-rules.md` — Evidence and citation discipline
 - `output-format.md` — Markdown structure for findings
 </references>

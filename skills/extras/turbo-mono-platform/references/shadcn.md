@@ -103,6 +103,6 @@ export function cn(...inputs: ClassValue[]) {
 ## Rules
 
 - `shadcn add` must run from `packages/ui/` — never `apps/web/`
-- ALWAYS include `--preset b1tMcUv91` on `shadcn init`
+- Always include `--preset b1tMcUv91` on `shadcn init`
 - No `tailwind.config.js` — `@theme` directive only
 - Import components as `@rp/ui/components/<n>`

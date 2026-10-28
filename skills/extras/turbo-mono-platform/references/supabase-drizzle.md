@@ -137,7 +137,7 @@ export default defineConfig({
 
 ## Gotchas
 
-- `drizzle-orm/postgres-js` — NOT `drizzle-orm/node-postgres`
+- `drizzle-orm/postgres-js` — not `drizzle-orm/node-postgres`
 - Drizzle `0.40.x` only — v1.0 breaks Better Auth adapter
 - `server-only` must be the first import in `db.ts` and `client.ts`
 - Realtime requires Supabase SDK — cannot use Drizzle
