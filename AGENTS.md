@@ -62,3 +62,11 @@ Start from the requested outcome; the repository is the system of record. Read `
 
 `zharness` only installs, updates, and uninstalls. There is no task database. There is no parallel control-plane state.
 <!-- ZHARNESS:END -->
+
+## Unattended Shipping
+
+Read by the land step of `skills/mono/playbooks/ship.md` and the rubric in `skills/stages/check/references/check-risk.md`.
+
+- Auto-merge: low-risk
+- Always-review paths: setup/install-git-hooks.sh, setup/hooks/**, scripts/ci/**, .github/**, cli/src/installer/**, cli/Cargo.toml, cli/Cargo.lock, setup/settings*.json
+- Merge method: merge (the repo disables GitHub auto-merge, so wait for green with `gh pr checks --watch`, never `gh pr merge --auto`)

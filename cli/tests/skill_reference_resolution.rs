@@ -16,7 +16,14 @@ const STAGES: &[(&str, &[&str])] = &[
     ),
     (
         "check",
-        &["check", "check-durable", "check-validation", "check-review"],
+        &[
+            "check",
+            "check-durable",
+            "check-validation",
+            "check-review",
+            "check-risk",
+            "check-exercise",
+        ],
     ),
     ("handoff", &["handoff"]),
     ("watzup", &["watzup"]),

@@ -40,6 +40,9 @@ HOOKS_DIR="$REPO_ROOT/.git/hooks"
 #       its `proof_classes:` line; a missing class rejects, naming it.
 #       zharness_lane_required_proof mirrors the matrix; test-guards.sh
 #       fails when the two disagree.
+#   R6: LANE-RAISE — R3/R4 judge an entry at the effective lane: the declared
+#       lane, raised to high-risk when a staged path or a commit since the
+#       default branch touches an always-review path (check-risk.md).
 #   FLOOR: entries already committed at ZHARNESS_GUARD_HISTORICAL_FLOOR are
 #       never re-executed. A push whose before-SHA predates the v0.24 cutover
 #       makes the pre-cutover entries look new, and their proofs cannot run at
@@ -119,6 +122,39 @@ zharness_lane_required_proof() {          # <lane> -> classes; unknown lane -> 1
   esac
 }
 
+zharness_effective_lane() {               # <declared-lane> <agents-md>; changed paths on stdin
+  # R6 LANE-RAISE: mirror of check-risk.md § Checks "Always-review paths".
+  # A declared lane below high-risk is raised when any changed path matches
+  # a built-in risky path or an AGENTS.md `Always-review paths:` glob. In a
+  # `case` pattern `*` also matches `/`, so `dir/**` covers the subtree.
+  local lane="$1" agents="$2" p g globs gl
+  [ -n "$lane" ] || { cat >/dev/null; return 0; }
+  globs='.github/* .gitlab-ci.yml *Cargo.toml *Cargo.lock *package.json *package-lock.json *bun.lock *pnpm-lock.yaml *yarn.lock *go.mod *go.sum *migrations/*'
+  if [ -f "$agents" ]; then
+    globs="$globs $(sed -n 's/^- Always-review paths:[[:space:]]*//p' "$agents" | tr ',' ' ')"
+  fi
+  # read -a splits without pathname expansion: a glob must never match the cwd.
+  read -r -a gl <<< "$globs"
+  if [ "$lane" != "high-risk" ]; then
+    while IFS= read -r p; do
+      [ -n "$p" ] || continue
+      for g in "${gl[@]}"; do
+        # shellcheck disable=SC2254
+        case "$p" in $g) lane=high-risk; break 2 ;; esac
+      done
+    done
+  fi
+  cat >/dev/null
+  echo "$lane"
+}
+
+zharness_changed_paths() {                # staged paths plus commits since the default branch
+  local base
+  git diff --cached --name-only 2>/dev/null
+  base=$(git merge-base HEAD origin/HEAD 2>/dev/null || git merge-base HEAD origin/master 2>/dev/null) || return 0
+  git diff --name-only "$base" HEAD 2>/dev/null
+}
+
 zharness_entry_missing_proof() {           # <lane> <entry-body> -> missing classes
   local req declared c missing=""
   req=$(zharness_lane_required_proof "$1") || return 0
@@ -178,7 +214,7 @@ zharness_guard_historical_floor_hashes() {  # <root> <path> <out-file> <floor>
 }
 
 zharness_guard_entries_of_file() {         # <path> <old-file> <new-file>
-  local path="$1" old="$2" new="$3" failed=0 rc_cmd cmd out body verdict cmds scratch h efile header line missing
+  local path="$1" old="$2" new="$3" failed=0 rc_cmd cmd out body verdict cmds scratch h efile header line missing lane
   # Old-side entry hashes live in a file, not an associative array: `local -A`
   # needs bash 4+, and macOS ships bash 3.2 as /bin/bash. There the declaration
   # fails, the hex subscript is then evaluated as arithmetic, and the shell dies
@@ -204,6 +240,7 @@ zharness_guard_entries_of_file() {         # <path> <old-file> <new-file>
   zharness_guard_historical_floor_hashes \
     "$(git rev-parse --show-toplevel 2>/dev/null || echo .)" "$path" "$oldhashes" 4cd86cf
 
+  lane=$(zharness_changed_paths | zharness_effective_lane "$(zharness_lane_of "$new")" "$(git rev-parse --show-toplevel 2>/dev/null || echo .)/AGENTS.md")
   for efile in "$scratch"/n/e*.txt; do
     [ -f "$efile" ] || continue
     h=$(sha256sum "$efile" | cut -d' ' -f1)
@@ -211,11 +248,11 @@ zharness_guard_entries_of_file() {         # <path> <old-file> <new-file>
     body=$(cat "$efile")
     header=$(head -1 "$efile")
 
-    if [ "$(zharness_lane_of "$new")" = "high-risk" ] && zharness_entry_has_same_session "$body"; then
+    if [ "$lane" = "high-risk" ] && zharness_entry_has_same_session "$body"; then
       failed=$((failed + 1))
       echo "" >&2
       echo "❌ R3 JUDGE GUARD REJECTED: $path" >&2
-      echo "   frontmatter sets lane: high-risk and a newly added ## Validation" >&2
+      echo "   lane is high-risk (declared, or raised by R6 for an always-review path) and a newly added ## Validation" >&2
       echo "   entry declares a same-session judge. An independent judge is required." >&2
       echo "   offending entry starts: $header" >&2
       printf '%s\n' "$body" | grep 'judge:' | sed 's/^/     /' >&2
@@ -248,12 +285,12 @@ zharness_guard_entries_of_file() {         # <path> <old-file> <new-file>
       continue
     fi
 
-    missing=$(zharness_entry_missing_proof "$(zharness_lane_of "$new")" "$body")
+    missing=$(zharness_entry_missing_proof "$lane" "$body")
     if [ -n "$missing" ]; then
       failed=$((failed + 1))
       echo "" >&2
       echo "❌ R4 PROOF-CLASS GUARD REJECTED: $path" >&2
-      echo "   lane $(zharness_lane_of "$new") requires proof: $(zharness_lane_required_proof "$(zharness_lane_of "$new")")" >&2
+      echo "   lane $lane requires proof: $(zharness_lane_required_proof "$lane")" >&2
       echo "   missing from proof_classes: $missing" >&2
       echo "   offending entry starts: $header" >&2
       continue

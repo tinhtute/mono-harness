@@ -1003,6 +1003,26 @@ st_rc=$?
 	bad "STALE an edited wrapper must be rejected (rc $st_rc)"
 rm -rf "$st"
 
+# R6 LANE-RAISE: a diff touching an always-review path raises the declared
+# lane to high-risk, so R3/R4 judge it as high-risk (check-risk.md).
+lr=$(mktemp -d)
+printf '# x\n\n## Unattended Shipping\n\n- Always-review paths: setup/hooks/**, scripts/ci/**\n' > "$lr/AGENTS.md"
+l=$(printf '%s\n' docs/a.md .github/workflows/ci.yml | zharness_effective_lane normal "$lr/AGENTS.md")
+[ "$l" = "high-risk" ] && ok "R6 CI workflow raises normal to high-risk" ||
+	bad "R6 CI workflow expected high-risk, got '$l'"
+l=$(printf '%s\n' scripts/ci/test-guards.sh | zharness_effective_lane tiny "$lr/AGENTS.md")
+[ "$l" = "high-risk" ] && ok "R6 AGENTS.md always-review glob raises tiny" ||
+	bad "R6 AGENTS.md glob expected high-risk, got '$l'"
+l=$(printf '%s\n' cli/Cargo.lock | zharness_effective_lane normal "$lr/none.md")
+[ "$l" = "high-risk" ] && ok "R6 lockfile raises without AGENTS.md" ||
+	bad "R6 lockfile expected high-risk, got '$l'"
+l=$(printf '%s\n' docs/a.md skills/x/SKILL.md | zharness_effective_lane normal "$lr/AGENTS.md")
+[ "$l" = "normal" ] && ok "R6 docs-only diff keeps declared lane" ||
+	bad "R6 docs-only expected normal, got '$l'"
+l=$(printf '' | zharness_effective_lane "" "$lr/AGENTS.md")
+[ -z "$l" ] && ok "R6 no lane stays no lane" ||
+	bad "R6 no lane expected empty, got '$l'"
+
 # TRIP: each validator has a committed bad fixture that must make it fail.
 tl=$(mktemp -d)
 mkdir -p "$tl/scripts/ci" "$tl/docs" "$tl/cli" "$tl/skills" "$tl/setup"
