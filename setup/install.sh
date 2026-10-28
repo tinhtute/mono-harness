@@ -48,7 +48,7 @@ echo "Target: $CLAUDE_DIR"
 echo ""
 
 # --- Step 1: Create directories ---
-mkdir -p "$CLAUDE_DIR/rules" "$CLAUDE_DIR/hooks/lib"
+mkdir -p "$CLAUDE_DIR/rules" "$CLAUDE_DIR/hooks"
 green "✓ Directories ready"
 
 # --- Step 2: CLAUDE.md ---
@@ -74,10 +74,6 @@ for f in "$REPO_DIR/setup/hooks/"*; do
   [ -f "$f" ] || continue
   sync_file "$f" "$CLAUDE_DIR/hooks/$(basename "$f")"
 done
-for f in "$REPO_DIR/setup/hooks/lib/"*; do
-  [ -f "$f" ] || continue
-  sync_file "$f" "$CLAUDE_DIR/hooks/lib/$(basename "$f")"
-done
 # Make all executable hook scripts runnable
 find "$CLAUDE_DIR/hooks" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.cjs" \) -exec chmod +x {} +
 green "✓ Hooks installed"
@@ -89,6 +85,13 @@ for f in "$REPO_DIR/setup/agents/"*.md; do
   sync_file "$f" "$CLAUDE_DIR/agents/$(basename "$f")"
 done
 green "✓ Agents installed"
+
+# --- Step 4c: Claude mods (loaded via CLAUDE_CODE_PLUGIN_DIRS) ---
+( cd "$REPO_DIR/setup/mods" && find . -type f ! -path '*/.claude-plugin/types/*' ) | while read -r f; do
+  mkdir -p "$(dirname "$CLAUDE_DIR/mods/$f")"
+  sync_file "$REPO_DIR/setup/mods/$f" "$CLAUDE_DIR/mods/$f"
+done
+green "✓ Mods installed ($(ls "$REPO_DIR/setup/mods" | tr '\n' ' '))"
 
 # --- Step 5: settings.json ---
 if [ -f "$CLAUDE_DIR/settings.json" ]; then

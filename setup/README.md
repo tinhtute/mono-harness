@@ -31,9 +31,9 @@ After install: edit `~/.claude/settings.json` → set `ANTHROPIC_AUTH_TOKEN`.
 
 | Hook | Event | What it does |
 | :--- | :--- | :--- |
-| `privacy-guard.cjs` | PreToolUse | Blocks reads of sensitive files (`.env`, keys, etc.); uses `lib/privacy-checker.cjs`, `lib/hook-logger.cjs` |
-| `post-compact-reminder.sh` | PostCompact | Re-injects Hard Rules after context compaction |
-| inline in `settings.json` | PreToolUse | Blocks `rm` in tool input; use `trash` |
 | inline in `settings.json` | Stop | Reminds to use AskUserQuestion when a reply ends with `?` |
+
+Tool guards (`rm` → `trash`, sensitive files, private URLs to web tools) and the compaction rule reminder live in the `ninja-kit` Claude mod (`setup/mods/ninja-kit`, installed to `~/.claude/mods/ninja-kit` and loaded through `CLAUDE_CODE_PLUGIN_DIRS`); test it with `claude plugin test setup/mods/ninja-kit`.
+
 
 from therealTINHTUTE with love
