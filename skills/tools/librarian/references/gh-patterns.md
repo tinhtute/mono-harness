@@ -209,3 +209,18 @@ if [ $? -ne 0 ]; then
   echo "Repo not found or not accessible: $REPO"
 fi
 ```
+
+## Cache Management
+
+The cache persists across sessions with no automatic cleanup; the user clears it with `trash .zharness/cache/github/` (or a single repo).
+
+## Scope Limits
+
+- Max 5 repos per query (use --repo filters to narrow)
+- Max 30 search results per gh search call (default)
+- If scope too broad, ask user to narrow before searching
+- Private repos: if 404/403, report access constraint clearly
+
+## Anti-Patterns
+- Deep-diving before `gh repo view` confirms the repo exists
+- Citing paths not confirmed at HEAD — cached or outdated results go stale

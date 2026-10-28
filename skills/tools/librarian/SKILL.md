@@ -66,18 +66,7 @@ Cache only files you need to cite, into `.zharness/cache/github/{owner}/{repo}/`
 Read cached files with line numbers. Cite as `.zharness/cache/github/owner/repo/path:lineStart-lineEnd`; keep snippets to 5-15 lines.
 
 ### 5. Write Findings
-Report findings inline. Save to `docs/research/{topic}.md` only when a plan will cite them, with frontmatter:
-```yaml
----
-title: {topic}
-description: {one-line summary}
-status: active
-created: {date}
-tags: [github, {repo-name}]
----
-```
-
-Follow output format from `references/output-format.md`.
+Report findings inline per `references/output-format.md`; save to `docs/research/{topic}.md` only when a plan will cite them.
 
 ## Citation Rules
 
@@ -88,25 +77,14 @@ Full rules and examples: `references/citation-rules.md`.
 - **Never speculate**: not observed in tool output → not a fact; nothing found → say "not found"
 - **Partial evidence**: state what is confirmed and what remains uncertain
 
-## Cache Management
+## Limits
 
-The cache persists across sessions with no automatic cleanup; the user clears it with `trash .zharness/cache/github/` (or a single repo).
-
-## Scope Limits
-
-- Max 5 repos per query (use --repo filters to narrow)
-- Max 30 search results per gh search call (default)
-- If scope too broad, ask user to narrow before searching
-- Private repos: if 404/403, report access constraint clearly
-
-## Anti-Patterns
-- Deep-diving before `gh repo view` confirms the repo exists
-- Citing paths not confirmed at HEAD — cached or outdated results go stale
+At most 5 repos and 30 results per search; too broad → ask the user to narrow. 404/403 on a private repo → report the access constraint. Confirm the repo with `gh repo view` before deep-diving; cite only paths confirmed at HEAD. Cache, scope and anti-pattern details: `references/gh-patterns.md`.
 </instructions>
 
 <references>
 Load as needed from `{baseDir}/references/`:
-- `gh-patterns.md` — 7 known-good gh command templates
+- `gh-patterns.md` — 7 known-good gh command templates; cache, scope limits, anti-patterns
 - `citation-rules.md` — Evidence and citation discipline
 - `output-format.md` — Markdown structure for findings
 </references>

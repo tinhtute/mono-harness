@@ -120,6 +120,7 @@ Observations as of 2026-10-21, not product policy; recheck against the vendor's 
 | Reasoning (o-series, extended thinking) | High-level goals. Trust the model. Don't say "think step-by-step" — it manages its own reasoning. |
 | Standard GPT / non-thinking | Explicit step-by-step. Define exact output. |
 | Claude 5 family (as of 2026-10-21) | Calibrates length to complexity. Follows "be conservative" literally. Shorter by default. (Local observation.) |
+| Claude 5.5 family (as of 2026-10-28) | Effort, not prompt text, is the main thinking control; start at `medium` ([Prompting Opus 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5-5)). Opus 5.5 for judgment and design, Sonnet 5.5 for well-scoped work. Sonnet 5.5 at `low` may report done without a real check; remove "minimize tool calls" wording so it searches instead of answering from training. Frequent harness text right after tool results can read as injection — keep reminders rare ([Prompting Sonnet 5.5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-sonnet-5-5)). |
 
 ## The Iteration Rule
 

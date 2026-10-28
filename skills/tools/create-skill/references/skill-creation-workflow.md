@@ -35,7 +35,7 @@ Analyze each example:
 - Repeated discovery → `references/` (schemas, docs, APIs)
 - Repeated boilerplate → `assets/` (templates, images)
 
-Scripts MUST: respect `.env` hierarchy, have tests, pass all tests.
+Scripts must: respect `.env` hierarchy, have tests, pass all tests.
 
 ## Step 4: Initialize
 
