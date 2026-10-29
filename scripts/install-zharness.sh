@@ -18,6 +18,15 @@ if ! command -v gh >/dev/null 2>&1; then
   exit 1
 fi
 
+# A CA bundle variable left pointing at a removed path (e.g. an uninstalled
+# package manager) makes gh fail TLS; drop it so the system roots apply.
+for var in SSL_CERT_FILE SSL_CERT_DIR CURL_CA_BUNDLE; do
+  if [ -n "${!var:-}" ] && [ ! -e "${!var}" ]; then
+    echo "warning: ignoring ${var}=${!var} (path does not exist)" >&2
+    unset "$var"
+  fi
+done
+
 case "$(uname -s)" in
   Linux) os="linux" ;;
   Darwin) os="darwin" ;;
