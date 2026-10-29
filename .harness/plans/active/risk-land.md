@@ -66,6 +66,7 @@ lane: high-risk
 - 2026-10-29 — requests 3–5 fixed: R6 reads the revspec range (pre-commit: index plus commits since `ZHARNESS_DEFAULT_BRANCH`), fails closed to high-risk when no range resolves, takes policy from AGENTS.md at both ends and lists AGENTS.md and `*schema*` itself; every `Always-review paths:` line counts. Fixture stub removed; end-to-end fixtures run the guard on a real range; mutating the wiring fails 2 cases. test-guards 102/0. R8: merge memory written on this machine (`~/.claude/projects/-home-tinhpt-Lab-mono-harness/memory/merge-wait-for-green.md`).
 - 2026-10-29 — decision: the merged-message half of R3 and the success_signal is proved by the next docs-only PR after #181 merges; open item.
 - 2026-10-29 — after the 04:44Z verdict: land request 1 fixed (check-risk.md lists AGENTS.md itself and reads the base's copy; ship.md opts in only from `origin/<base>:AGENTS.md`); request 3 fixed (release merge uses AGENTS.md `Merge method`, default squash); lane-raise request 1 fixed (fixtures for branch history and fail-closed; each mutation now fails). test-guards 104/0. Land request 2 (write ## Risk into #181) blocked: the PR-body write was denied in this session; the section text is ready.
+- 2026-10-29 — ## Risk (needs review, judged on 754f598) written into #181 body; Validation and test counts in the body refreshed to 104. Land request 2 done; no merge (needs review).
 
 ## Validation
 - 2026-10-29T04:08Z — phase `lane-raise` — verdict: REQUEST_CHANGES — mode: full
@@ -120,10 +121,22 @@ lane: high-risk
   - requests: 1 fixtures for install-git-hooks.sh:265-267 and :160-162 (each mutation leaves 102/0)
   - judge: independent
   - judge_model: claude-fable-5-1
+- 2026-10-29T05:30Z — phase `lane-raise` — verdict: APPROVED — mode: gate
+  - `bash scripts/ci/test-guards.sh` — exit 0; 104 passed, 0 failed (12 R6)
+  - `bash scripts/ci/verify-doc-links.sh` — exit 0; 0 findings
+  - `bash scripts/ci/validate-skills.sh` — exit 0; 21 skill(s) valid
+  - `cd cli && cargo test --test skill_reference_resolution` — exit 0; 2 passed
+  - scope: on target — 754f598 post-verdict fixes only
+  - proof_classes: output, unit, integration
+  - requirements: 04:44Z land requests 1, 3 met; lane-raise request 1 met (6 mutations of install-git-hooks.sh:160-162,267 each fail a fixture)
+  - rollback_point: 8873130
+  - requests: none blocking; risk verdict needs review (Where to look in #181 ## Risk)
+  - judge: independent
+  - judge_model: claude-fable-5-1
 
 ## Current State and Next Action
 - active_phase: lane-raise
 - lifecycle_status: in-progress
-- blockers: ## Risk not yet written into #181 (PR-body write denied this session)
+- blockers: none
 - open_items: merged-message proof on the next docs-only PR after #181
-- exact_next_action: owner writes ## Risk into #181 (or allows the write); re-run check gate on the post-verdict fixes; then handoff closes the plan
+- exact_next_action: owner reviews #181 Where to look and merges; then on the next docs-only PR prove the merged message and move this plan to completed
