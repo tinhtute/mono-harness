@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [v0.33.0] — 2026-10-29
+
+### Added
+
+- `ship` land step: an independent judge writes a `## Risk` verdict into the
+  PR body; with `Auto-merge: low-risk` in the base branch's `AGENTS.md`, a
+  low-risk PR merges after green via `--match-head-commit`, never `--auto`.
+  Needs-review PRs print **Where to look** and never merge (#181).
+- `check`: exercise proof (`check-exercise.md`) and the risk rubric
+  (`check-risk.md`).
+- Pre-commit guard R6 LANE-RAISE: a declared lane is raised to high-risk when
+  the range touches an always-review path (`AGENTS.md`, `*schema*`, and the
+  `AGENTS.md` list); fails closed when no range resolves. Reinstall hooks with
+  `bash setup/install-git-hooks.sh --force`.
+- `mono`: prior-art step before building (#180).
+- Setup: guards and the compaction reminder move into the ninja-kit mod;
+  privacy and URL guards wired; statusline token weather icon.
+- `create-skill` teaches context engineering and progressive disclosure.
+
+### Changed
+
+- Skills trimmed: repeated context removed, `think`/`hunt` detail moved into
+  references.
+- Release merges use `AGENTS.md` `Merge method` (default `squash`).
+
 ## [v0.32.0] — 2026-10-26
 
 ### Changed
