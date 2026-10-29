@@ -1,6 +1,6 @@
 [package]
 name = "zharness"
-version = "0.32.0"
+version = "0.33.0"
 edition = "2021"
 description = "Installer/updater for the markdown-first workflow harness"
 license = "MIT"
