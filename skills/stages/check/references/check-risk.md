@@ -9,7 +9,7 @@ Measure on the judged commit against the merge base: `git diff --numstat "origin
 | Check | Needs review when |
 |---|---|
 | Size | more than 400 changed lines (added plus deleted), not counting docs, tests, generated files and lockfiles |
-| Always-review paths | the diff touches a path in `AGENTS.md` § Unattended Shipping `Always-review paths`, any CI configuration, a dependency manifest or lockfile, or a migration or schema |
+| Always-review paths | the diff touches `AGENTS.md` itself, a path in the base branch's `AGENTS.md` § Unattended Shipping `Always-review paths`, any CI configuration, a dependency manifest or lockfile, or a migration or schema |
 | Tests | a test file or case removed, an assertion removed or loosened, a skip or ignore marker added, or an expected value changed to match new output without a stated reason |
 | Exercise | the PR body's `## Exercised` section reports `wrong:` |
 | Plan | the diff does something the PR's plan or Goal did not set out to do, or omits a planned phase, without saying so in the PR body |
@@ -20,7 +20,7 @@ When no check hits, the verdict is **low risk** only if the judge can name what 
 
 ## Judge
 
-One fresh-context sub-agent judges; the session that wrote the code is the worst judge of its risk. Brief it with the PR number, `$SHA`, `$BASE`, this file, and `AGENTS.md` § Unattended Shipping, and ask for the filled `## Risk` section and nothing else. With no sub-agents available, judge from this rubric alone and record `judge: same-session`; a same-session verdict is never low risk.
+One fresh-context sub-agent judges; the session that wrote the code is the worst judge of its risk. Brief it with the PR number, `$SHA`, `$BASE`, this file, and `AGENTS.md` § Unattended Shipping read from the base (`git show origin/$BASE:AGENTS.md`, never the PR's own copy), and ask for the filled `## Risk` section and nothing else. With no sub-agents available, judge from this rubric alone and record `judge: same-session`; a same-session verdict is never low risk.
 
 ## Risk Section
 

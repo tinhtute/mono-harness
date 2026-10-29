@@ -1055,6 +1055,27 @@ r6case docs/a.md && ok "R6 guard accepts the same entry on a docs-only diff" ||
 	bad "R6 guard must accept a docs-only normal-lane entry"
 r6case AGENTS.md && bad "R6 guard must raise when the commit edits AGENTS.md itself" ||
 	ok "R6 an AGENTS.md edit raises the lane"
+# Branch history: a CI change committed earlier on the branch still raises a
+# commit that only stages docs. Fail closed: no default-branch ref resolves.
+r6branch() {                                # <default-branch> -> guard rc
+	local d rc
+	d=$(mktemp -d)
+	(
+		cd "$d" && git init -q -b master && git config user.email t@t && git config user.name t &&
+			mkdir -p .harness/plans/active docs .github && cp "$tmp/r6-old.md" .harness/plans/active/p.md &&
+			git add -A && git commit -qm base && git checkout -qb feat &&
+			printf 'y\n' > .github/ci.yml && git add -A && git commit -qm ci &&
+			cp "$tmp/r6-new.md" .harness/plans/active/p.md && printf 'y\n' > docs/a.md && git add -A &&
+			mkdir g && ZHARNESS_DEFAULT_BRANCH="$1" zhuards_guard_plans .harness/plans/active/p.md HEAD : "$d/g"
+	) >/dev/null 2>&1
+	rc=$?
+	rm -rf "$d"
+	return $rc
+}
+r6branch master && bad "R6 an earlier branch commit on a CI path must raise a docs-only commit" ||
+	ok "R6 branch history since the default branch raises the lane"
+r6branch no-such-ref && bad "R6 must fail closed to high-risk when no default branch resolves" ||
+	ok "R6 fails closed when no range resolves"
 
 # TRIP: each validator has a committed bad fixture that must make it fail.
 tl=$(mktemp -d)

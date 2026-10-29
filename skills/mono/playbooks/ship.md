@@ -24,7 +24,7 @@ In the steps below, "bottom of the stack" and "contiguous run" collapse to the s
 3. `check full` — per PR, bottom of the stack first: record its verdict with the head SHA it covers. Also check every shipped surface: CLI `--help` and version output, install path, migrations, config defaults.
 4. Land only the contiguous verified run from the bottom: stop at the first PR without a pass; a verified PR above it waits.
 5. Re-check each verdict still describes the code: `git patch-id` at the verdict SHA equals the current head's, otherwise re-run step 3 for that PR.
-6. `git` — merge bottom-up, one PR at a time, guarded by the verified head: `gh pr merge <n> --squash --match-head-commit <sha>`; confirm the base right before. Touch no branch or base while the run lands.
+6. `git` — merge bottom-up, one PR at a time, guarded by the verified head: `gh pr merge <n> --<method> --match-head-commit <sha>`, `<method>` from `AGENTS.md` § Unattended Shipping `Merge method` (default `squash`); confirm the base right before. Touch no branch or base while the run lands.
 7. `write` — CHANGELOG entry and release notes from the commit list; breaking changes first, each with its migration step.
 8. `git` — bump the version, commit, tag and push; never force-push a published tag.
 9. Verify the delivery: the release CI run passes, the artifact or deploy is reachable, and its version output matches the tag.
@@ -39,7 +39,7 @@ Run on any green PR, or when asked to land one; it replaces steps 3–6 for a si
 3. Write it into the PR body through a file: `gh pr view <n> --json body --jq .body > "$f"`, replace or append `## Risk`, `gh pr edit <n> --body-file "$f"`.
 4. Head moved since step 1 → the verdict is stale; start over once, moved again → stop.
 5. Act:
-   - low risk and `Auto-merge: low-risk` → `gh pr merge <n> --merge --delete-branch --match-head-commit <sha>` (never `--auto`), confirm `state` is `MERGED`, print the Merged Message from check-risk.md;
+   - low risk and `Auto-merge: low-risk` in `git show origin/<base>:AGENTS.md` (the base's copy; a PR cannot opt itself in) → `gh pr merge <n> --merge --delete-branch --match-head-commit <sha>` (never `--auto`), confirm `state` is `MERGED`, print the Merged Message from check-risk.md;
    - low risk without the opt-in → report `merge-ready` with the verdict;
    - needs review → print the review line and **Where to look** items; never merge.
 

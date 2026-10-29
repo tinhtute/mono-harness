@@ -65,6 +65,7 @@ lane: high-risk
 
 - 2026-10-29 — requests 3–5 fixed: R6 reads the revspec range (pre-commit: index plus commits since `ZHARNESS_DEFAULT_BRANCH`), fails closed to high-risk when no range resolves, takes policy from AGENTS.md at both ends and lists AGENTS.md and `*schema*` itself; every `Always-review paths:` line counts. Fixture stub removed; end-to-end fixtures run the guard on a real range; mutating the wiring fails 2 cases. test-guards 102/0. R8: merge memory written on this machine (`~/.claude/projects/-home-tinhpt-Lab-mono-harness/memory/merge-wait-for-green.md`).
 - 2026-10-29 — decision: the merged-message half of R3 and the success_signal is proved by the next docs-only PR after #181 merges; open item.
+- 2026-10-29 — after the 04:44Z verdict: land request 1 fixed (check-risk.md lists AGENTS.md itself and reads the base's copy; ship.md opts in only from `origin/<base>:AGENTS.md`); request 3 fixed (release merge uses AGENTS.md `Merge method`, default squash); lane-raise request 1 fixed (fixtures for branch history and fail-closed; each mutation now fails). test-guards 104/0. Land request 2 (write ## Risk into #181) blocked: the PR-body write was denied in this session; the section text is ready.
 
 ## Validation
 - 2026-10-29T04:08Z — phase `lane-raise` — verdict: REQUEST_CHANGES — mode: full
@@ -83,9 +84,46 @@ lane: high-risk
   - judge: independent
   - judge_model: claude-fable-5-1
 
+- 2026-10-29T04:44Z — phase `land` — verdict: APPROVE_WITH_REQUESTS — mode: full
+  - `bash scripts/ci/verify-doc-links.sh` — exit 0; 0 findings
+  - `bash scripts/ci/validate-skills.sh` — exit 0; 21 skill(s) valid
+  - `cd cli && cargo test --test skill_reference_resolution` — exit 0; 2 passed (the only executable pin of check-risk.md)
+  - `grep -n "match-head-commit" skills/mono/playbooks/ship.md` — exit 0; lines 27, 42
+  - `! grep -nE "gh pr merge" skills/mono/playbooks/babysit.md` — exit 0
+  - `grep -q "Auto-merge: low-risk" AGENTS.md && grep -q "Auto-merge: low-risk" skills/stages/README.md && grep -q "Auto-merge: low-risk" skills/mono/playbooks/ship.md` — exit 0
+  - `grep -q "check-risk.md" skills/stages/check/references/check.md && grep -q "check-risk.md" skills/mono/playbooks/ship.md` — exit 0
+  - scope: on target — planned surfaces only
+  - proof_classes: output, unit, integration
+  - requirements: R1 met | R2 partial (→ dogfood after check full, plan validation line; #181 MERGEABLE at 2fab6ea, 5/5 green, 0 open threads, verdict produced; PR-body write missing) | R3 partial (→ #181 needs-review reply; merged message per Log decision) | R4 met | R5 met | R8 met (memory read; testimony) | success_signal partial
+  - rollback_point: 8873130
+  - requests: 1 check-risk.md:12,23 and ship.md:42 read AGENTS.md from origin/$BASE and list AGENTS.md as always-review, as install-git-hooks.sh:135,168 do; 2 write ## Risk into #181 and Log the reply before closing; 3 AGENTS.md:72 merge vs ship.md:27 squash
+  - judge: independent
+  - judge_model: claude-fable-5-1
+- 2026-10-29T04:44Z — phase `exercise` — verdict: APPROVED — mode: full
+  - `grep -q "check-exercise.md" skills/stages/check/references/check.md && grep -q "check-exercise.md" skills/mono/playbooks/feature.md` — exit 0
+  - `cd cli && cargo test --test skill_reference_resolution` — exit 0; 2 passed
+  - `bash scripts/ci/verify-doc-links.sh` — exit 0; 0 findings
+  - scope: on target — check-exercise.md, check.md step 6, feature.md step 4
+  - proof_classes: output, unit, integration
+  - requirements: R6 met
+  - rollback_point: 8873130
+  - requests: none
+  - judge: independent
+  - judge_model: claude-fable-5-1
+- 2026-10-29T04:44Z — phase `lane-raise` — verdict: APPROVE_WITH_REQUESTS — mode: full
+  - `bash scripts/ci/test-guards.sh` — exit 0; 102 passed, 0 failed (10 R6, 3 end to end)
+  - `bash -n setup/install-git-hooks.sh` — exit 0
+  - scope: on target — ZGUARD-CORE R6, test-guards.sh, Lane Matrix note
+  - proof_classes: output, unit, integration
+  - requirements: R7 met (wiring mutation fails 3; judge scratch runs reject on fail-closed, branch history, pr range, both-ends policy)
+  - rollback_point: 8873130
+  - requests: 1 fixtures for install-git-hooks.sh:265-267 and :160-162 (each mutation leaves 102/0)
+  - judge: independent
+  - judge_model: claude-fable-5-1
+
 ## Current State and Next Action
 - active_phase: lane-raise
 - lifecycle_status: in-progress
-- blockers: check full REQUEST_CHANGES 2026-10-29 — requests 1–5 in Validation
+- blockers: ## Risk not yet written into #181 (PR-body write denied this session)
 - open_items: merged-message proof on the next docs-only PR after #181
-- exact_next_action: work — fix requests 3–5 (guard fixture, revspec base, AGENTS.md from index), dogfood land on #181, settle R8; then re-run check full
+- exact_next_action: owner writes ## Risk into #181 (or allows the write); re-run check gate on the post-verdict fixes; then handoff closes the plan
