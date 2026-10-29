@@ -24,6 +24,11 @@ grep -q '^zharness_guard_plan_paths()' "$GUARD" || {
 	echo "FAIL - plan path selector missing from core"; exit 1; }
 # shellcheck disable=SC1090
 source "$GUARD"
+# Fixtures run from the repo root, so the real R6 changed-path source would
+# read this branch's own diff and raise every fixture lane. Keep the real one
+# as zharness_changed_paths_real (tested below) and feed fixtures nothing.
+eval "zharness_changed_paths_real()$(declare -f zharness_changed_paths | tail -n +2)"
+zharness_changed_paths() { :; }
 
 pass=0
 fail=0
@@ -1022,6 +1027,10 @@ l=$(printf '%s\n' docs/a.md skills/x/SKILL.md | zharness_effective_lane normal "
 l=$(printf '' | zharness_effective_lane "" "$lr/AGENTS.md")
 [ -z "$l" ] && ok "R6 no lane stays no lane" ||
 	bad "R6 no lane expected empty, got '$l'"
+git -C "$lr" init -q && mkdir -p "$lr/.github" && : > "$lr/.github/ci.yml" && git -C "$lr" add .github/ci.yml
+l=$( cd "$lr" && zharness_changed_paths_real | zharness_effective_lane normal "$lr/AGENTS.md")
+[ "$l" = "high-risk" ] && ok "R6 staged always-review path reaches the lane raise" ||
+	bad "R6 staged .github path expected high-risk, got '$l'"
 
 # TRIP: each validator has a committed bad fixture that must make it fail.
 tl=$(mktemp -d)

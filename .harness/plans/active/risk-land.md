@@ -28,7 +28,7 @@ lane: high-risk
 - risks: auto-merge lands a bad PR → verdict bound to `--match-head-commit`, independent judge, always-review paths force needs-review, revert command printed; stop and turn `Auto-merge` off if any auto-merged PR is reverted. Guard R5 false-positives block normal commits → fixtures for both hit and miss paths; recovery: declare `lane: high-risk` or revert the rule commit.
 - seams: `skills/mono/playbooks/{ship,babysit,feature}.md`; `skills/stages/check/references/check.md` § Lane Matrix and step 6; `setup/install-git-hooks.sh` ZGUARD-CORE block; `scripts/ci/test-guards.sh`; `cli/src/embedded.rs` + `cli/tests/skill_reference_resolution.rs` text contracts; `AGENTS.md`.
 - phase_slug: `land`
-  status: planned
+  status: in-progress
   - goal: R1, R2, R3, R4, R5, R8 | depends_on: none
   - surfaces: `skills/stages/check/references/check-risk.md` (new), `check.md` link, `skills/mono/playbooks/ship.md`, `babysit.md`, `skills/mono/SKILL.md`, `skills/stages/README.md`, `AGENTS.md`, merge memory | avoided: `cli/src/**` logic, hooks
   - escalate_when: the repo has no CI checks that `gh pr checks` can see, or `--match-head-commit` with `--auto` is refused by GitHub settings
@@ -40,7 +40,7 @@ lane: high-risk
     - T4 update merge memory (owner: lead, writes memory file only) — output: memory text — check: `grep -i "low-risk" ~/.claude/projects/-Users-tinhtute-Lab-mono-harness/memory/merge-wait-for-green.md`
   - phase check: `bash scripts/ci/verify-doc-links.sh && bash scripts/ci/validate-skills.sh && (cd cli && cargo test)`
 - phase_slug: `exercise`
-  status: planned
+  status: in-progress
   - goal: R6 | depends_on: land
   - surfaces: `skills/stages/check/references/check-exercise.md` (new), `check.md` step 6 link, `skills/mono/playbooks/feature.md` | avoided: Lane Matrix columns
   - escalate_when: a `cargo test` text contract pins wording that the exercise step must change
@@ -48,7 +48,7 @@ lane: high-risk
     - T5 write exercise procedure and `## Exercised` report format; link from `check.md` and a step in `feature.md` (owner: lead, writes those 3 files only) — output: procedure — check: `bash scripts/ci/verify-doc-links.sh && (cd cli && cargo test)` — stop_if: a contract test fails twice
   - phase check: `bash scripts/ci/verify-doc-links.sh && bash scripts/ci/validate-skills.sh && (cd cli && cargo test)`
 - phase_slug: `lane-raise`
-  status: planned
+  status: in-progress
   - goal: R7 | depends_on: land
   - surfaces: `setup/install-git-hooks.sh` (new R5 in ZGUARD-CORE), `scripts/ci/test-guards.sh`, `check.md` § Lane Matrix note | avoided: R2/R3/R4 behavior
   - escalate_when: the always-review path list cannot be read identically by the guard and the rubric
@@ -60,6 +60,7 @@ lane: high-risk
 
 ## Log
 - 2026-10-28 — phases land, exercise, lane-raise implemented; gates green: test-guards 99/0, cargo fmt/clippy/test, doc-links, validate-skills. Independent `check full` not run yet.
+- 2026-10-29 — CI hook-guard red (89/8): fixtures ran the real R6 changed-path source from the repo root and read the branch's own diff. Fixed by stubbing it in test-guards.sh and testing the real one in a temp repo; 98/0. Phase statuses set to in-progress to match the Log.
 
 ## Validation
 
