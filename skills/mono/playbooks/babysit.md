@@ -1,6 +1,6 @@
 # Playbook: babysit
 
-Get open PRs to merge-ready. Never merges: landing is `ship`.
+Get open PRs to merge-ready. Never merges: a loop that fixes its own PR must not also approve it. At merge-ready, hand off to the `ship` playbook's [land](ship.md#land) step.
 
 1. Declare the mode before any poll: `drive` (loop to merge-ready; in Claude Code run it under `/loop` self-paced, never a sleep loop), `threads-only` (answer review comments only), or `check` (one status pass and a report).
 2. Work the lowest unmerged PR only; read and batch upstack threads, never fix them while the bottom is red.

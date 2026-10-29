@@ -1003,6 +1003,80 @@ st_rc=$?
 	bad "STALE an edited wrapper must be rejected (rc $st_rc)"
 rm -rf "$st"
 
+# R6 LANE-RAISE: a diff touching an always-review path raises the declared
+# lane to high-risk, so R3/R4 judge it as high-risk (check-risk.md).
+lr=$(mktemp -d)
+printf '# x\n\n## Unattended Shipping\n\n- Always-review paths: setup/hooks/**, scripts/ci/**\n' > "$lr/AGENTS.md"
+l=$(printf '%s\n' docs/a.md .github/workflows/ci.yml | zharness_effective_lane normal "$lr/AGENTS.md")
+[ "$l" = "high-risk" ] && ok "R6 CI workflow raises normal to high-risk" ||
+	bad "R6 CI workflow expected high-risk, got '$l'"
+l=$(printf '%s\n' scripts/ci/test-guards.sh | zharness_effective_lane tiny "$lr/AGENTS.md")
+[ "$l" = "high-risk" ] && ok "R6 AGENTS.md always-review glob raises tiny" ||
+	bad "R6 AGENTS.md glob expected high-risk, got '$l'"
+l=$(printf '%s\n' cli/Cargo.lock | zharness_effective_lane normal "$lr/none.md")
+[ "$l" = "high-risk" ] && ok "R6 lockfile raises without AGENTS.md" ||
+	bad "R6 lockfile expected high-risk, got '$l'"
+l=$(printf '%s\n' docs/a.md skills/x/SKILL.md | zharness_effective_lane normal "$lr/AGENTS.md")
+[ "$l" = "normal" ] && ok "R6 docs-only diff keeps declared lane" ||
+	bad "R6 docs-only expected normal, got '$l'"
+l=$(printf '' | zharness_effective_lane "" "$lr/AGENTS.md")
+[ -z "$l" ] && ok "R6 no lane stays no lane" ||
+	bad "R6 no lane expected empty, got '$l'"
+printf -- '- Always-review paths: a/**\n- Always-review paths: b/**\n' > "$lr/two.md"
+l=$(printf '%s\n' b/x | zharness_effective_lane normal "$lr/two.md")
+[ "$l" = "high-risk" ] && ok "R6 a second Always-review paths line counts" ||
+	bad "R6 second policy line expected high-risk, got '$l'"
+l=$(printf '%s\n' db/schema.sql | zharness_effective_lane normal "$lr/none.md")
+[ "$l" = "high-risk" ] && ok "R6 schema file raises" || bad "R6 schema expected high-risk, got '$l'"
+rm -rf "$lr"
+
+# R6 end to end: the guard itself, on a real revspec range, judges a normal-lane
+# same-session APPROVED entry at the raised lane (R3 rejects) and keeps the
+# declared lane for a docs-only diff (accepts).
+r6case() {                                  # <extra-path> -> guard rc
+	local d rc
+	d=$(mktemp -d)
+	(
+		cd "$d" && git init -q -b master && git config user.email t@t && git config user.name t &&
+			mkdir -p .harness/plans/active docs && cp "$tmp/r6-old.md" .harness/plans/active/p.md &&
+			printf '# x\n' > AGENTS.md && git add -A && git commit -qm base &&
+			cp "$tmp/r6-new.md" .harness/plans/active/p.md && mkdir -p "$(dirname "$1")" && printf 'y\n' >> "$1" && git add -A &&
+			mkdir g && ZHARNESS_DEFAULT_BRANCH=master zhuards_guard_plans .harness/plans/active/p.md HEAD : "$d/g"
+	) >/dev/null 2>&1
+	rc=$?
+	rm -rf "$d"
+	return $rc
+}
+printf -- '---\nlane: normal\n---\n\n## Validation\n' > "$tmp/r6-old.md"
+printf -- '---\nlane: normal\n---\n\n## Validation\n\n- `2026-10-29T00:00:00Z` — phase `main` — verdict: APPROVED — mode: gate\n  - `true`\n  - proof_classes: output, unit\n  - judge: same-session\n' > "$tmp/r6-new.md"
+r6case .github/workflows/ci.yml && bad "R6 guard must reject a same-session entry once a CI path raises the lane" ||
+	ok "R6 guard rejects a raised-lane same-session entry end to end"
+r6case docs/a.md && ok "R6 guard accepts the same entry on a docs-only diff" ||
+	bad "R6 guard must accept a docs-only normal-lane entry"
+r6case AGENTS.md && bad "R6 guard must raise when the commit edits AGENTS.md itself" ||
+	ok "R6 an AGENTS.md edit raises the lane"
+# Branch history: a CI change committed earlier on the branch still raises a
+# commit that only stages docs. Fail closed: no default-branch ref resolves.
+r6branch() {                                # <default-branch> -> guard rc
+	local d rc
+	d=$(mktemp -d)
+	(
+		cd "$d" && git init -q -b master && git config user.email t@t && git config user.name t &&
+			mkdir -p .harness/plans/active docs .github && cp "$tmp/r6-old.md" .harness/plans/active/p.md &&
+			git add -A && git commit -qm base && git checkout -qb feat &&
+			printf 'y\n' > .github/ci.yml && git add -A && git commit -qm ci &&
+			cp "$tmp/r6-new.md" .harness/plans/active/p.md && printf 'y\n' > docs/a.md && git add -A &&
+			mkdir g && ZHARNESS_DEFAULT_BRANCH="$1" zhuards_guard_plans .harness/plans/active/p.md HEAD : "$d/g"
+	) >/dev/null 2>&1
+	rc=$?
+	rm -rf "$d"
+	return $rc
+}
+r6branch master && bad "R6 an earlier branch commit on a CI path must raise a docs-only commit" ||
+	ok "R6 branch history since the default branch raises the lane"
+r6branch no-such-ref && bad "R6 must fail closed to high-risk when no default branch resolves" ||
+	ok "R6 fails closed when no range resolves"
+
 # TRIP: each validator has a committed bad fixture that must make it fail.
 tl=$(mktemp -d)
 mkdir -p "$tl/scripts/ci" "$tl/docs" "$tl/cli" "$tl/skills" "$tl/setup"
