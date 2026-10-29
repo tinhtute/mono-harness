@@ -64,10 +64,25 @@ lane: high-risk
 - 2026-10-29 — plan text aligned with the shipped code: R2 merge command is `--merge --match-head-commit` (never `--auto`, per AGENTS.md); the lane-raise rule is R6 (R5 was taken); `skills/mono/SKILL.md` needs no carve-out; T4 memory path is this machine's.
 
 ## Validation
+- 2026-10-29T04:08Z — phase `lane-raise` — verdict: REQUEST_CHANGES — mode: full
+  - `cd cli && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test` — exit 0; 84+3+2 tests pass
+  - `bash scripts/ci/test-guards.sh` — exit 0; guards: 98 passed, 0 failed (6 R6 cases)
+  - `bash scripts/ci/verify-doc-links.sh` — exit 0; doc links OK (0 findings)
+  - `bash scripts/ci/validate-skills.sh` — exit 0; 21 skill(s) valid
+  - `grep -n "match-head-commit" skills/mono/playbooks/ship.md` — exit 0; lines 27, 42
+  - `! grep -nE "gh pr merge" skills/mono/playbooks/babysit.md` — exit 0
+  - `grep -n "Auto-merge: low-risk" skills/stages/README.md skills/mono/playbooks/ship.md` — exit 0; carve-outs at README.md:35, ship.md:3
+  - scope: on target — diff stays on the planned surfaces; no change to CLI logic
+  - proof_classes: output, unit, integration
+  - requirements: R1 met (check-risk.md linked; doc-links pass) | R2 not met (no land walk-through on a real PR) | R3 not met (no reply observed on a real PR) | R4 met (babysit grep) | R5 met (carve-out greps) | R6 met (cargo test pins check-exercise) | R7 met (judge exercise of the installed hook in a scratch repo: CI path rejected under R3 and R4, docs-only accepted) | R8 not met (memory file absent on this machine) | success_signal not met (no PR dogfood)
+  - rollback_point: 8873130
+  - requests: 1 dogfood land on #181 (needs-review, no merge), and a Log decision moving the merged-message proof past merge; 2 write the R8 memory or re-scope it in a Log decision; 3 add a fixture for setup/install-git-hooks.sh:243, which a mutation leaves 98/0; 4 make setup/install-git-hooks.sh:151-156 use the revspec base and fail closed; 5 read AGENTS.md from the index at setup/install-git-hooks.sh:243
+  - judge: independent
+  - judge_model: claude-fable-5-1
 
 ## Current State and Next Action
 - active_phase: lane-raise
 - lifecycle_status: in-progress
-- blockers: none
+- blockers: check full REQUEST_CHANGES 2026-10-29 — requests 1–5 in Validation
 - open_items: none
-- exact_next_action: check full (independent judge) on all three phases, then dogfood land on this PR
+- exact_next_action: work — fix requests 3–5 (guard fixture, revspec base, AGENTS.md from index), dogfood land on #181, settle R8; then re-run check full
