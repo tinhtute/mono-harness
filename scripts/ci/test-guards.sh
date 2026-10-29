@@ -24,11 +24,6 @@ grep -q '^zharness_guard_plan_paths()' "$GUARD" || {
 	echo "FAIL - plan path selector missing from core"; exit 1; }
 # shellcheck disable=SC1090
 source "$GUARD"
-# Fixtures run from the repo root, so the real R6 changed-path source would
-# read this branch's own diff and raise every fixture lane. Keep the real one
-# as zharness_changed_paths_real (tested below) and feed fixtures nothing.
-eval "zharness_changed_paths_real()$(declare -f zharness_changed_paths | tail -n +2)"
-zharness_changed_paths() { :; }
 
 pass=0
 fail=0
@@ -1027,10 +1022,39 @@ l=$(printf '%s\n' docs/a.md skills/x/SKILL.md | zharness_effective_lane normal "
 l=$(printf '' | zharness_effective_lane "" "$lr/AGENTS.md")
 [ -z "$l" ] && ok "R6 no lane stays no lane" ||
 	bad "R6 no lane expected empty, got '$l'"
-git -C "$lr" init -q && mkdir -p "$lr/.github" && : > "$lr/.github/ci.yml" && git -C "$lr" add .github/ci.yml
-l=$( cd "$lr" && zharness_changed_paths_real | zharness_effective_lane normal "$lr/AGENTS.md")
-[ "$l" = "high-risk" ] && ok "R6 staged always-review path reaches the lane raise" ||
-	bad "R6 staged .github path expected high-risk, got '$l'"
+printf -- '- Always-review paths: a/**\n- Always-review paths: b/**\n' > "$lr/two.md"
+l=$(printf '%s\n' b/x | zharness_effective_lane normal "$lr/two.md")
+[ "$l" = "high-risk" ] && ok "R6 a second Always-review paths line counts" ||
+	bad "R6 second policy line expected high-risk, got '$l'"
+l=$(printf '%s\n' db/schema.sql | zharness_effective_lane normal "$lr/none.md")
+[ "$l" = "high-risk" ] && ok "R6 schema file raises" || bad "R6 schema expected high-risk, got '$l'"
+rm -rf "$lr"
+
+# R6 end to end: the guard itself, on a real revspec range, judges a normal-lane
+# same-session APPROVED entry at the raised lane (R3 rejects) and keeps the
+# declared lane for a docs-only diff (accepts).
+r6case() {                                  # <extra-path> -> guard rc
+	local d rc
+	d=$(mktemp -d)
+	(
+		cd "$d" && git init -q -b master && git config user.email t@t && git config user.name t &&
+			mkdir -p .harness/plans/active docs && cp "$tmp/r6-old.md" .harness/plans/active/p.md &&
+			printf '# x\n' > AGENTS.md && git add -A && git commit -qm base &&
+			cp "$tmp/r6-new.md" .harness/plans/active/p.md && mkdir -p "$(dirname "$1")" && printf 'y\n' >> "$1" && git add -A &&
+			mkdir g && ZHARNESS_DEFAULT_BRANCH=master zhuards_guard_plans .harness/plans/active/p.md HEAD : "$d/g"
+	) >/dev/null 2>&1
+	rc=$?
+	rm -rf "$d"
+	return $rc
+}
+printf -- '---\nlane: normal\n---\n\n## Validation\n' > "$tmp/r6-old.md"
+printf -- '---\nlane: normal\n---\n\n## Validation\n\n- `2026-10-29T00:00:00Z` — phase `main` — verdict: APPROVED — mode: gate\n  - `true`\n  - proof_classes: output, unit\n  - judge: same-session\n' > "$tmp/r6-new.md"
+r6case .github/workflows/ci.yml && bad "R6 guard must reject a same-session entry once a CI path raises the lane" ||
+	ok "R6 guard rejects a raised-lane same-session entry end to end"
+r6case docs/a.md && ok "R6 guard accepts the same entry on a docs-only diff" ||
+	bad "R6 guard must accept a docs-only normal-lane entry"
+r6case AGENTS.md && bad "R6 guard must raise when the commit edits AGENTS.md itself" ||
+	ok "R6 an AGENTS.md edit raises the lane"
 
 # TRIP: each validator has a committed bad fixture that must make it fail.
 tl=$(mktemp -d)

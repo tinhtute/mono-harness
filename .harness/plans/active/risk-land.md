@@ -63,6 +63,9 @@ lane: high-risk
 - 2026-10-29 — CI hook-guard red (89/8): fixtures ran the real R6 changed-path source from the repo root and read the branch's own diff. Fixed by stubbing it in test-guards.sh and testing the real one in a temp repo; 98/0. Phase statuses set to in-progress to match the Log.
 - 2026-10-29 — plan text aligned with the shipped code: R2 merge command is `--merge --match-head-commit` (never `--auto`, per AGENTS.md); the lane-raise rule is R6 (R5 was taken); `skills/mono/SKILL.md` needs no carve-out; T4 memory path is this machine's.
 
+- 2026-10-29 — requests 3–5 fixed: R6 reads the revspec range (pre-commit: index plus commits since `ZHARNESS_DEFAULT_BRANCH`), fails closed to high-risk when no range resolves, takes policy from AGENTS.md at both ends and lists AGENTS.md and `*schema*` itself; every `Always-review paths:` line counts. Fixture stub removed; end-to-end fixtures run the guard on a real range; mutating the wiring fails 2 cases. test-guards 102/0. R8: merge memory written on this machine (`~/.claude/projects/-home-tinhpt-Lab-mono-harness/memory/merge-wait-for-green.md`).
+- 2026-10-29 — decision: the merged-message half of R3 and the success_signal is proved by the next docs-only PR after #181 merges; open item.
+
 ## Validation
 - 2026-10-29T04:08Z — phase `lane-raise` — verdict: REQUEST_CHANGES — mode: full
   - `cd cli && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test` — exit 0; 84+3+2 tests pass
@@ -84,5 +87,5 @@ lane: high-risk
 - active_phase: lane-raise
 - lifecycle_status: in-progress
 - blockers: check full REQUEST_CHANGES 2026-10-29 — requests 1–5 in Validation
-- open_items: none
+- open_items: merged-message proof on the next docs-only PR after #181
 - exact_next_action: work — fix requests 3–5 (guard fixture, revspec base, AGENTS.md from index), dogfood land on #181, settle R8; then re-run check full
