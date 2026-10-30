@@ -86,7 +86,7 @@ read-only and bounded work.
 Start a task with `/mono <task>`. The router matches one playbook, copies
 its steps into a todo list, and calls the skill each step names.
 
-![mono routes a task to one of twelve playbooks, each a chain of skills](site/assets/workflow.png)
+![mono routes a task to one of thirteen playbooks, each a chain of skills](site/assets/workflow.png)
 
 | Playbook | Steps |
 |---|---|
@@ -98,6 +98,7 @@ its steps into a todo list, and calls the skill each step names.
 | fanout | separate → spawn sub-agents → aggregate → check |
 | investigation | think or hunt; read-only, changes nothing |
 | research | read (search, fetch) → learn → write; notes only |
+| ambition | ambition (depth, altitude or range) → lint the rewrite → route on request |
 | babysit | `/loop` over review threads and CI until the PR is ready |
 | ship | watzup → security-review → check → land → changelog → tag → verify → rollback |
 | session-pickup | watzup → reconcile → route to the next playbook |
@@ -177,7 +178,7 @@ for workflow execution; retained legacy files are not a fallback. Other skills
 are optional extensions.
 
 `mono` sits at `skills/mono`; the other skills live in four groups: `stages`
-(the six workflow skills plus retro), `reason` (think, hunt, arena, learn), `tools` (git,
+(the six workflow skills plus retro), `reason` (think, hunt, arena, learn, ambition), `tools` (git,
 create-skill, librarian, prompt-leverage, read, tldraw-diagram, write) and `extras` (create-cli,
 turbo-mono-platform). `retro`, `create-cli` and
 `turbo-mono-platform` are gated: they run only from a mono playbook step or
