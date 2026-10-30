@@ -38,21 +38,13 @@ Leave anything you did not mean to commit unstaged; if `git status --porcelain` 
 
 ### Step 2: Security check
 
-A repo with this harness's pre-commit hook blocks staged secrets itself. Elsewhere, scan the staged files; the `cut` keeps output to `file:line`, never the value:
+A repo with this harness's pre-commit hook blocks staged secrets itself. Elsewhere, run `{baseDir}/scripts/scan-staged.sh`. It prints `ok` (exit 0) or one `secret: file:line` / `file: path` line per hit (exit 1), never the value.
 
-```bash
-git diff --cached --name-only -z | xargs -0 -r git grep --cached -nE "AKIA[0-9A-Z]{16}|-----BEGIN ([A-Z]+ )*PRIVATE KEY|://[^/:@ ]+:[^/@ ]+@|(api[_-]?key|token|password|secret)[\"']?[[:space:]]*[:=]" -- | cut -d: -f1-2
-```
-
-Also flag staged `.env`/`.env.*` (except `*.example`), `*.key`, `*.pem`, `*.p12`, `credentials.json`, `secrets.json`. **Any hit: STOP, report `file:line` only, suggest env vars or `.gitignore`, offer `git restore --staged <file>`. Do not commit.**
+**Exit 1: STOP, report its lines as-is, suggest env vars or `.gitignore`, offer `git restore --staged <file>`. Do not commit.**
 
 ### Step 3: Split decision
 
-Group staged files by kind (`docs:` for `.md`/`.txt`, `test:` for test/spec paths, `config:` for `.claude/` files, `deps:` for dependency manifests and lockfiles, `code:` for everything else).
-
-`deps:` covers every stack, not just Node: `package.json` with `package-lock.json`/`yarn.lock`/`pnpm-lock.yaml`, `go.mod` with `go.sum`, `Cargo.toml` with `Cargo.lock`, and `pyproject.toml` with `requirements*.txt`/`poetry.lock`/`uv.lock`. A manifest always commits together with its lockfile — splitting them produces a commit that resolves to different dependency versions than the one that was tested.
-
-A changed `*_test.go` commits with the source file it covers when both changed, rather than splitting into `test:` and `code:`. Go places `foo_test.go` beside `foo.go` in the same package, so the split yields two commits, neither of which builds and passes on its own. The same applies to any stack that co-locates a test with its source (`foo.spec.ts` beside `foo.ts`, `foo_test.py` beside `foo.py`); a test directory that mirrors the tree separately (`tests/`, `__tests__/`) still splits normally.
+Run `{baseDir}/scripts/group-staged.sh`; it prints `kind: file` per staged file (`deps`, `config`, `test`, `docs`, `code`). It already keeps a manifest with its lockfile (`deps`) and a co-located test with its source (`code`), because splitting either yields a commit that was never built or tested. Treat its grouping as final unless a file is plainly misfiled.
 
 **Single commit:** same type/scope, files ≤ 3, lines ≤ 50.
 **Multiple commits:** mixed types/scopes — one commit per group (`chore(config)`, `chore(deps)`, `test`, `feat`/`fix` for `code:`, `docs`). Reset and re-stage per group: `git reset && git add file1 file2 && git commit -m "type(scope): desc"`.
