@@ -1,7 +1,7 @@
 ---
 name: mono
 version: "1.0.0"
-description: "Entry router: match a task to one of twelve playbooks (feature, bug-fix, refactoring, perf, research, ship, ...) and run its skill steps as a todo list. Use when the route is unclear."
+description: "Entry router: match a task to one of thirteen playbooks (feature, bug-fix, refactoring, perf, research, ship, ...) and run its skill steps as a todo list. Use when the route is unclear."
 argument-hint: "[task]"
 compatibility: Designed for Claude Code
 ---
@@ -19,6 +19,7 @@ Ask the user only through the agent's question tool (Claude Code `AskUserQuestio
 | Decide a design by building throwaway variants | [playbooks/prototype.md](playbooks/prototype.md) |
 | Question, review, diagnosis; nothing to change | [playbooks/investigation.md](playbooks/investigation.md) |
 | Web research, read sources, deep dive into a topic | [playbooks/research.md](playbooks/research.md) |
+| "Be ambitious", make a task deeper, "what would an expert do" | [playbooks/ambition.md](playbooks/ambition.md) |
 | Get PRs green, address review comments, "check on PR X" | [playbooks/babysit.md](playbooks/babysit.md) |
 | Land PRs, release, tag, publish, deploy, "is this worth a release" | [playbooks/ship.md](playbooks/ship.md) |
 | Resume, "where was I", an active plan exists | [playbooks/session-pickup.md](playbooks/session-pickup.md) |
