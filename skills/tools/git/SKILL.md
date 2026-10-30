@@ -1,6 +1,6 @@
 ---
 name: git
-version: "1.3.0"
+version: "1.4.0"
 model: haiku
 description: "Git operations with conventional commits. Use for staging, committing, pushing, PRs, merges. Auto-splits commits by type/scope. Security scans for secrets."
 argument-hint: "cm|cp|pr|merge [args]"

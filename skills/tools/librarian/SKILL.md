@@ -1,5 +1,6 @@
 ---
 name: librarian
+version: "1.1.0"
 model: haiku
 description: GitHub code research via gh CLI, no cloning. Use to investigate external repos, find where a symbol is defined, or gather cited evidence and usage examples from GitHub.
 allowed-tools: "Read Bash"
