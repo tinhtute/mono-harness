@@ -1,5 +1,6 @@
 ---
 name: librarian
+version: "1.1.0"
 model: haiku
 description: GitHub code research via gh CLI, no cloning. Use to investigate external repos, find where a symbol is defined, or gather cited evidence and usage examples from GitHub.
 allowed-tools: "Read Bash"
@@ -35,10 +36,7 @@ skill), model failover, subagent spawning, workspace isolation in /tmp
 ## Pre-flight Check
 
 Before any GitHub search:
-1. Run `gh --version` — if fails, report "gh CLI not installed. Install: https://cli.github.com"
-2. Run `gh auth status` — if fails, report "gh not authenticated. Run: gh auth login"
-
-If either check fails, stop and report the constraint.
+Run `{baseDir}/scripts/gh-search.sh preflight`. Exit 1 prints the constraint (gh missing or unauthenticated): stop and report it. `ok remaining=N/M` with a low N → narrow the search before spending calls.
 
 ## Core Strategy
 
@@ -57,13 +55,13 @@ Goal: smallest useful evidence set with exact citations.
 - Path/metadata request? → Use search/tree output first
 
 ### 2. Search GitHub
-Use the command templates in `references/gh-patterns.md`: code search with `--repo`/`--owner`/`--limit`, tree API for structure, contents API for listings; find symbol, explore structure, find examples, compare implementations.
+Use `{baseDir}/scripts/gh-search.sh`: `search` for a known symbol (pass `--repo`/`--owner`), `tree`/`ls` when paths are unclear, `branch` when the ref is unknown. Each output line is a lead to confirm, not proof. Exit 1 on `tree`/`ls`/`fetch` → 404/403 or rate limit: report it, do not guess paths. Ad-hoc tree filters: `references/gh-patterns.md`.
 
 ### 3. Cache Files
-Cache only files you need to cite, into `.zharness/cache/github/{owner}/{repo}/`, with the contents-API recipe in `references/gh-patterns.md`.
+Cache only files you need to cite: `gh-search.sh fetch <repo> <file> [ref]` writes to `.zharness/cache/github/{owner}/{repo}/` and prints the path.
 
 ### 4. Read and Cite
-Read cached files with line numbers. Cite as `.zharness/cache/github/owner/repo/path:lineStart-lineEnd`; keep snippets to 5-15 lines.
+`gh-search.sh lines <repo> <file> <a> <b>` prints numbered lines. Cite as `.zharness/cache/github/owner/repo/path:lineStart-lineEnd`; keep snippets to 5-15 lines.
 
 ### 5. Write Findings
 Report findings inline per `references/output-format.md`; save to `docs/research/{topic}.md` only when a plan will cite them.
@@ -84,7 +82,7 @@ At most 5 repos and 30 results per search; too broad → ask the user to narrow.
 
 <references>
 Load as needed from `{baseDir}/references/`:
-- `gh-patterns.md` — 7 known-good gh command templates; cache, scope limits, anti-patterns
+- `gh-patterns.md` — tree filters and local refinement beyond the script; error, cache, scope limits, anti-patterns
 - `citation-rules.md` — Evidence and citation discipline
 - `output-format.md` — Markdown structure for findings
 </references>

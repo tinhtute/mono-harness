@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 lane: high-risk
 ---
 # Risk verdict, low-risk auto-merge, and exercise proof
