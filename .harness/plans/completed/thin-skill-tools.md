@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 lane: standard
 ---
 # Thin skills: move repeatable prose into scripts
