@@ -1,70 +1,6 @@
 # GitHub CLI Command Patterns
 
-Known-good `gh` command templates for GitHub code research. These patterns are tested
-and reliable for the librarian workflow.
-
-## Variable Convention
-
-Set variables when useful for readability:
-```bash
-REPO='owner/repo'
-REF='branch-or-sha'
-DIR='src'
-FILE='path/to/file.ts'
-```
-
-## Pattern 0: Resolve Default Branch
-
-When REF is unknown, resolve the default branch:
-```bash
-gh repo view "$REPO" --json defaultBranchRef --jq '.defaultBranchRef.name'
-```
-
-Example:
-```bash
-REPO='cli/cli'
-REF=$(gh repo view "$REPO" --json defaultBranchRef --jq '.defaultBranchRef.name')
-echo "Default branch: $REF"
-```
-
-## Pattern 1: Code Search
-
-Search for code across GitHub with filters:
-```bash
-gh search code '<terms>' --json path,repository,sha,url,textMatches --limit 30
-```
-
-Optional scope filters:
-- `--repo owner/repo` — limit to specific repository
-- `--owner owner` — limit to specific owner/org
-- `--match path` — match in file paths only
-- `--match file` — match in file content only
-
-Examples:
-```bash
-# Search in specific repo
-gh search code "NewCmdRoot" --repo cli/cli --json path,repository,sha,url --limit 10
-
-# Search across owner's repos
-gh search code "useEffect" --owner facebook --limit 20
-
-# Path-only search
-gh search code "README.md" --repo owner/repo --match path --limit 5
-```
-
-## Pattern 2: Repo Tree Map
-
-Get recursive tree structure:
-```bash
-gh api "repos/$REPO/git/trees/$REF?recursive=1" > tree.json
-```
-
-Example:
-```bash
-REPO='cli/cli'
-REF='trunk'
-gh api "repos/$REPO/git/trees/$REF?recursive=1" > tree.json
-```
+`scripts/gh-search.sh` runs the known-good calls: `preflight`, `branch`, `search`, `tree`, `ls`, `fetch`, `lines`. Run it with no arguments for usage. This file keeps what the script does not do: ad-hoc tree filters, local refinement of cached files, and error, cache and scope rules.
 
 ## Pattern 3: Filter Tree Paths
 
@@ -83,49 +19,6 @@ jq -r '.tree[] | select(.type=="blob" and (.path | startswith("pkg/cmd/"))) | .p
 
 # Count files by extension
 jq -r '.tree[] | select(.type=="blob") | .path' tree.json | sed 's/.*\.//' | sort | uniq -c
-```
-
-## Pattern 4: Directory Entries via Contents API
-
-List directory contents:
-```bash
-# Specific directory
-gh api "repos/$REPO/contents/$DIR?ref=$REF" --jq '.[] | [.type, .path] | @tsv'
-
-# Repo root
-gh api "repos/$REPO/contents?ref=$REF" --jq '.[] | [.type, .path] | @tsv'
-```
-
-Examples:
-```bash
-REPO='cli/cli'
-REF='trunk'
-
-# List root directory
-gh api "repos/$REPO/contents?ref=$REF" --jq '.[] | [.type, .path] | @tsv'
-
-# List specific directory
-gh api "repos/$REPO/contents/pkg?ref=$REF" --jq '.[] | [.type, .path] | @tsv'
-```
-
-## Pattern 5: Fetch File to Local Cache
-
-Download and decode file content:
-```bash
-mkdir -p ".zharness/cache/github/$REPO/$(dirname "$FILE")"
-gh api "repos/$REPO/contents/$FILE?ref=$REF" --jq .content | tr -d '\n' | base64 --decode > ".zharness/cache/github/$REPO/$FILE"
-```
-
-Example:
-```bash
-REPO='cli/cli'
-REF='trunk'
-FILE='pkg/cmd/root/root.go'
-
-mkdir -p ".zharness/cache/github/$REPO/$(dirname "$FILE")"
-gh api "repos/$REPO/contents/$FILE?ref=$REF" --jq .content | tr -d '\n' | base64 --decode > ".zharness/cache/github/$REPO/$FILE"
-
-echo "Cached to: .zharness/cache/github/$REPO/$FILE"
 ```
 
 ## Pattern 6: Refine Locally After Caching
@@ -157,32 +50,6 @@ find ".zharness/cache/github/$REPO" -name "*.ts"
 
 # Search for imports
 rg -n "^import.*from" ".zharness/cache/github/$REPO"
-```
-
-## Pattern 7: Get Line-Numbered Evidence
-
-Extract specific lines with context:
-```bash
-# Using nl (number lines)
-nl -ba ".zharness/cache/github/$REPO/$FILE" | sed -n '42,56p'
-
-# Using sed with line numbers
-sed -n '42,56p' ".zharness/cache/github/$REPO/$FILE" | nl -ba
-
-# Using head/tail
-head -n 56 ".zharness/cache/github/$REPO/$FILE" | tail -n 15 | nl -ba -v 42
-```
-
-Examples:
-```bash
-REPO='cli/cli'
-FILE='pkg/cmd/root/root.go'
-
-# Lines 42-56 with line numbers
-nl -ba ".zharness/cache/github/$REPO/$FILE" | sed -n '42,56p'
-
-# Context around line 50 (±5 lines)
-nl -ba ".zharness/cache/github/$REPO/$FILE" | sed -n '45,55p'
 ```
 
 ## Error Handling
