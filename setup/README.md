@@ -30,5 +30,7 @@ After install: edit `~/.claude/settings.json` → set `ANTHROPIC_AUTH_TOKEN`.
 
 Tool guards (`rm` → `trash`, sensitive files, private URLs to web tools) and the compaction rule reminder live in the `ninja-kit` Claude mod (`setup/mods/ninja-kit`, installed to `~/.claude/mods/ninja-kit` and loaded through `CLAUDE_CODE_PLUGIN_DIRS`); test it with `claude plugin test setup/mods/ninja-kit`.
 
+The `cache-guard` mod (`setup/mods/cache-guard`, installed and loaded the same way) shows a band above the prompt when the model or effort changes while context is at or above `threshold` percent (default 40, set under `pluginConfigs."cache-guard".options`), with Compact and Skip buttons, because the switch drops the prompt cache; test it with `claude plugin test setup/mods/cache-guard`.
+
 
 from therealTINHTUTE with love

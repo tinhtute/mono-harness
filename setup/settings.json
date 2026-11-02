@@ -14,7 +14,7 @@
     "MAX_MCP_OUTPUT_TOKENS": "50000",
     "MAX_THINKING_TOKENS": "32000",
     "USE_BUILTIN_RIPGREP": "0",
-    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/ninja-kit"
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/ninja-kit:~/.claude/mods/cache-guard"
   },
   "attribution": {
     "commit": "🥷 - from therealTINHTUTE with love",
