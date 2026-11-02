@@ -6,7 +6,7 @@
 #   bash setup/install.sh
 #
 # What this does:
-#   1. Copies CLAUDE.md, rules/, hooks/ (all under setup/) to ~/.claude/
+#   1. Copies CLAUDE.md, rules/, agents/, mods/ (all under setup/) to ~/.claude/
 #   2. Installs statusline
 #   3. Handles settings.json (copy if new, show diff if existing)
 #   4. Installs all skills via npx skills add
@@ -48,7 +48,7 @@ echo "Target: $CLAUDE_DIR"
 echo ""
 
 # --- Step 1: Create directories ---
-mkdir -p "$CLAUDE_DIR/rules" "$CLAUDE_DIR/hooks"
+mkdir -p "$CLAUDE_DIR/rules"
 green "✓ Directories ready"
 
 # --- Step 2: CLAUDE.md ---
@@ -68,15 +68,6 @@ for name in ask-user-question execution-discipline karpathy-guidelines workflow-
   yellow "  ↩ retired: $dest"
 done
 green "✓ Rules installed ($(ls "$CLAUDE_DIR/rules/"*.md 2>/dev/null | wc -l | tr -d ' ') files)"
-
-# --- Step 4: Hooks ---
-for f in "$REPO_DIR/setup/hooks/"*; do
-  [ -f "$f" ] || continue
-  sync_file "$f" "$CLAUDE_DIR/hooks/$(basename "$f")"
-done
-# Make all executable hook scripts runnable
-find "$CLAUDE_DIR/hooks" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.cjs" \) -exec chmod +x {} +
-green "✓ Hooks installed"
 
 # --- Step 4b: Agents (role -> model policy: setup/models.json) ---
 mkdir -p "$CLAUDE_DIR/agents"
@@ -140,11 +131,9 @@ echo ""
 echo "Verification"
 echo "------------"
 RULES_COUNT="$(ls "$CLAUDE_DIR/rules/"*.md 2>/dev/null | wc -l | tr -d ' ')"
-HOOKS_COUNT="$(find "$CLAUDE_DIR/hooks" -maxdepth 1 -type f \( -name "*.sh" -o -name "*.cjs" \) 2>/dev/null | wc -l | tr -d ' ')"
 SKILLS_COUNT="$(ls -d "$CLAUDE_DIR/skills/"*/ 2>/dev/null | wc -l | tr -d ' ')"
 echo "  CLAUDE.md     : $([ -f "$CLAUDE_DIR/CLAUDE.md" ] && echo present || echo MISSING)"
 echo "  rules/        : $RULES_COUNT files"
-echo "  hooks/        : $HOOKS_COUNT scripts"
 echo "  agents/       : $(ls "$CLAUDE_DIR/agents/"*.md 2>/dev/null | wc -l | tr -d ' ') definitions"
 echo "  skills/       : $SKILLS_COUNT installed"
 echo "  settings.json : $([ -f "$CLAUDE_DIR/settings.json" ] && echo present || echo MISSING)"
