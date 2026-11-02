@@ -1,6 +1,6 @@
 ---
 name: git
-version: "1.4.0"
+version: "1.5.0"
 model: haiku
 description: "Git operations with conventional commits. Use for staging, committing, pushing, PRs, merges. Auto-splits commits by type/scope. Security scans for secrets."
 argument-hint: "cm|cp|pr|merge [args]"
@@ -61,7 +61,7 @@ git commit -m "type(scope): description"
 
 **Types (priority order):** `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `build`, `ci`.
 
-**Never include AI attribution** ("Generated with Claude", "Co-Authored-By: Claude", or any AI reference) in the commit message.
+Add no attribution of your own; when the host or the user's instructions supply attribution lines for commits or PRs, use them exactly.
 
 ### Step 5: Push (`cp`, or `cm` + explicit push request only)
 
