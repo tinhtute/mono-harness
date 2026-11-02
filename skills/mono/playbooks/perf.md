@@ -2,7 +2,7 @@
 
 Every fix ties to a measurement; reading source is not measuring.
 
-1. Capture a baseline on the real surface (benchmark, trace or profile; Claude Code `run` skill for an app or CLI). Before trusting any number: name what limits it, its unit, run count and variance, and rule out that it measured something other than the work.
+1. Capture a baseline on the real surface (benchmark, trace or profile; Claude Code `run` skill for an app or CLI). Before trusting any number: name what limits it, its unit, run count and variance, and rule out that it measured something other than the work. For a command-line workload, [bench.sh](../scripts/bench.sh) gives n, median, p90 and spread; you still name the limiter and check it timed the right thing.
 2. `hunt` — hypotheses from the trace, not from source; no ceiling claim without running it.
 3. `librarian` / `read` — prior art for the named bottleneck per [prior-art.md](../references/prior-art.md); a borrowed fix is still a hypothesis until measured.
 4. Try the mantras cheapest first and stop at the first that meets the target: don't do it → don't do it again → do it less → do it later → do it when they're not looking → do it concurrently → do it cheaper.
