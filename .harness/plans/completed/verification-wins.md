@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 lane: normal
 ---
 # Verification wins: close the audit's quick gaps
@@ -27,7 +27,7 @@ lane: normal
 ## Phases and Verification
 - approach: One phase, partitioned by write set for a fanout; shared files (`AGENTS.md`, `setup/settings.json`, `validate-skill.sh`) stay with the lead. Rejected: one sequential pass — four disjoint slices run faster in parallel.
 - phase_slug: `main`
-  status: checked
+  status: done
   - goal: R2, R3, R4, R5, R6, R7, R8, R9 | depends_on: none
   - surfaces: `scripts/ci/`, `.github/workflows/skills-ci.yml`, `skills/tools/git/SKILL.md`, `skills/extras/create-cli/SKILL.md`, `skills/mono/{playbooks,scripts}/`, `skills/stages/check/{scripts,references/check-risk.md}`, `AGENTS.md`, `setup/settings.json` | avoided: `cli/src/`, `setup/install-git-hooks.sh`
   - T0 lead: R5, R6 (writes `AGENTS.md`, `setup/settings.json`, `setup/install.sh`, `setup/README.md` only); lands before the wave
@@ -48,6 +48,8 @@ lane: normal
 - 2026-11-02 check full (verifier-wins, claude-fable-5-1, independent): REQUEST_CHANGES — 3 blocking (R6 grep hit in a risk-facts fixture; stale hook docs in setup/README.md and install.sh; PR's own .gitattributes could exempt code from Size), 3 should-fix (only first Always-review line read; skip markers lost for quoted/space paths; *.spec.*, test/, spec/, __tests__/, *Test.java missed), lows.
 - 2026-11-02 fixes (lead): risk-facts.sh reads linguist-generated from `<base>`, reads every Always-review line, diffs skip markers per path from `--numstat -z`, widens test patterns; 4 new fixtures fail on the pre-fix script (15 passed, 4 failed) and pass now; fixture glob `setup/hooks/**` → `scripts/ci/**`; setup/README.md hooks row, Stop-hook table and "required by hooks" removed; install.sh header, `~/.claude/hooks` mkdir and hook count removed; AGENTS.md § Exercise isolates `XDG_CONFIG_HOME`; T0 write set widened to setup/README.md; R2 acceptance path fixed.
 - 2026-11-02 re-check (verifier-wins, claude-fable-5-1): APPROVE_WITH_REQUESTS — fixes #2 #3 #6 #7 #8 #9 #13 verified by its own repros; condition: stage the working copy (done, `git diff --quiet` rc=0, staged risk-facts.sh has `--source="$base"`).
+- 2026-11-02 shipped: PR #187 merged to master at 50f8731 after all 9 CI checks passed; 4 worker worktrees and `worktree-agent-*` branches removed.
+- 2026-11-02 handoff — decision — absorb: none (risk-facts.sh, bench.sh and the CI fixture jobs carry the lessons; open items stay listed below).
 
 ## Validation
 - 2026-11-02 phase main, combined working tree: `bash scripts/ci/validate-skills.sh` → 22 skill(s) valid rc=0; `bash scripts/ci/verify-doc-links.sh` → 0 findings rc=0; `bash scripts/ci/test-guards.sh` → 104 passed, 0 failed rc=0; `bash scripts/ci/test-skill-scripts.sh` → 23 passed, 0 failed rc=0; `bash scripts/ci/test-risk-facts.sh` → 15 passed rc=0; `cd cli && cargo test` → 89 passed, 0 failed rc=0; `jq -e . setup/settings.json && bash -n setup/install.sh` rc=0.
@@ -55,7 +57,7 @@ lane: normal
 
 ## Current State and Next Action
 - active_phase: main
-- lifecycle_status: checked
+- lifecycle_status: completed
 - blockers: none
 - open_items: owner policy call — `*.md` always counts as docs for Size, so SKILL.md and cli/docs/embedded/*.md (shipped in the binary) count 0; bench.sh has no CI fixture and uses GNU `date +%s%N`; gh-search.sh/fetch.sh fixtures cover usage only; Always-review globs use bash `[[ == ]]` (`**/x/**` does not match a root `x/`), same as the hook; a PR-added `*.generated.*` file still exempts itself from Size (listed in excluded_paths; verifier non-blocking).
-- exact_next_action: ask the owner about commit/PR and worker worktree removal
+- exact_next_action: none; the open items above are follow-ups for a new plan if the owner wants them
