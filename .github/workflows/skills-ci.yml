@@ -16,6 +16,10 @@ on:
       - "scripts/ci/fixtures/bad-skill/**"
       - "skills/stages/check/scripts/**"
       - "scripts/ci/test-panel-merge.py"
+      - "scripts/ci/test-skill-scripts.sh"
+      - "scripts/ci/test-risk-facts.sh"
+      - "scripts/ci/fixtures/skill-scripts/**"
+      - "skills/**/scripts/**"
       - ".github/workflows/skills-ci.yml"
   pull_request:
     paths:
@@ -25,6 +29,10 @@ on:
       - "scripts/ci/fixtures/bad-skill/**"
       - "skills/stages/check/scripts/**"
       - "scripts/ci/test-panel-merge.py"
+      - "scripts/ci/test-skill-scripts.sh"
+      - "scripts/ci/test-risk-facts.sh"
+      - "scripts/ci/fixtures/skill-scripts/**"
+      - "skills/**/scripts/**"
       - ".github/workflows/skills-ci.yml"
 
 jobs:
@@ -54,3 +62,21 @@ jobs:
 
       - name: Panel merge fixtures
         run: python3 -I scripts/ci/test-panel-merge.py
+
+  skill-scripts:
+    # Verification audit gap 5: one hit and one miss fixture per skill script.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skill script fixtures
+        run: bash scripts/ci/test-skill-scripts.sh
+
+  risk-facts:
+    # Verification audit gap 3: fixtures for the mechanical risk checks.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Risk facts fixtures
+        run: bash scripts/ci/test-risk-facts.sh

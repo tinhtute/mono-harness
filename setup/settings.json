@@ -1,5 +1,5 @@
 {
-  "_comment": "Claude Code settings template. Sensitive values are placeholders — edit before use. Hooks require setup/hooks/ files installed to ~/.claude/hooks/.",
+  "_comment": "Claude Code settings template. Sensitive values are placeholders — edit before use.",
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "YOUR_AUTH_TOKEN_HERE",
     "ANTHROPIC_BASE_URL": "https://api.anthropic.com",
@@ -35,19 +35,6 @@
     "type": "command",
     "command": "bash ~/.claude/statusline.sh",
     "refreshInterval": 30
-  },
-  "hooks": {
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'if echo \"$CLAUDE_LAST_MESSAGE\" | grep -qE \"\\?$\"; then echo \"REMINDER: Use AskUserQuestion tool for questions\" >&2; fi'",
-            "statusMessage": "Checking for prose questions"
-          }
-        ]
-      }
-    ]
   },
   "enabledPlugins": {},
   "extraKnownMarketplaces": {

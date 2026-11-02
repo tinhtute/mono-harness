@@ -10,7 +10,7 @@ effort: high
 context: fork
 compatibility: Designed for Claude Code
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 Detect the mode first, then interview.
@@ -119,13 +119,13 @@ These integrate with `/brainstorm → /to-plan → /work` workflow.
 Frontmatter:
 ```yaml
 ---
-title: CLI Spec — {name}
-description: {one-liner}
-status: draft
-created: {date}
-tags: [cli, {language}]
+status: active
+lane: normal
 ---
+# CLI Spec — {name}
 ```
+
+Follow the plan skeleton in `skills/stages/brainstorm/references/brainstorm-lock.md` for the remaining headings.
 
 See `references/examples.md` for sample spec and roadmap outputs.
 

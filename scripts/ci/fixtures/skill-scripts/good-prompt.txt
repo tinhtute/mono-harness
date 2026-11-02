@@ -1,0 +1,7 @@
+Field: SRE incident response
+Raw: ./logs/incident.log
+Instruments: grep, jq
+Assumption: the outage began after the deploy
+Judge: cargo test --test outage
+Pass: exit 0 and 12 tests green
+Fail: any test red

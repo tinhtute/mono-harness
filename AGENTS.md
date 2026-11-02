@@ -42,6 +42,18 @@ once installed with `bash setup/install-git-hooks.sh --force`.
 
 Run a single Rust test: `cd cli && cargo test --lib installer::registry::tests::registry_update_registers`.
 
+## Exercise
+
+The recipe `skills/stages/check/references/check-exercise.md` starts from. Run `zharness` against a throwaway repository, never this one:
+
+```bash
+cd cli && cargo build -q && BIN=$PWD/target/debug/zharness
+export XDG_CONFIG_HOME=$(mktemp -d)   # keep the real repo registry untouched
+T=$(mktemp -d) && cd "$T" && git init -q
+"$BIN" install     # expect rc=0; .harness/WORKFLOW.md, .harness/PROJECT.md, AGENTS.md, .gitignore created
+"$BIN" uninstall   # expect rc=0; `git status --porcelain` is empty afterwards
+```
+
 ## Architecture Notes
 
 - **Prompt engineering:** before writing or editing skills (SKILL.md), rules (setup/rules/*.md), or any agent instruction file, read `docs/guides/prompt-engineering-principles.md` — context engineering, formatting syntax, language rules, interfaces before examples, anti-patterns, cross-model awareness.
@@ -68,5 +80,5 @@ Start from the requested outcome; the repository is the system of record. Read `
 Read by the land step of `skills/mono/playbooks/ship.md` and the rubric in `skills/stages/check/references/check-risk.md`.
 
 - Auto-merge: low-risk
-- Always-review paths: setup/install-git-hooks.sh, setup/hooks/**, scripts/ci/**, .github/**, cli/src/installer/**, cli/Cargo.toml, cli/Cargo.lock, setup/settings*.json
+- Always-review paths: setup/install-git-hooks.sh, scripts/ci/**, .github/**, cli/src/installer/**, cli/Cargo.toml, cli/Cargo.lock, setup/settings*.json
 - Merge method: merge (the repo disables GitHub auto-merge, so wait for green with `gh pr checks --watch`, never `gh pr merge --auto`)

@@ -4,13 +4,13 @@ Decides whether a green PR needs a person. Used by the land step of the `mono` s
 
 ## Checks
 
-Measure on the judged commit against the merge base: `git diff --numstat "origin/$BASE...$SHA"`. Any hit means **needs-review**.
+Run this skill's `scripts/risk-facts.sh "origin/$BASE" "$SHA"` from the repository root. It diffs the judged commit against the merge base, reads the always-review globs from the base branch's `AGENTS.md`, and prints the mechanical facts as JSON; its header defines each field. Exit 2 means a bad argument, unknown ref, or no merge base: fix it and rerun; a verdict needs the facts. Any hit below means **needs-review**.
 
 | Check | Needs review when |
 |---|---|
-| Size | more than 400 changed lines (added plus deleted), not counting docs, tests, generated files and lockfiles |
-| Always-review paths | the diff touches `AGENTS.md` itself, a path in the base branch's `AGENTS.md` § Unattended Shipping `Always-review paths`, any CI configuration, a dependency manifest or lockfile, or a migration or schema |
-| Tests | a test file or case removed, an assertion removed or loosened, a skip or ignore marker added, or an expected value changed to match new output without a stated reason |
+| Size | `counted_lines` > 400 (docs, tests, generated files and lockfiles already excluded) |
+| Always-review paths | `always_review_hits` is non-empty, `ci_config_touched` or `manifest_or_lockfile_touched` is `true`, or the diff adds or changes a migration or schema |
+| Tests | `test_changes.removed_files` or `test_changes.skip_markers_added` is non-empty, or the diff removes a test case, removes or loosens an assertion, or changes an expected value to match new output without a stated reason |
 | Exercise | the PR body's `## Exercised` section reports `wrong:` |
 | Plan | the diff does something the PR's plan or Goal did not set out to do, or omits a planned phase, without saying so in the PR body |
 
@@ -20,7 +20,7 @@ When no check hits, the verdict is **low risk** only if the judge can name what 
 
 ## Judge
 
-One fresh-context sub-agent judges; the session that wrote the code is the worst judge of its risk. Brief it with the PR number, `$SHA`, `$BASE`, this file, and `AGENTS.md` § Unattended Shipping read from the base (`git show origin/$BASE:AGENTS.md`, never the PR's own copy), and ask for the filled `## Risk` section and nothing else. With no sub-agents available, judge from this rubric alone and record `judge: same-session`; a same-session verdict is never low risk.
+One fresh-context sub-agent judges; the session that wrote the code is the worst judge of its risk. Brief it with the PR number, `$SHA`, `$BASE`, this file, the absolute path of `scripts/risk-facts.sh` (or its JSON output), and `AGENTS.md` § Unattended Shipping read from the base (`git show origin/$BASE:AGENTS.md`, never the PR's own copy), and ask for the filled `## Risk` section and nothing else. With no sub-agents available, judge from this rubric alone and record `judge: same-session`; a same-session verdict is never low risk.
 
 ## Risk Section
 
@@ -31,8 +31,8 @@ Written into the PR body, replacing any earlier `## Risk` section:
 
 **Verdict:** low risk | needs review, judged on <full SHA> (judge: independent | same-session)
 
-- Size: <n> counted lines (<n> excluded) → ok | over 400
-- Always-review paths: none | <paths>
+- Size: <counted_lines> counted lines (<excluded_lines> excluded) → ok | over 400
+- Always-review paths: none | <always_review_hits, CI config, manifest or lockfile, migration or schema>
 - Tests: ok | <what was deleted or weakened>
 - Exercise: ok | not exercised: <why> | wrong: <what>
 - Plan: ok | no plan | <unstated deviation>
