@@ -1,0 +1,15 @@
+{
+  "seed": 192,
+  "frozen": {
+    "model": "claude-sonnet-5-5",
+    "effort": "high",
+    "tools": "Bash,Read,Edit,Write,Glob,Grep,Skill,Task",
+    "timeout_s": 1200
+  },
+  "tasks": {
+    "D01": "Rename tally.core.count_words to word_count everywhere and keep the tests green.",
+    "D02": "Implement the tally-filters plan.",
+    "D03": "Resume the tally-unicode plan.",
+    "D05": "Add tally.core.longest(text): return the longest word, the first one on ties, None for blank text. Add a test."
+  }
+}

@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `evals/rsi/`: reproducible RSI eval harness (seeded train/val/test split,
+  frozen headless runner, restored lean fixture and oracle, split report).
+- `session-digest.py --json`; token usage now counts each API message once and
+  skips sub-agent records in stream-json traces.
+
 ## [v0.33.0] — 2026-10-29
 
 ### Added

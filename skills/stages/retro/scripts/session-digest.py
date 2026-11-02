@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Condense a Claude Code session log into the signals a retro needs.
 
-Usage: session-digest.py [SESSION_JSONL | SESSION_ID]
+Usage: session-digest.py [--json] [SESSION_JSONL | SESSION_ID]
 With no argument, reads the newest session for the current directory under
-~/.claude/projects/<cwd-slug>/. Prints plain text; reads nothing else.
+~/.claude/projects/<cwd-slug>/. Also reads `claude -p --output-format
+stream-json` traces. Prints plain text, or one JSON object with --json;
+reads nothing else.
 """
 import collections
 import glob
@@ -48,7 +50,11 @@ def short(s, n=160):
 
 
 def main():
-    path = resolve(sys.argv[1] if len(sys.argv) > 1 else None)
+    args = sys.argv[1:]
+    as_json = "--json" in args
+    args = [a for a in args if a != "--json"]
+    path = resolve(args[0] if args else None)
+    seen = set()
     calls = {}
     counts = collections.Counter()
     repeats = collections.Counter()
@@ -61,14 +67,15 @@ def main():
                 rec = json.loads(line)
             except ValueError:
                 continue
-            if rec.get("isSidechain"):
+            if rec.get("isSidechain") or rec.get("parent_tool_use_id"):
                 continue
             if rec.get("type") == "system" and "compact" in str(rec.get("subtype", "")):
                 compactions += 1
             msg = rec.get("message") or {}
             content = msg.get("content")
             usage = msg.get("usage") if rec.get("type") == "assistant" else None
-            if usage:
+            if usage and (msg.get("id") is None or msg["id"] not in seen):  # one API message spans several records
+                seen.add(msg.get("id"))
                 context = sum(usage.get(k) or 0 for k in (
                     "input_tokens", "cache_read_input_tokens", "cache_creation_input_tokens"))
                 peak_context = max(peak_context, context)
@@ -98,6 +105,17 @@ def main():
                     if b.get("is_error"):
                         errors.append((name, short(body)))
 
+    if as_json:
+        print(json.dumps({
+            "session": path, "user_prompts": len(prompts),
+            "tool_use": sum(counts.values()), "tool_use_by_name": dict(counts),
+            "repeats": sum(n - 1 for n in repeats.values()),
+            "top_repeats": [{"name": k[0], "input": k[1], "count": n}
+                            for k, n in repeats.most_common(5) if n > 1],
+            "errors": len(errors), "peak_context": peak_context,
+            "output_tokens": output_tokens, "compactions": compactions,
+        }, sort_keys=True))
+        return
     print(f"session: {path}")
     print(f"user prompts: {len(prompts)}  tool calls: {sum(counts.values())}")
     print(f"peak context tokens: {peak_context}  output tokens: {output_tokens}  "
