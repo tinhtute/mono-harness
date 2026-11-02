@@ -38,26 +38,20 @@ lane: normal
   - phase check: `bash scripts/ci/validate-skills.sh && bash scripts/ci/verify-doc-links.sh && bash scripts/ci/test-guards.sh && bash scripts/ci/test-skill-scripts.sh && (cd cli && cargo test)`
 
 ## Log
-- 2026-11-02 T0 done (lead, claude-opus-5-5, branch quaqua/verification-wins, uncommitted): R6 removed `setup/hooks` refs from `setup/settings.json:2`, `AGENTS.md` always-review list, `setup/install.sh` Step 4, and the `$CLAUDE_LAST_MESSAGE` Stop hook; R5 added `AGENTS.md` § Exercise, run green in a temp repo (install rc=0, uninstall rc=0, porcelain empty).
 - 2026-11-02 wave spawned: T1 worker A (sonnet), T2 worker B (sonnet), T3 lead C (opus), T4 worker D (sonnet), each in its own worktree (base turned out to be `origin/master` `98ba582`, which contains `a3e1ff1`).
-- 2026-11-02 T2 done (worker B, sonnet, branch worktree-agent-a9ddf72b215e92f4b, 3e8a53e): R2 git SKILL.md:64 defers to host attribution, v1.5.0; R3 create-cli frontmatter `status: active`/`lane: normal`, v1.1.0; R4 babysit step 5 names `gh run view <run-id> --log-failed`. Verified by lead: commit touches only the 3 scoped files; acceptance greps reported 0/none/1.
-- 2026-11-02 T4 done (worker D, sonnet, branch worktree-agent-ae8de15d3c5a2d6a2, f37a8ad): R9 `skills/mono/scripts/bench.sh` + perf.md step 1 link. Re-run by lead: `-n 5 -- sleep 0.05` → median_ms 55.48 rc=0; `-n 3 -- false` → rc=1; no args → rc=2; commit touches only the 2 scoped files.
-- 2026-11-02 T1 done (worker A, sonnet, branch worktree-agent-a32e9345041ebc88b, e8dcbfa): R7 `scripts/ci/test-skill-scripts.sh` (23 cases over scan-staged, group-staged, lint-prompt, gh-search, fetch, session-digest) + new `skill-scripts` job in skills-ci.yml. Re-run by lead: `23 passed, 0 failed`; worker's mutation run (AKIA alternative removed) → `21 passed, 2 failed`; commit touches only the 5 scoped files.
-- 2026-11-02 T3 done (lead C, opus, branch worktree-agent-ab1ab50031ff9b36b, 2931c51): R8 `skills/stages/check/scripts/risk-facts.sh` + `scripts/ci/test-risk-facts.sh` + check-risk.md § Checks rewired. Re-run by lead: `passed: 15  failed: 0`; diff touches only the 3 scoped files.
 - 2026-11-02 integrated (lead): applied 3e8a53e, f37a8ad, e8dcbfa, 2931c51 to the working tree of quaqua/verification-wins (uncommitted; owner has not asked for a commit); held file edit: `risk-facts` job + path filter in skills-ci.yml. Phase check green on the combined tree.
 - 2026-11-02 check full (verifier-wins, claude-fable-5-1, independent): REQUEST_CHANGES — 3 blocking (R6 grep hit in a risk-facts fixture; stale hook docs in setup/README.md and install.sh; PR's own .gitattributes could exempt code from Size), 3 should-fix (only first Always-review line read; skip markers lost for quoted/space paths; *.spec.*, test/, spec/, __tests__/, *Test.java missed), lows.
 - 2026-11-02 fixes (lead): risk-facts.sh reads linguist-generated from `<base>`, reads every Always-review line, diffs skip markers per path from `--numstat -z`, widens test patterns; 4 new fixtures fail on the pre-fix script (15 passed, 4 failed) and pass now; fixture glob `setup/hooks/**` → `scripts/ci/**`; setup/README.md hooks row, Stop-hook table and "required by hooks" removed; install.sh header, `~/.claude/hooks` mkdir and hook count removed; AGENTS.md § Exercise isolates `XDG_CONFIG_HOME`; T0 write set widened to setup/README.md; R2 acceptance path fixed.
 - 2026-11-02 re-check (verifier-wins, claude-fable-5-1): APPROVE_WITH_REQUESTS — fixes #2 #3 #6 #7 #8 #9 #13 verified by its own repros; condition: stage the working copy (done, `git diff --quiet` rc=0, staged risk-facts.sh has `--source="$base"`).
 - 2026-11-02 shipped: PR #187 merged to master at 50f8731 after all 9 CI checks passed; 4 worker worktrees and `worktree-agent-*` branches removed.
-- 2026-11-02 handoff — decision — absorb: none (risk-facts.sh, bench.sh and the CI fixture jobs carry the lessons; open items stay listed below).
+- 2026-11-02 handoff — decision — absorb: none (risk-facts.sh, bench.sh and the CI fixture jobs carry the lessons). Unplanned follow-ups: owner policy call on `*.md` always counting as docs for Size (SKILL.md and cli/docs/embedded/*.md count 0); bench.sh has no CI fixture and uses GNU `date +%s%N`; gh-search.sh/fetch.sh fixtures cover usage only; Always-review globs use bash `[[ == ]]` (`**/x/**` misses a root `x/`), same as the hook; a PR-added `*.generated.*` file still exempts itself from Size.
 
 ## Validation
-- 2026-11-02 phase main, combined working tree: `bash scripts/ci/validate-skills.sh` → 22 skill(s) valid rc=0; `bash scripts/ci/verify-doc-links.sh` → 0 findings rc=0; `bash scripts/ci/test-guards.sh` → 104 passed, 0 failed rc=0; `bash scripts/ci/test-skill-scripts.sh` → 23 passed, 0 failed rc=0; `bash scripts/ci/test-risk-facts.sh` → 15 passed rc=0; `cd cli && cargo test` → 89 passed, 0 failed rc=0; `jq -e . setup/settings.json && bash -n setup/install.sh` rc=0.
 - 2026-11-02 after verifier fixes: validate-skills 22 valid rc=0; verify-doc-links 0 findings rc=0; test-guards 104/0 rc=0; test-skill-scripts 23/0 rc=0; test-risk-facts 19/0 rc=0; `cd cli && cargo test` 84+3+2 passed, 0 failed; shellcheck risk-facts.sh + test-risk-facts.sh rc=0; R6 grep empty (rc=1); § Exercise recipe: install 0, uninstall 0, porcelain empty, real registry unchanged.
 
 ## Current State and Next Action
-- active_phase: main
+- active_phase: none
 - lifecycle_status: completed
 - blockers: none
-- open_items: owner policy call — `*.md` always counts as docs for Size, so SKILL.md and cli/docs/embedded/*.md (shipped in the binary) count 0; bench.sh has no CI fixture and uses GNU `date +%s%N`; gh-search.sh/fetch.sh fixtures cover usage only; Always-review globs use bash `[[ == ]]` (`**/x/**` does not match a root `x/`), same as the hook; a PR-added `*.generated.*` file still exempts itself from Size (listed in excluded_paths; verifier non-blocking).
-- exact_next_action: none; the open items above are follow-ups for a new plan if the owner wants them
+- open_items: none
+- exact_next_action: none; start a new plan from the follow-ups in the absorb entry if the owner wants them
