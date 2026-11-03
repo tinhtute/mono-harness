@@ -54,10 +54,7 @@ if [ -n "${RSI_CANDIDATE_ENV:-}" ]; then
   done < "$RSI_CANDIDATE_ENV"
 fi
 # Isolated config dir holding only the login: keeps the caller's ~/.claude CLAUDE.md, rules, skills and agents out.
-# macOS keeps the login in the Keychain, so fall back to CLAUDE_CODE_OAUTH_TOKEN (`claude setup-token`).
-CFG=$(mktemp -d); CRED="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json"
-if [ -f "$CRED" ]; then cp "$CRED" "$CFG/"
-elif [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then echo "no $CRED and no CLAUDE_CODE_OAUTH_TOKEN" >&2; exit 2; fi
+CFG=$(mktemp -d); cp "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json" "$CFG/"
 # GNU timeout; macOS has none unless coreutils is installed.
 if command -v timeout >/dev/null; then TO=(timeout); elif command -v gtimeout >/dev/null; then TO=(gtimeout)
 else TO=(perl -e 'alarm shift; exec @ARGV or die "exec: $!"'); fi
