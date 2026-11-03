@@ -17,7 +17,7 @@ Fixture and oracle are restored from `git show d8ed43e^:docs/evals/evidence/`.
 
 ```bash
 bash evals/rsi/test.sh                                    # free
-for t in D01 D02 D03 D05; do for n in 1 2 3; do
+for t in D01 D02 D03 D05; do for n in 1 2 3 4 5; do
   bash evals/rsi/run.sh "$OUT" "$t" "$CANDIDATE_SHA" "$n"
 done; done
 python3 evals/rsi/report.py "$OUT" train                  # the only report the proposer reads

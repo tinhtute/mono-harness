@@ -28,8 +28,12 @@ git -C "$FIX" -c user.name=fixture -c user.email=fixture@example.invalid add -A
 git -C "$FIX" -c user.name=fixture -c user.email=fixture@example.invalid commit -qm "overlay $SHA"
 printf '%s\n' "$REQ" > "$T/request.txt"
 
+# hermetic: drop the caller's Claude Code env (plugin dirs, effort, token caps); keep auth/config dir
+UNSET=(); for v in $(compgen -e); do
+  case "$v" in CLAUDE_CONFIG_DIR) ;; CLAUDE*|MAX_THINKING_TOKENS|MAX_MCP_OUTPUT_TOKENS|ANTHROPIC_MODEL|ANTHROPIC_SMALL_FAST_MODEL) UNSET+=(-u "$v") ;; esac
+done
 START=$(date +%s)
-(cd "$FIX" && timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
+(cd "$FIX" && env "${UNSET[@]}" timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
   --model "$MODEL" --effort "$EFFORT" --allowedTools "$TOOLS" --permission-mode bypassPermissions \
   --output-format stream-json --verbose) > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
 END=$(date +%s)

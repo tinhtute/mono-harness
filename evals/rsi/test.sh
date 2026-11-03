@@ -40,9 +40,10 @@ cat > "$W/trace.jsonl" <<'J'
 {"type":"assistant","parent_tool_use_id":"x","message":{"id":"s1","usage":{"output_tokens":999},"content":[]}}
 {"type":"system","subtype":"compact_boundary"}
 {"type":"user","message":{"content":[{"type":"tool_result","tool_use_id":"t1","content":"a"}]}}
+{"type":"result","usage":{"output_tokens":42}}
 J
 m="$(python3 -I "$ROOT/skills/stages/retro/scripts/session-digest.py" --json "$W/trace.jsonl")"
-python3 -I -c 'import json,sys; m=json.loads(sys.argv[1]); exp={"output_tokens":7,"peak_context":100,"compactions":1,"tool_use":2,"repeats":1}; bad={k:(m[k],v) for k,v in exp.items() if m[k]!=v}; sys.exit(str(bad) if bad else 0)' "$m" \
+python3 -I -c 'import json,sys; m=json.loads(sys.argv[1]); exp={"output_tokens":42,"peak_context":100,"compactions":1,"tool_use":2,"repeats":1}; bad={k:(m[k],v) for k,v in exp.items() if m[k]!=v}; sys.exit(str(bad) if bad else 0)' "$m" \
   && ok "session-digest --json metrics" || bad "session-digest --json: $m"
 
 # report: synthetic train trials
@@ -52,7 +53,7 @@ for t in $(python3 -I -c 'import json,sys; print(" ".join(json.load(open(sys.arg
   done
 done
 r="$(python3 -I "$HERE/report.py" "$W/out" train)"
-python3 -I -c 'import json,sys; r=json.loads(sys.argv[1]); t=r["tasks"]; sys.exit(0 if r["split"]=="train" and all(v["pass"] and v["passes"]==2 and v["output_tokens"]=={"median":7,"iqr":0} for v in t.values()) and t else r)' "$r" \
+python3 -I -c 'import json,sys; r=json.loads(sys.argv[1]); t=r["tasks"]; sys.exit(0 if r["split"]=="train" and all(v["pass"] and v["passes"]==2 and v["output_tokens"]=={"median":42,"iqr":0} for v in t.values()) and t else r)' "$r" \
   && ok "report aggregates train trials" || bad "report: $r"
 
 echo "fails=$fails  (scratch: $W)"
