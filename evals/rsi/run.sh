@@ -28,9 +28,11 @@ git -C "$FIX" -c user.name=fixture -c user.email=fixture@example.invalid add -A
 git -C "$FIX" -c user.name=fixture -c user.email=fixture@example.invalid commit -qm "overlay $SHA"
 printf '%s\n' "$REQ" > "$T/request.txt"
 
-# hermetic: drop the caller's Claude Code env (plugin dirs, effort, token caps); keep auth/config dir
-UNSET=(); for v in $(compgen -e); do
-  case "$v" in CLAUDE_CONFIG_DIR) ;; CLAUDE*|MAX_THINKING_TOKENS|MAX_MCP_OUTPUT_TOKENS|ANTHROPIC_MODEL|ANTHROPIC_SMALL_FAST_MODEL) UNSET+=(-u "$v") ;; esac
+# Drop only the caller's knobs that would change a frozen trial. Stripping every CLAUDE* var made the
+# nested `claude -p` start as a top-level session and froze the desktop between trials (#192).
+UNSET=(); for v in CLAUDE_CODE_PLUGIN_DIRS CLAUDE_EFFORT CLAUDE_CODE_DISABLE_1M_CONTEXT \
+  MAX_THINKING_TOKENS MAX_MCP_OUTPUT_TOKENS ANTHROPIC_MODEL ANTHROPIC_SMALL_FAST_MODEL; do
+  UNSET+=(-u "$v")
 done
 # Isolated config dir holding only the login: keeps the caller's ~/.claude CLAUDE.md, rules, skills and agents out.
 CFG=$(mktemp -d); cp "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json" "$CFG/"
