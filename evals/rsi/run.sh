@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Run one RSI trial headless and score it. PAID: calls the model once.
-# Usage: bash evals/rsi/run.sh <out-root> <task> <candidate-sha> <trial-n>
+# Usage: [RSI_CANDIDATE_ENV=<file>] bash evals/rsi/run.sh <out-root> <task> <candidate-sha> <trial-n>
+# RSI_CANDIDATE_ENV: optional KEY=VALUE lines for the companion-config knobs under tuning (#194);
+# only MAX_THINKING_TOKENS and MAX_MCP_OUTPUT_TOKENS are accepted.
 # Model, effort, tools, and timeout come from tasks.json "frozen"; nothing overrides them.
 # Writes <out-root>/<task>/<trial-n>/: fixture/, request.txt, trace.jsonl,
 # predicates.tsv, metrics.json, trial.env (pass=1 only when every predicate passes).
@@ -34,10 +36,18 @@ UNSET=(); for v in CLAUDE_CODE_PLUGIN_DIRS CLAUDE_EFFORT CLAUDE_CODE_DISABLE_1M_
   MAX_THINKING_TOKENS MAX_MCP_OUTPUT_TOKENS ANTHROPIC_MODEL ANTHROPIC_SMALL_FAST_MODEL; do
   UNSET+=(-u "$v")
 done
+KNOBS=()
+if [ -n "${RSI_CANDIDATE_ENV:-}" ]; then
+  while IFS= read -r line || [ -n "$line" ]; do
+    [ -z "$line" ] && continue
+    [[ "$line" =~ ^(MAX_THINKING_TOKENS|MAX_MCP_OUTPUT_TOKENS)=[0-9]+$ ]] || { echo "bad candidate knob: $line" >&2; exit 2; }
+    KNOBS+=("$line")
+  done < "$RSI_CANDIDATE_ENV"
+fi
 # Isolated config dir holding only the login: keeps the caller's ~/.claude CLAUDE.md, rules, skills and agents out.
 CFG=$(mktemp -d); cp "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json" "$CFG/"
 START=$(date +%s)
-(cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
+(cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" ${KNOBS[@]+"${KNOBS[@]}"} timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
   --model "$MODEL" --effort "$EFFORT" --allowedTools "$TOOLS" --permission-mode bypassPermissions \
   --output-format stream-json --verbose) > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
 END=$(date +%s)
@@ -48,6 +58,7 @@ python3 -I "$ROOT/skills/stages/retro/scripts/session-digest.py" --json "$T/trac
 {
   echo "task=$TASK"; echo "trial=$N"; echo "candidate_sha=$SHA"
   echo "model=$MODEL"; echo "effort=$EFFORT"; echo "tools=$TOOLS"
+  echo "knobs=${KNOBS[*]+${KNOBS[*]}}"
   echo "runtime=claude-code $(claude --version | cut -d' ' -f1)"
   echo "elapsed_s=$((END - START))"
   echo "pass=$(grep -q $'\tfail$' "$T/predicates.tsv" && echo 0 || echo 1)"
