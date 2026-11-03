@@ -32,11 +32,14 @@ printf '%s\n' "$REQ" > "$T/request.txt"
 UNSET=(); for v in $(compgen -e); do
   case "$v" in CLAUDE_CONFIG_DIR) ;; CLAUDE*|MAX_THINKING_TOKENS|MAX_MCP_OUTPUT_TOKENS|ANTHROPIC_MODEL|ANTHROPIC_SMALL_FAST_MODEL) UNSET+=(-u "$v") ;; esac
 done
+# Isolated config dir holding only the login: keeps the caller's ~/.claude CLAUDE.md, rules, skills and agents out.
+CFG=$(mktemp -d); cp "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json" "$CFG/"
 START=$(date +%s)
-(cd "$FIX" && env "${UNSET[@]}" timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
+(cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
   --model "$MODEL" --effort "$EFFORT" --allowedTools "$TOOLS" --permission-mode bypassPermissions \
   --output-format stream-json --verbose) > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
 END=$(date +%s)
+trash "$CFG"
 
 python3 -I "$HERE/oracle.py" "$TASK" "$FIX" > "$T/predicates.tsv" || printf 'oracle_ran\tfail\n' > "$T/predicates.tsv"
 python3 -I "$ROOT/skills/stages/retro/scripts/session-digest.py" --json "$T/trace.jsonl" > "$T/metrics.json"
