@@ -60,6 +60,7 @@ def main():
     repeats = collections.Counter()
     errors, results, prompts, answers = [], [], [], []
     peak_context = output_tokens = compactions = 0
+    final_output = None  # stream-json `result` record: per-record usage there is a partial snapshot
 
     with open(path, encoding="utf-8") as f:
         for line in f:
@@ -69,6 +70,8 @@ def main():
                 continue
             if rec.get("isSidechain") or rec.get("parent_tool_use_id"):
                 continue
+            if rec.get("type") == "result" and isinstance(rec.get("usage"), dict):
+                final_output = rec["usage"].get("output_tokens")
             if rec.get("type") == "system" and "compact" in str(rec.get("subtype", "")):
                 compactions += 1
             msg = rec.get("message") or {}
@@ -105,6 +108,8 @@ def main():
                     if b.get("is_error"):
                         errors.append((name, short(body)))
 
+    if final_output is not None:
+        output_tokens = final_output
     if as_json:
         print(json.dumps({
             "session": path, "user_prompts": len(prompts),
