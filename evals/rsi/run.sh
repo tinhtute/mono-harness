@@ -55,8 +55,11 @@ if [ -n "${RSI_CANDIDATE_ENV:-}" ]; then
 fi
 # Isolated config dir holding only the login: keeps the caller's ~/.claude CLAUDE.md, rules, skills and agents out.
 CFG=$(mktemp -d); cp "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json" "$CFG/"
+# GNU timeout; macOS has none unless coreutils is installed.
+if command -v timeout >/dev/null; then TO=(timeout); elif command -v gtimeout >/dev/null; then TO=(gtimeout)
+else TO=(perl -e 'alarm shift; exec @ARGV or die "exec: $!"'); fi
 START=$(date +%s)
-(cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" ${KNOBS[@]+"${KNOBS[@]}"} timeout "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
+(cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" ${KNOBS[@]+"${KNOBS[@]}"} "${TO[@]}" "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
   --model "$MODEL" --effort "$EFFORT" --allowedTools "$TOOLS" --permission-mode bypassPermissions \
   --output-format stream-json --verbose) > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
 END=$(date +%s)
