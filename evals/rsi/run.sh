@@ -16,6 +16,15 @@ MODEL="$(cfg "c['frozen']['model']")"; EFFORT="$(cfg "c['frozen']['effort']")"
 TOOLS="$(cfg "c['frozen']['tools']")"; TIMEOUT="$(cfg "c['frozen']['timeout_s']")"
 T="$OUT/$TASK/$N"; FIX="$T/fixture"
 [ ! -e "$T" ] || { echo "trial exists: $T" >&2; exit 1; }
+# Claude Code loads CLAUDE.md, .claude/CLAUDE.md and .claude/rules/ from every ancestor of the cwd,
+# so an out-root under $HOME pulls the caller's ~/.claude instructions into the trial.
+d="$(cd "$OUT" 2>/dev/null && pwd || dirname "$(realpath -m "$OUT")")"
+while [ "$d" != / ]; do
+  for f in "$d/CLAUDE.md" "$d/CLAUDE.local.md" "$d/.claude/CLAUDE.md" "$d/.claude/rules"; do
+    [ ! -e "$f" ] || { echo "out-root inherits $f; use an out-root outside it (e.g. under /var/tmp)" >&2; exit 2; }
+  done
+  d="$(dirname "$d")"
+done
 mkdir -p "$T"
 python3 -I "$HERE/split.py" --check
 
