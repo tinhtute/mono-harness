@@ -30,3 +30,18 @@ copied into each fixture from `CANDIDATE_SHA` is `.harness/WORKFLOW.md`,
 `skills/stages/*` (as `.claude/skills/`), and `setup/agents/worker.md`.
 Trials run with `--permission-mode bypassPermissions` inside the throwaway
 fixture, so run them in a sandbox you are willing to give that to.
+
+## Running a grid cheaply
+
+Waking the orchestrating agent costs a full context read per wake-up. A
+2026-11-03 audit found about 28% of one session's quota spent on per-trial
+Monitor wake-ups.
+
+- Put `$OUT` under `/var/tmp`: `run.sh` refuses an out-root that inherits an
+  ancestor `CLAUDE.md` or `.claude/rules`.
+- Launch the whole grid as one `run_in_background` command, so it notifies once
+  when it finishes. Do not use a Monitor that fires per trial.
+- If you do need a Monitor, fire only on the final line or an error, and follow
+  with `tail -n 0 -F`. `tail -n +1` replays old lines.
+- Run the orchestrating session on Sonnet, since it only launches and waits.
+  Stop background shells before ending the session.
