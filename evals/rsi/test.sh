@@ -17,7 +17,7 @@ done
   && ok "fixture tree is reproducible" || bad "fixture tree differs between builds"
 
 # reference solutions must pass every predicate
-(cd "$W/D01" && grep -rl count_words tally tests | xargs sed -i 's/count_words/word_count/g')
+(cd "$W/D01" && grep -rl count_words tally tests | xargs perl -pi -e 's/count_words/word_count/g')
 cat >> "$W/D05/tally/core.py" <<'PY'
 
 
