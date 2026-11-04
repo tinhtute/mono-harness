@@ -190,8 +190,8 @@ and no longer syncs here. The repository is private, so installing over SSH
 needs local SSH keys with access to it:
 
 ```bash
-npx skills add git@github.com:therealtinhtute/mono-harness.git --list   # list without installing
-npx skills add git@github.com:therealtinhtute/mono-harness.git -a claude-code -g -y
+npx skills add git@github.com:tinhtute/monoharness.git --list   # list without installing
+npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 ```
 
 No skill runs during installation.
@@ -201,7 +201,7 @@ To reinstall rules and skills from scratch, from this repository:
 ```bash
 cp setup/CLAUDE.md ~/.claude/CLAUDE.md
 cp setup/rules/*.md ~/.claude/rules/
-npx skills add git@github.com:therealtinhtute/mono-harness.git -a claude-code -g -y
+npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 ```
 
 `cp` never removes a rule that was dropped from `setup/rules/`; `bash setup/install.sh`

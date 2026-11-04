@@ -41,7 +41,7 @@
   var TERM_LINES = [
     { cls: "t-cmd", text: "zharness install" },
     { cls: "t-ok", text: "✓ scaffolded docs/ · committed markdown is truth" },
-    { cls: "t-cmd", text: "npx skills add therealtinhtute/mono-harness" },
+    { cls: "t-cmd", text: "npx skills add tinhtute/monoharness" },
     { cls: "t-out", text: "● 16 skills mounted · zero resident daemons" },
     { cls: "t-out", text: "● fail-closed guards active · fixture suite green" }
   ];
