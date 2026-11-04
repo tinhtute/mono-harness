@@ -7,7 +7,7 @@ Thanks for your interest in contributing.
 List skills without installing anything:
 
 ```bash
-npx skills add git@github.com:therealtinhtute/mono-harness.git --list
+npx skills add git@github.com:tinhtute/monoharness.git --list
 ```
 
 To iterate on a skill locally before publishing, point Claude Code at your
