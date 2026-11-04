@@ -3,7 +3,7 @@
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability in this repository, please report it
-privately via [GitHub Security Advisories](https://github.com/therealtinhtute/mono-harness/security/advisories/new)
+privately via [GitHub Security Advisories](https://github.com/tinhtute/monoharness/security/advisories/new)
 (Security tab → "Report a vulnerability") rather than opening a public issue.
 
 Please include:
