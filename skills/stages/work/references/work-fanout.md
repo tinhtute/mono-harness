@@ -54,11 +54,13 @@ Spawn the whole wave in one message, in the background, each with its own worktr
 ## Aggregate
 
 1. A report is a claim: reject it unless it names the tested source and the acceptance output.
-2. Accept only after checking that source, its diff against SCOPE, and its acceptance check yourself.
+2. Accept only after checking that source, its diff against SCOPE, and its acceptance check yourself. Inspect a worker tree with `git -C <worktree>` or a subshell `(cd <worktree> && …)` so your shell stays in the main checkout.
 3. A rejected or missing result gets one fresh worker with consolidated scope (the original brief, later directives, the prior report and branch). A second miss → log `blocked` and plan around it; a gap never counts as a pass.
 4. Race: apply the rule declared up front. For a design bakeoff, score each candidate against a 3–6 point rubric, ask a cross-family judge for its pick, choose one base, and graft the best part of each loser by hand; wild divergence means the brief was under-specified, so reframe and re-run rather than averaging.
 
 ## Integrate
+
+The target is the main checkout the session started in, addressed by absolute path. A host notice that your shell moved into a worker worktree changes neither that target nor the wave: integrate there and continue.
 
 1. Merge accepted branches one at a time; resolve conflicts against the plan, never by taking one side blindly.
 2. Edit the held shared files once, after the merges.
