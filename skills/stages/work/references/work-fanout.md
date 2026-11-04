@@ -60,6 +60,8 @@ Spawn the whole wave in one message, in the background, each with its own worktr
 
 ## Integrate
 
+Integration is part of the wave and needs no owner approval: once results are accepted, continue straight into these steps in the same run.
+
 1. Merge accepted branches one at a time; resolve conflicts against the plan, never by taking one side blindly.
 2. Edit the held shared files once, after the merges.
 3. Review the shared interfaces, then run the full phase check on the combined tree.
