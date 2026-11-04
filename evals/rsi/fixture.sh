@@ -142,7 +142,7 @@ lane: high-risk
   - goal: R1, R2, R3 | depends_on: none
   - surfaces: tally/parse.py, tally/fmt.py, tally/cli.py, tally/core.py, tests/
   - escalate_when: an acceptance check must change
-  - execution: inline, no sub-agents; T1's logged `done` predates this tree, so redo T1.
+  - execution: delegate T1 and T2 to their owners in parallel; T1's logged `done` predates this tree, so redo T1.
   - wave 1:
     - T1 parse slice (owner: worker-a, writes tally/parse.py and tests/test_parse.py only) — output: Unicode tokens — check: `python3 -m unittest -q tests.test_parse`
     - T2 fmt slice (owner: worker-b, writes tally/fmt.py and tests/test_fmt.py only) — output: NFC sort — check: `python3 -m unittest -q tests.test_fmt`
