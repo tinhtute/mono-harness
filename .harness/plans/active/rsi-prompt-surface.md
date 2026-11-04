@@ -1,0 +1,79 @@
+---
+status: active
+lane: high-risk
+---
+# rsi prompt surface (#193)
+
+## Goal
+- outcome: a frozen candidate edit to the prompt surface (`skills/stages/*/references/*.md`, `setup/agents/worker.md` body) makes the orchestrator integrate verified worker output into the main tree after a wave, without lowering pass rate elsewhere.
+- success_signal: `python3 evals/rsi/report.py <out> train` shows D03 passing ≥4/5 trials on the candidate and more passes than the 5-trial baseline at 00bd527; val (D05) does not regress; test (D01) runs exactly once on the frozen candidate and passes.
+- actors: the orchestrating agent running `work full` with a fanout wave; workers in `setup/agents/worker.md`; the owner who approves the frozen candidate.
+- authority: issue #193 (RSI constraints, HarnessMM App. B.2); `evals/rsi/README.md`; `evals/rsi/split.json` (train D02/D03, val D05, test D01); D03 finding on #193 (trials 2–3 verify workers then stop before integrating).
+- requirements:
+  - R1: baseline recorded — train and val at the current master SHA, 3 trials per task, report output kept in `## Validation`. | acceptance: `python3 evals/rsi/report.py <baseline-out> train` and `... val` outputs logged | source: #193 How step 1
+  - R2: each candidate changes only the allowed surface. | acceptance: `git diff --name-only master..<candidate>` lists only `skills/stages/*/references/*.md` and `setup/agents/worker.md` | source: #193 What
+  - R3: the proposer reads only train reports; selection uses val; at most 5 rounds. | acceptance: `## Log` names each round's candidate SHA and the report it read | source: #193 RSI constraints
+  - R4: the frozen candidate passes D03 ≥4/5 (5 trials), beating the 5-trial baseline count, and D02 not worse than baseline on train. | acceptance: `python3 evals/rsi/report.py <out> train` | source: owner (D03 first target)
+  - R5: test runs once on the frozen candidate and its result never feeds a proposer. | acceptance: one test run in `## Log` after the freeze entry; `report.py <out> test` passes | source: #193 RSI constraints
+  - R6: no guard loosened; the skill contract tests still pass. | acceptance: `cd cli && cargo test` and `bash scripts/ci/test-guards.sh` exit 0; no diff under `setup/install-git-hooks.sh`, `evals/rsi/oracle.py` or `setup/settings*.json` | source: #193 What
+- non-goals:
+  - NG1: no change to model, effort, tools or timeout in `evals/rsi/tasks.json`, nor to the oracle.
+  - NG2: the `output_tokens` −15% target from #193 is reported, not gated, in this plan.
+  - NG3: #194–#196 surfaces (hooks, mods, compaction) are out of scope.
+
+## Phases and Verification
+- approach: baseline at master, then up to 5 proposer rounds on train only, select one candidate by val, freeze, run test once. Each candidate is a branch commit whose SHA `evals/rsi/run.sh` overlays. Rejected: writing the integration fix by hand without baseline/val, which breaks the frozen-split rule in #193.
+- constraints: frozen model/effort/tools/timeout in `evals/rsi/tasks.json`; out-root under `/var/tmp/rsi-runs/`; 3 trials per task per candidate; every trial is a paid `claude -p` run.
+- recovery: candidates live on branches `quaqua/rsi-c<round>-<n>`; master is untouched until the frozen candidate's PR; a bad round is dropped by abandoning its branch.
+- risks: overfit to a 2-task train set → val D05 must hold; spend → stop after 5 rounds or 2 rounds with no train gain; test leakage → test runs only after the freeze entry in `## Log`.
+- seams: `evals/rsi/run.sh <out> <task> <sha> <n>` and `evals/rsi/report.py <out> <split>`; contract tests `cd cli && cargo test`.
+- phase_slug: `baseline`
+  status: done
+  - goal: R1 | depends_on: none
+  - surfaces: `/var/tmp/rsi-runs/baseline/`, this plan's `## Validation` | avoided: all tracked source
+  - escalate_when: `bash evals/rsi/test.sh` fails, or a trial errors on infrastructure
+  - wave 1:
+    - T1 run D02, D03, D05 × 3 at master SHA (owner: main agent, writes `/var/tmp/rsi-runs/baseline/` only) — output: 9 trial dirs — check: `python3 evals/rsi/report.py /var/tmp/rsi-runs/baseline train && python3 evals/rsi/report.py /var/tmp/rsi-runs/baseline val` — stop_if: any trial times out twice
+  - phase check: both report outputs recorded in `## Validation`
+- phase_slug: `rounds`
+  status: planned
+  - goal: R2, R3, R4, R6 | depends_on: baseline
+  - surfaces: `skills/stages/*/references/*.md`, `setup/agents/worker.md` body | avoided: `evals/rsi/**`, `setup/install-git-hooks.sh`, `setup/settings*.json`, `cli/**`
+  - escalate_when: a candidate needs a file outside the allowed surface, or an acceptance check must change
+  - wave 1 (repeat per round, ≤5):
+    - T1 propose 1–3 diffs from the latest train report only (owner: proposer sub-agent, writes allowed surface on its branch only) — output: candidate SHAs + hypothesis + risk — check: `git diff --name-only master..<sha>` within allowed surface and `cd cli && cargo test` — stop_if: proposer cites val or test data
+    - T2 run D02, D03 × 3 per candidate (owner: main agent, writes `/var/tmp/rsi-runs/r<round>-<n>/` only) — output: train report per candidate — check: `python3 evals/rsi/report.py /var/tmp/rsi-runs/r<round>-<n> train`
+  - wave 2:
+    - T3 run D05 × 3 on the best train candidates; pick one; log `decision: freeze <sha>` (owner: main agent) — check: `python3 evals/rsi/report.py <out> val` not worse than baseline
+  - phase check: frozen candidate D03 ≥2/3, D02 ≥ baseline; `cd cli && cargo test && bash scripts/ci/test-guards.sh`; independent verifier reviews the frozen diff
+- phase_slug: `test`
+  status: planned
+  - goal: R5 | depends_on: rounds
+  - surfaces: `/var/tmp/rsi-runs/test/`, PR for the frozen candidate | avoided: any further edit to the candidate
+  - escalate_when: test fails (no retry; report to owner)
+  - wave 1:
+    - T1 run D01 × 3 once on the frozen SHA (owner: main agent) — output: test report — check: `python3 evals/rsi/report.py /var/tmp/rsi-runs/test test`
+  - phase check: test report in `## Validation`; PR opened with the frozen diff, baseline/train/val/test tables, and token metrics
+
+## Log
+
+- 2026-11-04 — baseline — start — fanout: 3 workers (sonnet), one per task D02/D03/D05, 3 trials each at 00bd527, out-root /var/tmp/rsi-runs/baseline.
+- 2026-11-04 — baseline/T1 — done — 9/9 trials ran; train D02 3/3, D03 2/3; val D05 3/3; pass flags checked in each trial.env.
+- 2026-11-04 — baseline — decision — D03 already meets R4's ≥2/3 at baseline (was 1/3 at 9335066), so R4 cannot discriminate with 3 trials; owner to decide before rounds.
+- 2026-11-04 — baseline — decision — owner: D03 runs 5 trials per candidate (overrides the 3-trial constraint for D03 only); baseline adds D03 trials 4–5.
+- 2026-11-04 — baseline — done — D03 5-trial baseline 3/5 (trials 2 and 5 fail r1_punct, r2_nfc_sort, r3_cli_combined: wave output not integrated); phase baseline complete.
+- 2026-11-04 — rounds — start — round 1: proposer sub-agent (worktree) reads `report.py /var/tmp/rsi-runs/baseline train` and D02/D03 trial dirs only; writes branches `quaqua/rsi-c1-<n>` off 00bd527.
+- 2026-11-04 — rounds/T1 — done — round 1 candidates (read baseline train report + D02/D03 trials only; no D05/D01): c1-1 6ca4617 (integration target stays the main checkout despite cwd-moved notice), c1-2 2a52504 (wave integration needs no owner merge approval), c1-3 e1c42cc (worker `done` only after output is in main tree); all within allowed surface, `cargo test` pass.
+- 2026-11-04 — rounds/T2 — start — train D02×3, D03×5 per candidate into /var/tmp/rsi-runs/r1-{1,2,3}.
+
+## Validation
+
+- baseline @00bd527 (`report.py /var/tmp/rsi-runs/baseline train|val`): D02 3/3 (output_tokens median 6383, IQR 988), D03 2/3 (median 5196, IQR 1538; trial 2 fails r1_punct, r2_nfc_sort, r3_cli_combined), D05 3/3 (median 1294, IQR 509).
+- D03 5-trial baseline @00bd527: 3/5, output_tokens median 5196, IQR 2650. Bar for R4: candidate ≥4/5.
+
+## Current State and Next Action
+- active_phase: rounds
+- lifecycle_status: in-progress
+- blockers: none
+- open_items: none
+- exact_next_action: work full phase rounds (round 1: proposer reads baseline train report only)
