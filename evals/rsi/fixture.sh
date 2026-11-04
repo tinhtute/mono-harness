@@ -128,7 +128,7 @@ lane: high-risk
 
 ## Goal
 
-- outcome: tokenization and rendering are Unicode-correct; CLI output stays stable for ASCII input.
+- outcome: tokenization and rendering are Unicode-correct, and the CLI counts `tokens` output (punctuation is stripped for ASCII too).
 - requirements:
   - R1: `tally.parse.tokens` splits on Unicode whitespace and strips Unicode punctuation. | acceptance: `python3 -m unittest -q tests.test_parse` | source: owner
   - R2: `tally.fmt.render` sorts by NFC-normalized word. | acceptance: `python3 -m unittest -q tests.test_fmt` | source: owner
@@ -138,10 +138,11 @@ lane: high-risk
 ## Phases and Verification
 
 - phase_slug: `p1`
-  status: planned
+  status: in-progress
   - goal: R1, R2, R3 | depends_on: none
-  - surfaces: tally/parse.py, tally/fmt.py, tally/cli.py, tests/
+  - surfaces: tally/parse.py, tally/fmt.py, tally/cli.py, tally/core.py, tests/
   - escalate_when: an acceptance check must change
+  - execution: delegate T1 and T2 to their owners in parallel; T1's logged `done` predates this tree, so redo T1.
   - wave 1:
     - T1 parse slice (owner: worker-a, writes tally/parse.py and tests/test_parse.py only) — output: Unicode tokens — check: `python3 -m unittest -q tests.test_parse`
     - T2 fmt slice (owner: worker-b, writes tally/fmt.py and tests/test_fmt.py only) — output: NFC sort — check: `python3 -m unittest -q tests.test_fmt`
@@ -151,6 +152,7 @@ lane: high-risk
 
 ## Log
 
+- 2026-10-01T00:00:00Z — p1 — start — phase p1 in-progress.
 - 2026-10-01T00:00:00Z — p1/T1 — done — `python3 -m unittest -q tests.test_parse` exit 0 at commit 0000000 (pre-fixture tree; this tree has no tests/test_parse.py).
 
 ## Validation
