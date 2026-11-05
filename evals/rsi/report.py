@@ -10,7 +10,8 @@ import statistics
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-METRICS = ("output_tokens", "peak_context", "compactions", "tool_use", "repeats")
+METRICS = ("output_tokens", "peak_context", "compactions", "tool_use", "repeats",
+           "proof_calls", "proof_turns", "approved_entries", "approved_rejected")
 
 
 def iqr(xs):
@@ -37,7 +38,8 @@ def main():
             passes.append(env.get("pass") == "1")
             m = json.load(open(os.path.join(tdir, n, "metrics.json")))
             for k in METRICS:
-                vals[k].append(m[k])
+                if k in m:  # trials scored before #196 carry no finalization metrics
+                    vals[k].append(m[k])
         report["tasks"][task] = {
             "trials": len(trials), "passes": sum(passes),
             "pass": bool(trials) and sum(passes) * 2 > len(trials),
