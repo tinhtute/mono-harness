@@ -27,6 +27,8 @@ Validation is append-only from an entry's first commit; never replace committed 
 
 **Proof re-execution contract** — each proof re-runs from the repository root under `sh -c` on a bare checkout: no prior `cd`, virtualenv, or alias (carry them inline: `cd cli && cargo test`; bash-only syntax → `bash -c '…'`). It must not depend on environment variables, binary presence, or OS version. Timeout 300 s when `timeout`/`gtimeout` exists.
 
+**Batch proofs** — before writing an approvable entry, run every proof it will cite in one `bash scripts/workflow/record-check.sh -- "cmd1" "cmd2"` call, never one call per command; return to the code only on FAIL. Cite each command as its own proof sub-bullet.
+
 ## What the Guards Cannot Check
 
 Name any that applies in `proof_gaps:`: `judge: independent` is testimony; an unparsed verdict is ignored, not rejected; an entry added and removed inside one push is unseen; a `requirements:` line is testimony, and the proof it cites re-runs only as a proof sub-bullet.
