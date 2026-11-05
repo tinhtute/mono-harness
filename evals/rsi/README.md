@@ -10,6 +10,7 @@ Fixture and oracle are restored from `git show d8ed43e^:docs/evals/evidence/`.
 | `fixture.sh` | builds one task's `tally` repo (deterministic tree) |
 | `oracle.py` | frozen scorer; evaluator-only, never copied into the fixture |
 | `run.sh` | one headless trial against a candidate SHA; **paid** |
+| `finalization.sh` | #196 metrics: `proof_calls`, `proof_turns` (model turns that ran a proof), and `approved_entries`/`approved_rejected` (new APPROVED entries the R2 guard would reject on the final tree), scored with the evaluator's guard core |
 | `report.py` | per-split pass/fail plus median and IQR of the `session-digest.py --json` metrics |
 | `test.sh` | free self-test of everything above |
 
@@ -27,7 +28,9 @@ python3 evals/rsi/report.py "$OUT" test                   # once, on the frozen 
 
 A task passes when most of its trials pass every oracle predicate. The overlay
 copied into each fixture from `CANDIDATE_SHA` is `.harness/WORKFLOW.md`,
-`skills/stages/*` (as `.claude/skills/`), and `setup/agents/worker.md`.
+`skills/stages/*` (as `.claude/skills/`), `setup/agents/worker.md`, and
+`scripts/workflow/record-check.sh`. The pre-commit hook is not installed in the
+fixture; `finalization.sh` re-executes proofs after the trial instead.
 Trials run with `--permission-mode bypassPermissions` inside the throwaway
 fixture, so run them in a sandbox you are willing to give that to.
 

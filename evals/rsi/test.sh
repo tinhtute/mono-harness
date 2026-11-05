@@ -65,5 +65,27 @@ printf '{"error":{"code": 429,"status":"RESOURCE_EXHAUSTED"}}\n' > "$W/t_omp.jso
 g="$(for f in num retry claude omp; do bash "$HERE/limited.sh" "$W/t_$f.jsonl" "$W/t_err.txt"; done | tr -d '\n')"
 [ "$g" = 0011 ] && ok "rate-limit guard: terminal only, no bare 429" || bad "rate-limit guard: got $g, want 0011"
 
+# finalization (#196): proof turns from the trace, R2 re-exec of entries added after the overlay
+F="$W/fin"; bash "$HERE/fixture.sh" D02 "$F" >/dev/null
+git -C "$F" -c user.name=t -c user.email=t@t commit -q --allow-empty -m "overlay test"
+P="$F/.harness/plans/active/tally-filters.md"
+python3 -I - "$P" <<'PY'
+import sys
+p = sys.argv[1]; s = open(p).read()
+add = ("- 2026-01-01 `main` verdict: APPROVED\n  - `python3 -m unittest -q`\n"
+       "- 2026-01-02 `main` verdict: APPROVED\n  - `false`\n"
+       "- 2026-01-03 `main` verdict: REQUEST_CHANGES\n  - `false`\n\n")
+open(p, "w").write(s.replace("## Validation\n\n", "## Validation\n\n" + add, 1))
+PY
+cat > "$W/fin.jsonl" <<'J'
+{"type":"assistant","message":{"id":"a1","content":[{"type":"tool_use","id":"u1","name":"Bash","input":{"command":"bash scripts/workflow/record-check.sh -- 'python3 -m unittest -q'"}},{"type":"tool_use","id":"u2","name":"Bash","input":{"command":"python3 -m unittest -q"}}]}}
+{"type":"assistant","message":{"id":"a1","content":[{"type":"tool_use","id":"u2","name":"Bash","input":{"command":"python3 -m unittest -q"}}]}}
+{"type":"assistant","message":{"id":"a2","content":[{"type":"tool_use","id":"u3","name":"Bash","input":{"command":"pytest -q"}},{"type":"tool_use","id":"u4","name":"Bash","input":{"command":"ls"}}]}}
+{"type":"assistant","parent_tool_use_id":"x","message":{"id":"s1","content":[{"type":"tool_use","id":"u5","name":"Bash","input":{"command":"pytest"}}]}}
+J
+f="$(bash "$HERE/finalization.sh" "$W/fin.jsonl" "$F" "$ROOT/setup/install-git-hooks.sh")"
+python3 -I -c 'import json,sys; m=json.loads(sys.argv[1]); exp={"proof_calls":3,"proof_turns":2,"approved_entries":2,"approved_rejected":1}; sys.exit(0 if m==exp else f"{m} != {exp}")' "$f" \
+  && ok "finalization metrics" || bad "finalization: $f"
+
 echo "fails=$fails  (scratch: $W)"
 [ "$fails" -eq 0 ]

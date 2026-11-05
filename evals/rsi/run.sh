@@ -54,6 +54,9 @@ else
   git -C "$ROOT" show "$SHA:setup/agents/worker.md" > "$FIX/.claude/agents/worker.md"
 fi
 git -C "$ROOT" archive "$SHA" skills/stages | tar -x -C "$FIX/.claude/skills" --strip-components=2
+# check.md runs proofs through record-check.sh when it exists; ship the candidate's copy (#196).
+mkdir -p "$FIX/scripts/workflow"
+git -C "$ROOT" show "$SHA:scripts/workflow/record-check.sh" > "$FIX/scripts/workflow/record-check.sh"
 printf 'Read `.harness/WORKFLOW.md` before working.\n' > "$FIX/CLAUDE.md"
 git -C "$FIX" -c user.name=fixture -c user.email=fixture@example.invalid add -A
 git -C "$FIX" -c user.name=fixture -c user.email=fixture@example.invalid commit -qm "overlay $SHA"
@@ -136,6 +139,9 @@ PY
 else
   python3 -I "$ROOT/skills/stages/retro/scripts/session-digest.py" --json "$T/trace.jsonl" > "$T/metrics.json"
 fi
+# Finalization metrics (#196), scored with the evaluator's own guard core, never the candidate's.
+FIN="$(bash "$HERE/finalization.sh" "$T/trace.jsonl" "$FIX" "$ROOT/setup/install-git-hooks.sh")"
+python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1])); m.update(json.loads(sys.argv[2])); json.dump(m, open(sys.argv[1], "w"), sort_keys=True)' "$T/metrics.json" "$FIN"
 {
   echo "task=$TASK"; echo "trial=$N"; echo "candidate_sha=$SHA"
   echo "model=$RT_MODEL"; echo "effort=$EFFORT"; echo "tools=$TOOLS"
