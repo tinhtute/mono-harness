@@ -70,14 +70,22 @@ lane: high-risk
 - 2026-11-05 — owner — decision — run the grid on `omp` + `google-antigravity/gemini-3.8-flash` instead of the rate-limited Claude subscription, and fix the harness in this PR rather than carrying the defect. This supersedes NG1 for the model/effort pair: `evals/rsi/tasks.json` keeps `frozen.model` (Claude Code) and gains `frozen.omp_model`, and `RSI_RUNTIME` selects the pair. The baseline must be re-measured on the new runtime; the 00bd527 Claude baseline is no longer comparable and is kept only as a historical record.
 - 2026-11-05 — harness — done — `evals/rsi/run.sh` gains: an `RSI_RUNTIME` switch (`claude` default, `omp` opt-in), an `omp_model` lookup, the Claude-tool-name to omp-tool-name map (`Skill` → `manage_skill`), project subagents under `.omp/agents/` (omp does not read `.claude/agents/`), an omp metrics reader for `--mode=json` traces, and a rate-limit guard that tags `limited=1` and forces `pass=0`. Free `evals/rsi/test.sh` 10/10. One paid smoke trial `RSI_RUNTIME=omp … D05 00bd527 1`: 5/5 predicates, `elapsed_s=97`, `output_tokens=4461`, `tool_use=22`, `limited=0`.
 
+- 2026-11-05 — harness — done — rate-limit guard false-positived on omp traces (bare `429` matched token counts, costs, call ids; a mid-run 429 that omp retried on another credential also matched). Moved to `evals/rsi/limited.sh`: final trace record + stderr only, no bare `429`. `evals/rsi/test.sh` 11/11 (new case: number, retried 429, Claude 5-hour limit, terminal omp 429 → 0011). Re-scored baseline-omp D02/3, D03/5, D05/3 to `limited=0 pass=1` (all predicates pass); r1-1 Claude trials still tag limited.
+- 2026-11-05 — baseline — done — omp + gemini-3.8-flash @00bd527 into /var/tmp/rsi-runs/baseline-omp: D02 3/3, D03 5/5, D05 3/3; 0 limited.
+- 2026-11-05 — rounds/T2 — done — r1b on omp, 0 limited: r1b-1 (6ca4617) D02 3/3, D03 5/5; r1b-2 (2a52504) D02 3/3, D03 3/5 (trials 1, 3 fail r1_punct, r2_nfc_sort, r3_cli_combined); r1b-3 (e1c42cc) D02 3/3, D03 4/5 (trial 3, same predicates).
+- 2026-11-05 — rounds — blocked — gate: escalate_when "an acceptance check must change". Evidence: omp baseline D03 is 5/5, so R4 ("≥4/5, beating the 5-trial baseline count") cannot be met by any candidate on this runtime; the D03 integration gap does not reproduce on gemini-3.8-flash (failure_class: MISSING_CONTEXT). Next action: owner picks runtime/target for R4.
+- 2026-11-05 — owner — decision — close the D03 target: the integration gap does not reproduce on omp + gemini-3.8-flash (baseline 5/5), so no candidate is selected or frozen; commit only the harness fix. Test (D01) is not run.
+
 ## Validation
 
 - baseline @00bd527 (`report.py /var/tmp/rsi-runs/baseline train|val`): D02 3/3 (output_tokens median 6383, IQR 988), D03 2/3 (median 5196, IQR 1538; trial 2 fails r1_punct, r2_nfc_sort, r3_cli_combined), D05 3/3 (median 1294, IQR 509).
 - D03 5-trial baseline @00bd527: 3/5, output_tokens median 5196, IQR 2650. Bar for R4: candidate ≥4/5.
+- baseline-omp @00bd527 (omp + gemini-3.8-flash): D02 3/3 (output_tokens median 26702), D03 5/5 (median 40278), D05 3/3 (median 5030).
+- r1b train (omp): c1-1 D02 3/3, D03 5/5 (median 41764); c1-2 D02 3/3, D03 3/5; c1-3 D02 3/3, D03 4/5.
 
 ## Current State and Next Action
 - active_phase: rounds
 - lifecycle_status: in-progress
-- blockers: baseline must be re-measured on `omp` + `gemini-3.8-flash`; the Claude baseline is not comparable across runtimes.
+- blockers: none; D03 target closed by owner.
 - open_items: whether the merged candidate still shows the D03 integration gap on the new runtime at all — a different model may not reproduce the failure, which would make the candidate untestable rather than proven.
-- exact_next_action: re-run baseline (D02×3, D03×5, D05×3) into `/var/tmp/rsi-runs/baseline-omp` with `RSI_RUNTIME=omp`; `report.py <out> train|val`; then re-run the round-1 grid into `/var/tmp/rsi-runs/r1b-{1,2,3}`.
+- exact_next_action: record the D03 conclusion on #193 and close or archive this plan.

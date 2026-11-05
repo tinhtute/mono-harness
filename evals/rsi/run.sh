@@ -98,10 +98,7 @@ trash "$CFG"
 # A rate-limited run still exits 0 and looks like a terse failed attempt: Claude Code reports
 # `You've hit your 5-hour limit`, a provider 429 arrives as a quota message. Score it as a
 # failure but tag it, so a poisoned grid is visible in trial.env instead of silent (#193 round 1).
-LIMITED=0
-if grep -qiE "5-hour limit|rate.?limit|429|quota exceeded|resource_exhausted" "$T/trace.jsonl" "$T/stderr.txt" 2>/dev/null; then
-  LIMITED=1
-fi
+LIMITED="$(bash "$HERE/limited.sh" "$T/trace.jsonl" "$T/stderr.txt")"
 
 python3 -I "$HERE/oracle.py" "$TASK" "$FIX" > "$T/predicates.tsv" || printf 'oracle_ran\tfail\n' > "$T/predicates.tsv"
 # session-digest reads Claude Code stream-json; an omp trace carries no such records, so its
