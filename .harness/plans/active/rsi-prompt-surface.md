@@ -65,6 +65,8 @@ lane: high-risk
 - 2026-11-04 — rounds — start — round 1: proposer sub-agent (worktree) reads `report.py /var/tmp/rsi-runs/baseline train` and D02/D03 trial dirs only; writes branches `quaqua/rsi-c1-<n>` off 00bd527.
 - 2026-11-04 — rounds/T1 — done — round 1 candidates (read baseline train report + D02/D03 trials only; no D05/D01): c1-1 6ca4617 (integration target stays the main checkout despite cwd-moved notice), c1-2 2a52504 (wave integration needs no owner merge approval), c1-3 e1c42cc (worker `done` only after output is in main tree); all within allowed surface, `cargo test` pass.
 - 2026-11-04 — rounds/T2 — start — train D02×3, D03×5 per candidate into /var/tmp/rsi-runs/r1-{1,2,3}.
+- 2026-11-05 — rounds/T2 — invalid — round 1 produced no usable train data: 15/15 trials across r1-{1,2,3} carry `You've hit your 5-hour limit · resets 9pm` in `trace.jsonl`. Trials D0*/2–4 ran 2–3 s with `output_tokens: 0` and `tool_use: 0`; each D03/1 trial integrated both branches and was cut before T3, which is why `r3_cli_combined` fails. `run.sh` scores a limited trial as `pass=0`, so `report.py train` (D03 1/5 per candidate) is a harness artifact, not a candidate result. Baseline is unaffected: 12/12 baseline trials ran 16–162 s with no limit message.
+- 2026-11-05 — rounds/T2 — decision — discard r1-{1,2,3}; round 1 is unspent, not lost. No candidate may be selected from it, and no round-2 proposal cites it.
 
 ## Validation
 
@@ -74,6 +76,6 @@ lane: high-risk
 ## Current State and Next Action
 - active_phase: rounds
 - lifecycle_status: in-progress
-- blockers: none
-- open_items: none
-- exact_next_action: work full phase rounds (round 1: proposer reads baseline train report only)
+- blockers: round-1 train grid must be re-run; `evals/rsi/run.sh` scores a rate-limited trial as `pass=0`, so an unguarded re-run can poison train data the same way (harness fix is outside this plan's allowed surface — owner decision pending).
+- open_items: whether to gate `run.sh` on a rate-limit trace before re-running; whether to serialize trials instead of three parallel grids.
+- exact_next_action: after the owner rules on the harness guard, re-run round-1 train (D02×3, D03×5 per candidate) into fresh out-roots `/var/tmp/rsi-runs/r1b-{1,2,3}`, then `report.py <out> train` per candidate.
