@@ -67,6 +67,8 @@ lane: high-risk
 - 2026-11-04 — rounds/T2 — start — train D02×3, D03×5 per candidate into /var/tmp/rsi-runs/r1-{1,2,3}.
 - 2026-11-05 — rounds/T2 — invalid — round 1 produced no usable train data: 15/15 trials across r1-{1,2,3} carry `You've hit your 5-hour limit · resets 9pm` in `trace.jsonl`. Trials D0*/2–4 ran 2–3 s with `output_tokens: 0` and `tool_use: 0`; each D03/1 trial integrated both branches and was cut before T3, which is why `r3_cli_combined` fails. `run.sh` scores a limited trial as `pass=0`, so `report.py train` (D03 1/5 per candidate) is a harness artifact, not a candidate result. Baseline is unaffected: 12/12 baseline trials ran 16–162 s with no limit message.
 - 2026-11-05 — rounds/T2 — decision — discard r1-{1,2,3}; round 1 is unspent, not lost. No candidate may be selected from it, and no round-2 proposal cites it.
+- 2026-11-05 — owner — decision — run the grid on `omp` + `google-antigravity/gemini-3.8-flash` instead of the rate-limited Claude subscription, and fix the harness in this PR rather than carrying the defect. This supersedes NG1 for the model/effort pair: `evals/rsi/tasks.json` keeps `frozen.model` (Claude Code) and gains `frozen.omp_model`, and `RSI_RUNTIME` selects the pair. The baseline must be re-measured on the new runtime; the 00bd527 Claude baseline is no longer comparable and is kept only as a historical record.
+- 2026-11-05 — harness — done — `evals/rsi/run.sh` gains: an `RSI_RUNTIME` switch (`claude` default, `omp` opt-in), an `omp_model` lookup, the Claude-tool-name to omp-tool-name map (`Skill` → `manage_skill`), project subagents under `.omp/agents/` (omp does not read `.claude/agents/`), an omp metrics reader for `--mode=json` traces, and a rate-limit guard that tags `limited=1` and forces `pass=0`. Free `evals/rsi/test.sh` 10/10. One paid smoke trial `RSI_RUNTIME=omp … D05 00bd527 1`: 5/5 predicates, `elapsed_s=97`, `output_tokens=4461`, `tool_use=22`, `limited=0`.
 
 ## Validation
 
@@ -76,6 +78,6 @@ lane: high-risk
 ## Current State and Next Action
 - active_phase: rounds
 - lifecycle_status: in-progress
-- blockers: round-1 train grid must be re-run; `evals/rsi/run.sh` scores a rate-limited trial as `pass=0`, so an unguarded re-run can poison train data the same way (harness fix is outside this plan's allowed surface — owner decision pending).
-- open_items: whether to gate `run.sh` on a rate-limit trace before re-running; whether to serialize trials instead of three parallel grids.
-- exact_next_action: after the owner rules on the harness guard, re-run round-1 train (D02×3, D03×5 per candidate) into fresh out-roots `/var/tmp/rsi-runs/r1b-{1,2,3}`, then `report.py <out> train` per candidate.
+- blockers: baseline must be re-measured on `omp` + `gemini-3.8-flash`; the Claude baseline is not comparable across runtimes.
+- open_items: whether the merged candidate still shows the D03 integration gap on the new runtime at all — a different model may not reproduce the failure, which would make the candidate untestable rather than proven.
+- exact_next_action: re-run baseline (D02×3, D03×5, D05×3) into `/var/tmp/rsi-runs/baseline-omp` with `RSI_RUNTIME=omp`; `report.py <out> train|val`; then re-run the round-1 grid into `/var/tmp/rsi-runs/r1b-{1,2,3}`.
