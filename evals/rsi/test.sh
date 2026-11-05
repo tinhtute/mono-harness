@@ -56,5 +56,14 @@ r="$(python3 -I "$HERE/report.py" "$W/out" train)"
 python3 -I -c 'import json,sys; r=json.loads(sys.argv[1]); t=r["tasks"]; sys.exit(0 if r["split"]=="train" and all(v["pass"] and v["passes"]==2 and v["output_tokens"]=={"median":42,"iqr":0} for v in t.values()) and t else r)' "$r" \
   && ok "report aggregates train trials" || bad "report: $r"
 
+# rate-limit guard: only a terminal limit counts; numbers containing 429 and a retried 429 do not
+printf '{"usage":{"totalTokens":20429},"cost":0.01429725,"id":"call_279429"}\n' > "$W/t_num.jsonl"
+printf '{"error":{"code": 429,"status":"RESOURCE_EXHAUSTED"}}\n{"stopReason":"stop","isTerminal":true}\n' > "$W/t_retry.jsonl"
+printf '{"type":"result","result":"You have hit your 5-hour limit"}\n' | sed 's/You have/You'"'"'ve/' > "$W/t_claude.jsonl"
+printf '{"error":{"code": 429,"status":"RESOURCE_EXHAUSTED"}}\n' > "$W/t_omp.jsonl"
+: > "$W/t_err.txt"
+g="$(for f in num retry claude omp; do bash "$HERE/limited.sh" "$W/t_$f.jsonl" "$W/t_err.txt"; done | tr -d '\n')"
+[ "$g" = 0011 ] && ok "rate-limit guard: terminal only, no bare 429" || bad "rate-limit guard: got $g, want 0011"
+
 echo "fails=$fails  (scratch: $W)"
 [ "$fails" -eq 0 ]

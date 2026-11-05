@@ -2,6 +2,7 @@
   "seed": 192,
   "frozen": {
     "model": "claude-sonnet-5-5",
+    "omp_model": "google-antigravity/gemini-3.8-flash",
     "effort": "high",
     "tools": "Bash,Read,Edit,Write,Glob,Grep,Skill,Task",
     "timeout_s": 1200
