@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 lane: high-risk
 ---
 # rsi prompt surface (#193)
@@ -75,6 +75,7 @@ lane: high-risk
 - 2026-11-05 — rounds/T2 — done — r1b on omp, 0 limited: r1b-1 (6ca4617) D02 3/3, D03 5/5; r1b-2 (2a52504) D02 3/3, D03 3/5 (trials 1, 3 fail r1_punct, r2_nfc_sort, r3_cli_combined); r1b-3 (e1c42cc) D02 3/3, D03 4/5 (trial 3, same predicates).
 - 2026-11-05 — rounds — blocked — gate: escalate_when "an acceptance check must change". Evidence: omp baseline D03 is 5/5, so R4 ("≥4/5, beating the 5-trial baseline count") cannot be met by any candidate on this runtime; the D03 integration gap does not reproduce on gemini-3.8-flash (failure_class: MISSING_CONTEXT). Next action: owner picks runtime/target for R4.
 - 2026-11-05 — owner — decision — close the D03 target: the integration gap does not reproduce on omp + gemini-3.8-flash (baseline 5/5), so no candidate is selected or frozen; commit only the harness fix. Test (D01) is not run.
+- 2026-11-05 — handoff — done — plan closed: harness fix committed (31f5583), D03 conclusion posted on #193; phases rounds and test not reached by owner decision.
 
 ## Validation
 
@@ -85,7 +86,7 @@ lane: high-risk
 
 ## Current State and Next Action
 - active_phase: rounds
-- lifecycle_status: in-progress
+- lifecycle_status: closed
 - blockers: none; D03 target closed by owner.
 - open_items: whether the merged candidate still shows the D03 integration gap on the new runtime at all — a different model may not reproduce the failure, which would make the candidate untestable rather than proven.
-- exact_next_action: record the D03 conclusion on #193 and close or archive this plan.
+- exact_next_action: none; #193 holds the D03 conclusion.
