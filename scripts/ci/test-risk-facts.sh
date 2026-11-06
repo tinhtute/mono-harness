@@ -126,7 +126,7 @@ commit
 check ".github/x.yml is an always-review hit and CI config" \
   '.always_review_hits == [".github/x.yml"] and .ci_config_touched == true'
 
-new_repo tworeview "$(printf -- '- Always-review paths: setup/**\n- Always-review paths: db/**')"
+new_repo tworeview "$(printf -- '- Always-review paths: tools/**\n- Always-review paths: db/**')"
 mkdir -p "$REPO/db"
 printf 'x\n' >"$REPO/db/x.sql"
 commit

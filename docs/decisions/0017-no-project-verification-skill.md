@@ -10,7 +10,7 @@ Issue #155 asks whether a project-specific verification skill fills a gap that t
 
 Failure history searched (fix commits in the log, the audit's findings F1 and F2):
 
-1. A skill validator that never ran. `f5af8e8` revived `scripts/ci/validate-skill.sh` after the pre-commit hook pointed at a stale path. Now the hook calls it (`setup/install-git-hooks.sh:559`) and `scripts/ci/test-guards.sh:944` proves it fails on a bad fixture.
+1. A skill validator that never ran. `f5af8e8` revived `scripts/ci/validate-skill.sh` after the pre-commit hook pointed at a stale path. Now the hook calls it (`scripts/install-git-hooks.sh:559`) and `scripts/ci/test-guards.sh:944` proves it fails on a bad fixture.
 2. Embedded playbook contracts drifting from reworded skills. `4d0beb3` fixed a contract that no longer matched its playbook. `AGENTS.md` now says to run `cd cli && cargo test` after editing `skills/stages/*/references/`, and the `cli-ci` workflow runs on `skills/stages/**` (`.github/workflows/cli-ci.yml:9`, `:17`).
 3. A stale installed hook wrapper (audit F1). The CI job `hook-guard` re-runs the guard core, so a stale wrapper delays rejection but does not bypass it.
 4. Auto-mode routing wrote plan state (`1fbf4ac`, `fcdae1f`, `0dfb5b2`). The fix lives in the `check.md` preconditions, a rule in the existing playbook.
@@ -42,4 +42,4 @@ No document may claim runtime enforcement of these gates until a concrete host o
 
 ## Authority
 
-`docs/research/pstack-concepts-audit.md:32`; commits `f5af8e8`, `4d0beb3`; `setup/install-git-hooks.sh:559`; `scripts/ci/test-guards.sh:944`; `.github/workflows/cli-ci.yml:9`; `AGENTS.md` Layout and Gate Commands; issue #155 (acceptance criteria resolved by this record).
+`docs/research/pstack-concepts-audit.md:32`; commits `f5af8e8`, `4d0beb3`; `scripts/install-git-hooks.sh:559`; `scripts/ci/test-guards.sh:944`; `.github/workflows/cli-ci.yml:9`; `AGENTS.md` Layout and Gate Commands; issue #155 (acceptance criteria resolved by this record).

@@ -196,15 +196,15 @@ npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 
 No skill runs during installation.
 
-To reinstall rules and skills from scratch, from this repository:
+To reinstall rules and skills from scratch, from the [monoclaudian](https://github.com/tinhtute/monoclaudian) repository:
 
 ```bash
-cp setup/CLAUDE.md ~/.claude/CLAUDE.md
-cp setup/rules/*.md ~/.claude/rules/
+cp CLAUDE.md ~/.claude/CLAUDE.md
+cp rules/*.md ~/.claude/rules/
 npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 ```
 
-`cp` never removes a rule that was dropped from `setup/rules/`; `bash setup/install.sh`
+`cp` never removes a rule that was dropped from `rules/`; `bash install.sh` in that repository
 retires the known ones. `npx skills add` never removes a skill that was dropped from this repository.
 Trash each dropped skill by name from `~/.claude/skills/` and `~/.agents/skills/`
 before reinstalling.
@@ -234,7 +234,7 @@ bash scripts/ci/test-guards.sh
 
 This repository is the source of the binary and skills. Edit workflow procedures
 in `skills/stages/<stage>/references/`. Edit the managed router in
-`cli/docs/embedded/WORKFLOW.md`, then copy it to `.harness/WORKFLOW.md`. Machine-wide Claude Code bootstrap is `setup/install.sh`;
+`cli/docs/embedded/WORKFLOW.md`, then copy it to `.harness/WORKFLOW.md`. Machine-wide Claude Code bootstrap is `install.sh` in [monoclaudian](https://github.com/tinhtute/monoclaudian);
 that is not how a consumer app repo receives zharness.
 
 ## Contributing and security

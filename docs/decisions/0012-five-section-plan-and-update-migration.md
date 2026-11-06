@@ -17,8 +17,8 @@ of size, and a closed plan kept every start/done line forever.
 The pre-commit guard parses three headings verbatim (`## Validation`,
 `## Phases and Verification`, `## Current State and Next Action`) and the
 fields `lane:`, `phase_slug:`, `status:` and `lifecycle_status:`
-(`setup/install-git-hooks.sh:45`, `setup/install-git-hooks.sh:51`,
-`setup/install-git-hooks.sh:244`, `setup/install-git-hooks.sh:251`). The guard core is frozen: it must
+(`scripts/install-git-hooks.sh:45`, `scripts/install-git-hooks.sh:51`,
+`scripts/install-git-hooks.sh:244`, `scripts/install-git-hooks.sh:251`). The guard core is frozen: it must
 stay byte-identical so CI and installed hooks agree.
 
 ## Decision
@@ -32,9 +32,9 @@ stay byte-identical so CI and installed hooks agree.
    `high-risk` keeps phases, waves and tasks.
 3. **Bare phase status.** A phase's lifecycle is `status:` on its own line
    directly under `- phase_slug:`, with no bullet. The completed-plan PHASE-DONE
-   check matches only `/^[[:space:]]*status:/` (`setup/install-git-hooks.sh:251`), so the older `    - status: X`
+   check matches only `/^[[:space:]]*status:/` (`scripts/install-git-hooks.sh:251`), so the older `    - status: X`
    bullet was invisible to it, and that check fires only when Current State reads
-   `lifecycle_status: completed` (`setup/install-git-hooks.sh:244`), which closing
+   `lifecycle_status: completed` (`scripts/install-git-hooks.sh:244`), which closing
    `handoff` now writes (`docs/playbooks/handoff.md`, step 6).
 4. **Compaction at close.** Closing `handoff` drops Log `start`/`done` entries
    and all but the last Validation entry per phase; everything else is kept
@@ -77,6 +77,6 @@ Rejected:
 
 - `git show 3bab3c0:docs/plans/completed/zharness-slim.md` — R8–R13; owner approval 2026-09-19;
   the `migrate.go` transitional-code decision in `### Decisions`.
-- `setup/install-git-hooks.sh` — the guard core this format must satisfy.
+- `scripts/install-git-hooks.sh` — the guard core this format must satisfy.
 - `docs/decisions/0011-update-without-three-way-merge.md` — the `update` shape
   the migration runs inside.

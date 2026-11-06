@@ -88,7 +88,7 @@ guard job. A guard cannot select a base it did not fetch.
   that most guard defects live between the policy, syntax, and execution layers
   rather than inside any one of them.
 - `README.md` — *Invariants enforced, not assumed*.
-- `setup/install-git-hooks.sh` — the `ZGUARD-CORE` block is the authoritative
+- `scripts/install-git-hooks.sh` — the `ZGUARD-CORE` block is the authoritative
   guard implementation; `scripts/test-guards.sh` extracts it verbatim, so the
   change lives inside the BEGIN/END markers.
 - `git show 3bab3c0:docs/plans/completed/macos-guard-portability.md` — R2, establishing that

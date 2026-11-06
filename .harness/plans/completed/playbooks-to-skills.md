@@ -55,7 +55,7 @@ Seed/load legacy ownership using both current and retired known targets before d
 
 If the current projection matches the recorded digest and ownership proves a preexisting original, restore the saved original as part of retirement, following existing uninstall restoration semantics. If that payload/provenance is unavailable, keep the current file and recovery records with a notice. If the current file is edited, preserve it and its original backup; later uninstall must not overwrite those edits. Preserve metadata needed for unresolved restoration independently of active upstream targets. An empty directory can be removed; recursive directory deletion is forbidden. Do not reinterpret ADR 0013's directory-symlink policy.
 
-| ID | Setup/action | Required result |
+| ID | Arrange/action | Required result |
 |---|---|---|
 | M01 | Created-by-installer legacy file equals recorded digest; update | Remove managed copy, name removal, remove retired active base entry; unrelated bytes unchanged |
 | M02 | File differs from recorded digest | Preserve exact edits with reason; remove from active targets; retain needed original/provenance data |

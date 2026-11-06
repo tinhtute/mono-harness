@@ -20,10 +20,10 @@ Rejected: a phaseless normal plan, because check preflight, handoff and the guar
 
 ## Consequences
 
-Easy: a normal cycle loses one stage and its playbook read. The guard needs no change: its completed-plan check still sees one `phase_slug:` with `status:` (`setup/install-git-hooks.sh:289-293`). Hard: a normal plan no longer has a written step list to resume from mid-phase; the `## Log` `done` entries per requirement and Current State carry that instead.
+Easy: a normal cycle loses one stage and its playbook read. The guard needs no change: its completed-plan check still sees one `phase_slug:` with `status:` (`scripts/install-git-hooks.sh:289-293`). Hard: a normal plan no longer has a written step list to resume from mid-phase; the `## Log` `done` entries per requirement and Current State carry that instead.
 
 ## Authority
 
 - Owner answers, 2026-10-12: normal = Goal + 1 auto phase; skip `to-plan` for normal; keep three lanes; run the change as `high-risk` with a new ADR.
 - `docs/decisions/0012-five-section-plan-and-update-migration.md:31` — the decision amended here.
-- `setup/install-git-hooks.sh:289-293` — the completed-plan check that reads `## Phases and Verification`.
+- `scripts/install-git-hooks.sh:289-293` — the completed-plan check that reads `## Phases and Verification`.

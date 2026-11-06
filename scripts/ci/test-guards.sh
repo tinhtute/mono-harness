@@ -1006,7 +1006,7 @@ rm -rf "$st"
 # R6 LANE-RAISE: a diff touching an always-review path raises the declared
 # lane to high-risk, so R3/R4 judge it as high-risk (check-risk.md).
 lr=$(mktemp -d)
-printf '# x\n\n## Unattended Shipping\n\n- Always-review paths: setup/hooks/**, scripts/ci/**\n' > "$lr/AGENTS.md"
+printf '# x\n\n## Unattended Shipping\n\n- Always-review paths: tools/hooks/**, scripts/ci/**\n' > "$lr/AGENTS.md"
 l=$(printf '%s\n' docs/a.md .github/workflows/ci.yml | zharness_effective_lane normal "$lr/AGENTS.md")
 [ "$l" = "high-risk" ] && ok "R6 CI workflow raises normal to high-risk" ||
 	bad "R6 CI workflow expected high-risk, got '$l'"

@@ -624,14 +624,7 @@ mod tests {
         let repo_root = Path::new(env!("CARGO_MANIFEST_DIR"))
             .parent()
             .expect("crate lives one level below the repository root");
-        for rel in [
-            "skills",
-            "scripts",
-            "setup",
-            "site",
-            "README.md",
-            "AGENTS.md",
-        ] {
+        for rel in ["skills", "scripts", "site", "README.md", "AGENTS.md"] {
             let p = repo_root.join(rel);
             assert!(p.exists(), "walk {rel}: no such path");
             let mut hits: Vec<PathBuf> = Vec::new();

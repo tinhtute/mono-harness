@@ -36,7 +36,7 @@ Keep adjacent preferences outside the check.
 
 Find this repository's existing validation owner. Typical owners here:
 
-- `bash scripts/ci/test-guards.sh` and `setup/install-git-hooks.sh` (ZGUARD-CORE)
+- `bash scripts/ci/test-guards.sh` and `scripts/install-git-hooks.sh` (ZGUARD-CORE)
 - `bash scripts/ci/verify-doc-links.sh`
 - `cd cli && cargo test`
 
