@@ -1,0 +1,8 @@
+{
+  "name": "ninja-kit-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "bun test hooks/rules.spec.ts"
+  }
+}
