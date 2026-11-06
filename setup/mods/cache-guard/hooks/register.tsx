@@ -1,27 +1,15 @@
 import { atom, read, update } from 'claude-code'
 import type { Register } from 'claude-code'
 
-import type { Sent } from '../types'
+import type { Settings } from './rules.ts'
+import { changedWhat, currentSent, gradient, parseThreshold, shouldWarn, warnKey } from './rules.ts'
 
 const sent = atom({ plugin: 'cache-guard', key: 'sent' } as const, null)
 const dismissed = atom({ plugin: 'cache-guard', key: 'dismissed' } as const, null)
 const busy = atom({ plugin: 'cache-guard', key: 'busy' } as const, false)
 
-const hex = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
-const gradient = (text: string, from: string, to: string): [string, string][] => {
-  const [a, b] = [hex(from), hex(to)]
-  const chars = [...text]
-  return chars.map((c, i) => {
-    const t = chars.length > 1 ? i / (chars.length - 1) : 0
-    const rgb = a.map((v, k) => Math.round(v + ((b[k] ?? v) - v) * t).toString(16).padStart(2, '0'))
-    return [c, `#${rgb.join('')}`]
-  })
-}
-
-const label = (s: Sent) => `${s.model}${s.effort ? `/${s.effort}` : ''}`
-
 export const register: Register = (on, options) => {
-  const threshold = Number(options.threshold ?? 40)
+  const threshold = parseThreshold(options.threshold)
 
   on('session.start', async ($, e, next) => {
     await $.ui.status(undefined)
@@ -49,24 +37,16 @@ export const register: Register = (on, options) => {
     if (e.props.hasSurvey || last === null) return next(e)
 
     const model = await $.session.model()
-    // /effort saves per model under modelSettings[model].effortLevel; top-level is the fallback
-    const settings = (await $.settings.read()) as {
-      effortLevel?: unknown
-      modelSettings?: Record<string, { effortLevel?: unknown }>
-    }
-    const raw = settings.modelSettings?.[model]?.effortLevel ?? settings.effortLevel
-    const now: Sent = { model, effort: typeof raw === 'string' ? raw : last.effort }
-    const changed = now.model !== last.model || now.effort !== last.effort
+    const settings = (await $.settings.read()) as Settings
+    const now = currentSent(model, settings, last)
     const pct = (await $.session.usage()).context.percent ?? 0
-    const key = `${label(last)}->${label(now)}`
-    const skipped = (await read($, dismissed)) === key
-    if (!changed || pct < threshold || skipped) return next(e)
+    const key = warnKey(last, now)
+    const dismissedKey = await read($, dismissed)
+    if (!shouldWarn(last, now, pct, threshold, dismissedKey)) return next(e)
 
     const { Box, Button, Text } = $.ui.resolve(e)
     const isBusy = await read($, busy)
-    const what = [now.effort !== last.effort && 'effort', now.model !== last.model && 'model']
-      .filter(Boolean)
-      .join('/')
+    const what = changedWhat(last, now)
     return (
       <Box gap={1}>
         <Text>
