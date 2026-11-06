@@ -15,11 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - The git hook installer moved to `scripts/install-git-hooks.sh`; rerun
   `bash scripts/install-git-hooks.sh --force`.
 - `evals/rsi/` was removed with no replacement.
+- Run `bash scripts/install-agents.sh` to install the renamed agents; it retires the old
+  `~/.claude/agents/{lead,worker,verifier}.md` by renaming each to
+  `<name>.md.retired.<timestamp>`, so remove those once you no longer need them.
 
 ### Added
 
-- `evals/rsi/`: reproducible RSI eval harness (seeded train/val/test split,
-  frozen headless runner, restored lean fixture and oracle, split report).
 - `session-digest.py --json`; token usage now counts each API message once and
   skips sub-agent records in stream-json traces.
 

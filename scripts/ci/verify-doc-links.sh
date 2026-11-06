@@ -15,7 +15,7 @@ ROOT="$(git rev-parse --show-toplevel)"
 cd "$ROOT"
 
 IGNORE_FILE=".claimignore"
-ALLOWED_PREFIXES="skills docs rules cli references"
+ALLOWED_PREFIXES="skills docs rules cli setup references"
 
 # --- ignore file: every non-comment line must carry a `# reason` -------------
 ignore_patterns=()

@@ -196,7 +196,22 @@ npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 
 No skill runs during installation.
 
-To reinstall rules and skills from scratch, from the [monoclaudian](https://github.com/tinhtute/monoclaudian) repository:
+The harness agents (`mono-lead`, `mono-worker`, `mono-verifier`) install from a
+clone of this repository; the installer retires old `lead`/`worker`/`verifier`
+agent files as `<name>.md.retired.<timestamp>`:
+
+```bash
+bash scripts/install-agents.sh
+```
+
+The Claude Code setup (global `CLAUDE.md`, rules, settings, statusline) lives in the
+separate [monoclaudian](https://github.com/tinhtute/monoclaudian) repository:
+
+```bash
+git clone https://github.com/tinhtute/monoclaudian ~/monoclaudian && bash ~/monoclaudian/install.sh
+```
+
+To reinstall rules and skills from scratch, from a monoclaudian clone:
 
 ```bash
 cp CLAUDE.md ~/.claude/CLAUDE.md

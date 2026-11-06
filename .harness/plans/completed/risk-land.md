@@ -26,7 +26,7 @@ lane: high-risk
 ## Phases and Verification
 - approach: Port forge's land/rubric/exercise as procedure text in existing playbooks and check references, opt-in via an `AGENTS.md` section, and enforce only the lane raise mechanically in the existing pre-commit guard (new rule R6 beside R3/R4). Rejected: a `zharness land` CLI subcommand — violates "zharness only installs" and NG1.
 - risks: auto-merge lands a bad PR → verdict bound to `--match-head-commit`, independent judge, always-review paths force needs-review, revert command printed; stop and turn `Auto-merge` off if any auto-merged PR is reverted. Guard R6 false-positives block normal commits → fixtures for both hit and miss paths; recovery: declare `lane: high-risk` or revert the rule commit.
-- seams: `skills/mono/playbooks/{ship,babysit,feature}.md`; `skills/stages/check/references/check.md` § Lane Matrix and step 6; `scripts/install-git-hooks.sh` ZGUARD-CORE block; `scripts/ci/test-guards.sh`; `cli/src/embedded.rs` + `cli/tests/skill_reference_resolution.rs` text contracts; `AGENTS.md`.
+- seams: `skills/mono/playbooks/{ship,babysit,feature}.md`; `skills/stages/check/references/check.md` § Lane Matrix and step 6; `setup/install-git-hooks.sh` (now `scripts/install-git-hooks.sh`) ZGUARD-CORE block; `scripts/ci/test-guards.sh`; `cli/src/embedded.rs` + `cli/tests/skill_reference_resolution.rs` text contracts; `AGENTS.md`.
 - phase_slug: `land`
   status: in-progress
   - goal: R1, R2, R3, R4, R5, R8 | depends_on: none
@@ -50,11 +50,11 @@ lane: high-risk
 - phase_slug: `lane-raise`
   status: in-progress
   - goal: R7 | depends_on: land
-  - surfaces: `scripts/install-git-hooks.sh` (new R6 in ZGUARD-CORE), `scripts/ci/test-guards.sh`, `check.md` § Lane Matrix note | avoided: R2/R3/R4 behavior
+  - surfaces: `setup/install-git-hooks.sh` (now `scripts/install-git-hooks.sh`) (new R6 in ZGUARD-CORE), `scripts/ci/test-guards.sh`, `check.md` § Lane Matrix note | avoided: R2/R3/R4 behavior
   - escalate_when: the always-review path list cannot be read identically by the guard and the rubric
   - wave 1:
     - T6 add failing fixtures: lane `normal` plan + staged `.github/workflows/x.yml` with approvable entry → reject; same with only docs → accept (owner: lead, writes `test-guards.sh` only) — output: red run — check: `bash scripts/ci/test-guards.sh` fails on the new cases
-    - T7 implement R6 in the guard and the Lane Matrix note; reinstall hooks (owner: lead, writes `install-git-hooks.sh`, `check.md` only) — output: green run — check: `bash scripts/ci/test-guards.sh && bash scripts/install-git-hooks.sh --force` — stop_if: any pre-existing guard case regresses
+    - T7 implement R6 in the guard and the Lane Matrix note; reinstall hooks (owner: lead, writes `install-git-hooks.sh`, `check.md` only) — output: green run — check: `bash scripts/ci/test-guards.sh && bash setup/install-git-hooks.sh --force` (now `scripts/install-git-hooks.sh`) — stop_if: any pre-existing guard case regresses
   - phase check: `bash scripts/ci/test-guards.sh && (cd cli && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test)`
 - validation: final `check full` with an independent judge; then dogfood on this plan's own PR — land must judge it needs-review (hooks and CI-adjacent paths), proving the no-merge path; a later docs-only PR proves the merged message.
 
@@ -81,7 +81,7 @@ lane: high-risk
   - proof_classes: output, unit, integration
   - requirements: R1 met (check-risk.md linked; doc-links pass) | R2 not met (no land walk-through on a real PR) | R3 not met (no reply observed on a real PR) | R4 met (babysit grep) | R5 met (carve-out greps) | R6 met (cargo test pins check-exercise) | R7 met (judge exercise of the installed hook in a scratch repo: CI path rejected under R3 and R4, docs-only accepted) | R8 not met (memory file absent on this machine) | success_signal not met (no PR dogfood)
   - rollback_point: 8873130
-  - requests: 1 dogfood land on #181 (needs-review, no merge), and a Log decision moving the merged-message proof past merge; 2 write the R8 memory or re-scope it in a Log decision; 3 add a fixture for scripts/install-git-hooks.sh:243, which a mutation leaves 98/0; 4 make scripts/install-git-hooks.sh:151-156 use the revspec base and fail closed; 5 read AGENTS.md from the index at scripts/install-git-hooks.sh:243
+  - requests: 1 dogfood land on #181 (needs-review, no merge), and a Log decision moving the merged-message proof past merge; 2 write the R8 memory or re-scope it in a Log decision; 3 add a fixture for setup/install-git-hooks.sh:243 (now `scripts/install-git-hooks.sh`), which a mutation leaves 98/0; 4 make setup/install-git-hooks.sh:151-156 use the revspec base and fail closed; 5 read AGENTS.md from the index at setup/install-git-hooks.sh:243
   - judge: independent
   - judge_model: claude-fable-5-1
 
@@ -113,7 +113,7 @@ lane: high-risk
   - judge_model: claude-fable-5-1
 - 2026-10-29T04:44Z — phase `lane-raise` — verdict: APPROVE_WITH_REQUESTS — mode: full
   - `bash scripts/ci/test-guards.sh` — exit 0; 102 passed, 0 failed (10 R6, 3 end to end)
-  - `bash -n scripts/install-git-hooks.sh` — exit 0
+  - `bash -n scripts/install-git-hooks.sh` — exit 0 (captured as `bash -n setup/install-git-hooks.sh`; the file was at setup/ at capture time)
   - scope: on target — ZGUARD-CORE R6, test-guards.sh, Lane Matrix note
   - proof_classes: output, unit, integration
   - requirements: R7 met (wiring mutation fails 3; judge scratch runs reject on fail-closed, branch history, pr range, both-ends policy)

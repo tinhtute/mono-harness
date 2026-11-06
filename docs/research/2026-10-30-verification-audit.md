@@ -78,7 +78,7 @@ Matters for perf, `write`, and skill quality.
 
 - **`scripts/ci/validate-skill.sh:246`:** `pytest … | grep -q "passed"` succeeds on "1 failed, 2 passed".
 - **`cli/tests/skill_reference_resolution.rs:106-109`:** asserts that wrapper text `contains("host's skill metadata")`. It pins wording, so it can't catch a behavior regression.
-- **`monoclaudian/settings.json:46`:** the Stop hook greps `$CLAUDE_LAST_MESSAGE`. If that variable is unset it is silently green (see E).
+- **`setup/settings.json:46` (setup/ later moved to monoclaudian):** the Stop hook greps `$CLAUDE_LAST_MESSAGE`. If that variable is unset it is silently green (see E).
 - **Untested scripts:** a grep of `scripts/ci` and `.github` finds CI tests only for `panel-merge.py`. Nothing tests `scan-staged.sh`, `group-staged.sh`, `gh-search.sh`, `lint-prompt.sh`, `session-digest.py` or `fetch.sh`, yet `git` SKILL.md:41-47 tells agents to trust their output as final.
 - **Fix:** change :246 to `pytest "$TEST_DIR" -q --tb=no` and check its exit code. Add `scripts/ci/test-skill-scripts.sh` with one positive and one negative fixture per script, starting with `scan-staged.sh` (a staged fake secret must give exit 1). Wire it into `skills-ci.yml`.
 
@@ -131,7 +131,7 @@ zverify plan    <plan.md>                              # pre-lint the Validation
 ## E. Unknowns
 
 - **Past transcripts:** about 30 session `.jsonl` files exist and were not digested, so there is no reinvention evidence from them (P2.2). Running `session-digest.py` on them would settle it.
-- **`$CLAUDE_LAST_MESSAGE`:** not confirmed that Claude Code sets this variable for Stop hooks. `monoclaudian/settings.json:2` mentions `monoclaudian/hooks/` files that don't exist in the repo, while AGENTS.md still lists `monoclaudian/hooks/**` as an always-review path.
+- **`$CLAUDE_LAST_MESSAGE`:** not confirmed that Claude Code sets this variable for Stop hooks. `setup/settings.json:2` (setup/ later moved to monoclaudian) mentions `setup/hooks/` files that don't exist in the repo, while AGENTS.md still lists `setup/hooks/**` as an always-review path.
 - **`evals/`:** unknown whether an external tool (e.g. `claude plugin eval`) runs these.
 - **Unread areas:** `cli/src/*` and most of the hook body (lines 93–543) were only grepped. The claims about guards R1–R6 come from the hook's comment headers and `test-guards.sh`.
 - **Unread reference sets:** the `create-skill`, `write`, `turbo-mono-platform` and `site/` references, so it is unknown whether those skills hide more prose mechanics.

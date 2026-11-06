@@ -12,6 +12,7 @@ on:
       - "agents/**"
       - "models.json"
       - "scripts/ci/test-agent-models.sh"
+      - "scripts/install-agents.sh"
       - ".github/workflows/cli-ci.yml"
   pull_request:
     paths:
@@ -23,6 +24,7 @@ on:
       - "agents/**"
       - "models.json"
       - "scripts/ci/test-agent-models.sh"
+      - "scripts/install-agents.sh"
       - ".github/workflows/cli-ci.yml"
 
 jobs:
@@ -90,6 +92,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check agent model policy
         run: bash scripts/ci/test-agent-models.sh
+      - name: Install agents into a temp CLAUDE_DIR and retire legacy ones
+        run: |
+          d=$(mktemp -d)
+          mkdir -p "$d/agents"
+          echo legacy > "$d/agents/lead.md"
+          CLAUDE_DIR="$d" bash scripts/install-agents.sh
+          test "$(ls "$d"/agents/mono-*.md | wc -l)" -eq 3
+          test ! -e "$d/agents/lead.md"
+          test "$(ls "$d"/agents/lead.md.retired.* | wc -l)" -eq 1
 
   hook-guard:
     # R4: re-run the v0.15 fail-closed guards (R2 proof re-execution + R3

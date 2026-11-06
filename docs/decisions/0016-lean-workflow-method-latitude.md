@@ -15,9 +15,9 @@ After the [0015](0015-skill-owned-procedures-and-safe-retirement.md) migration, 
 
    | Rule (source at B `da9fed6`) | Kind | Disposition | Enforcement |
    |---|---|---|---|
-   | At most one active plan (`scripts/install-git-hooks.sh:244`) | boundary | keep | pre-commit guard R5 |
+   | At most one active plan (`setup/install-git-hooks.sh:244` (now `scripts/install-git-hooks.sh`)) | boundary | keep | pre-commit guard R5 |
    | Five plan sections and parsed fields ([0012](0012-five-section-plan-and-update-migration.md), [0014](0014-outcome-spec-normal-plans.md) decision 5) | boundary | keep | pre-commit guards; `scripts/test-guards.sh` |
-   | Independent judge for high-risk and `full` (`scripts/install-git-hooks.sh:23`, `skills/workflow/work/references/work-full.md:23`) | boundary | keep | pre-commit guard R3 rejects `same-session`; independence itself is testimony |
+   | Independent judge for high-risk and `full` (`setup/install-git-hooks.sh:23` (now `scripts/install-git-hooks.sh`), `skills/workflow/work/references/work-full.md:23`) | boundary | keep | pre-commit guard R3 rejects `same-session`; independence itself is testimony |
    | Normal = Goal + `main`, no to-plan, single final `check full` ([0014](0014-outcome-spec-normal-plans.md) decisions 1–4) | boundary | keep | prompt only |
    | Log append-only, sole execution-status source (`skills/workflow/work/references/work-full.md:8`) | boundary | keep | prompt only |
    | Bounded mode writes no durable artifact (`skills/workflow/work/references/work.md:12`) | boundary | keep | prompt only |
