@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 
-import { COMPACT_RULES, RM, compactInstructions, guard, guardDeny, privateUrl, rmDeny } from './rules.ts'
+import { COMPACT_RULES, RM, compactInstructions, failClosed, guard, guardDeny, privateUrl, rmCommand, rmDeny, stripHeredocs } from './rules.ts'
 
 test('RM matches rm as a command word', () => {
   for (const c of ['rm -rf build', 'cd x && rm a', 'sudo rm f', 'ls; rm a', 'a | xargs rm', '(rm a)', 'echo hi\nrm a', 'rm']) {
@@ -79,4 +79,47 @@ test('compaction keeps the hard rules and the user instructions', () => {
   expect(compactInstructions('focus on the plan')).toBe(`focus on the plan\n\n${COMPACT_RULES}`)
   expect(compactInstructions(undefined)).toBe(COMPACT_RULES)
   expect(compactInstructions('')).toBe(COMPACT_RULES)
+})
+
+test('rmCommand ignores rm inside heredoc bodies', () => {
+  const bodies = [
+    'cat <<EOF\nrm -rf /\nEOF',
+    "cat <<'EOF'\n(rm x)\nEOF",
+    'cat <<"EOF"\n$(rm x)\nEOF',
+    'cat <<-EOF\n\trm -rf /\n\tEOF',
+    'cat <<\\EOF\nrm a\nEOF',
+    "cat > f.md <<'EOF'\nuse rm -rf\nsudo rm a\nxargs rm\nEOF\nls",
+    'cat <<A <<B\nrm a\nA\nrm b\nB',
+    'cat <<EOF\nrm a',
+  ]
+  for (const c of bodies) expect(rmCommand(c)).toBe(false)
+})
+
+test('rmCommand still blocks real rm forms around heredocs', () => {
+  const real = [
+    'rm x', 'a; rm x', '(rm x)', 'sudo rm x', 'ls | xargs rm',
+    'cat <<EOF\nhi\nEOF\nrm x',
+    "cat <<'EOF'\nhi\nEOF\nrm x",
+    'cat <<-EOF\n\thi\n\tEOF\nrm x',
+    'rm x\ncat <<EOF\nhi\nEOF',
+    'cat <<EOF; rm x\nhi\nEOF',
+    'cat <<EOF\n$(rm x)\nEOF',
+    'cat <<EOF\n`rm x`\nEOF',
+    'cat <<EOF\nEOF2\nEOF\nrm x',
+    'cat <<<"hi"; rm x',
+    'echo $((1 << 2)); rm x',
+  ]
+  for (const c of real) expect(rmCommand(c)).toBe(true)
+})
+
+test('stripHeredocs leaves commands without heredocs untouched', () => {
+  for (const c of ['ls', 'a; rm x', 'cat <<<"rm x"\nls']) expect(stripHeredocs(c)).toBe(c)
+})
+
+test('failClosed denies a throwing guard unless next already ran', () => {
+  const $ = { plugin: { name: 'ninja-kit' } }
+  const fresh = Object.assign((_e: string) => 'ran', { called: false })
+  expect(failClosed($, 'x', fresh)).toEqual({ deny: 'ninja-kit: guard failed, call blocked.' })
+  const ran = Object.assign((e: string) => `replayed ${e}`, { called: true })
+  expect(failClosed($, 'x', ran)).toBe('replayed x')
 })

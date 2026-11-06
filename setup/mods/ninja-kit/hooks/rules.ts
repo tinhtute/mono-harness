@@ -3,6 +3,41 @@
 
 // `rm` as a command word: start of line or after ; & | ( or sudo/xargs
 export const RM = /(^|[;&|(]\s*|\b(sudo|xargs)\s+)rm(\s|$)/m
+
+const HEREDOC = /(?<!<)<<(?!<)(-?)\s*(?:'([^'\n]+)'|"([^"\n]+)"|(\\?[A-Za-z_]\w*))/g
+const SUBST = /\$\([^)]*\)?|`[^`]*`/g
+
+// Drop heredoc bodies: text fed to a command is not a command. An unquoted
+// delimiter still expands $(...) and backticks, so keep those; they run.
+export function stripHeredocs(command: string): string {
+  const out: string[] = []
+  let pending: { tag: string; dash: boolean; expands: boolean }[] = []
+  for (const line of command.split('\n')) {
+    const open = pending[0]
+    if (open) {
+      if ((open.dash ? line.replace(/^\t+/, '') : line) === open.tag) pending.shift()
+      else if (open.expands) out.push(...(line.match(SUBST) ?? []).map(s => (s.startsWith('`') ? s.slice(1, -1) : s)))
+      continue
+    }
+    out.push(line)
+    pending = [...line.matchAll(HEREDOC)].map(m => ({
+      tag: m[2] ?? m[3] ?? m[4]!.replace(/^\\/, ''),
+      dash: m[1] === '-',
+      expands: m[4] !== undefined && !m[4].startsWith('\\'),
+    }))
+  }
+  return out.join('\n')
+}
+
+export const rmCommand = (command: string): boolean => RM.test(stripHeredocs(command))
+
+// Fail closed: a guard that throws is skipped by the host and the tool runs.
+// The .catch handler refuses in its place unless `next` already ran.
+export const failClosed = <E, R>(
+  $: { plugin: { name: string } },
+  e: E,
+  next: ((e: E) => R) & { called: boolean },
+): R | { deny: string } => (next.called ? next(e) : { deny: `${$.plugin.name}: guard failed, call blocked.` })
 export const COMPACT_RULES = 'Keep these rules verbatim in the summary: AskUserQuestion tool, trash not rm, prove before done, read before edit, minimal change only.'
 
 // 3. Guards: secrets on disk, private URLs to third parties

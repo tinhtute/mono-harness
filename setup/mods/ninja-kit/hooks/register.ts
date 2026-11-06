@@ -1,6 +1,6 @@
 import type { EngineInterface, Register } from 'claude-code'
 
-import { compactInstructions, guard, guardDeny, RM, rmDeny } from './rules.ts'
+import { compactInstructions, failClosed, guard, guardDeny, rmCommand, rmDeny } from './rules.ts'
 
 export { COMPACT_RULES, privateUrl } from './rules.ts'
 
@@ -35,16 +35,16 @@ async function refresh($: EngineInterface) {
 export const register: Register = on => {
   // 1. Guard: rm -> trash
   on('tool.call', { tool: 'Bash' }, ($, e, next) =>
-    RM.test(e.command)
+    rmCommand(e.command)
       ? { deny: rmDeny($.plugin.name) }
       : next(e),
-  )
+  ).catch(failClosed)
 
   // 3. Guards: secrets on disk, private URLs to third parties
   on('tool.call', ($, e, next) => {
     const why = guard(e as unknown as { tool: string } & Record<string, unknown>)
     return why ? { deny: guardDeny($.plugin.name, e.tool, why) } : next(e)
-  })
+  }).catch(failClosed)
 
   // 2. Refresh the plan label
   on('session.start', async ($, e, next) => {
