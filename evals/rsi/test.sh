@@ -9,7 +9,7 @@ pred() { python3 -I "$HERE/oracle.py" "$1" "$2" || true; }
 
 python3 -I "$HERE/split.py" --check && ok "split.json matches seed" || bad "split.json drifted"
 
-for t in D01 D02 D03 D05; do
+for t in D01 D02 D03 D05 D06; do
   bash "$HERE/fixture.sh" "$t" "$W/$t" >/dev/null
   if pred "$t" "$W/$t" | grep -q $'\tfail$'; then ok "$t: fresh fixture fails oracle"; else bad "$t: fresh fixture passes oracle"; fi
 done
@@ -27,7 +27,13 @@ def longest(text):
 PY
 printf 'import unittest\nfrom tally.core import longest\n\n\nclass T(unittest.TestCase):\n    def test_longest(self):\n        self.assertEqual(longest("a bb"), "bb")\n' > "$W/D05/tests/test_longest.py"
 git -C "$W/D05" add -A
-for t in D01 D05; do
+cat > "$W/D06/tally/fmt.py" <<'PY'
+def render(freqs):
+    return "\n".join(f"{w} {n}" for w, n in sorted(freqs.items(), key=lambda kv: (-kv[1], kv[0])))
+PY
+printf 'import unittest\nfrom tally.fmt import render\n\n\nclass T(unittest.TestCase):\n    def test_render(self):\n        self.assertEqual(render({"a": 1, "b": 2}), "b 2\\na 1")\n' > "$W/D06/tests/test_fmt.py"
+git -C "$W/D06" add -A
+for t in D01 D05 D06; do
   out="$(pred "$t" "$W/$t")"
   if grep -q $'\tfail$' <<<"$out"; then bad "$t: reference fails: $out"; else ok "$t: reference passes oracle"; fi
 done
@@ -86,6 +92,21 @@ J
 f="$(bash "$HERE/finalization.sh" "$W/fin.jsonl" "$F" "$ROOT/setup/install-git-hooks.sh")"
 python3 -I -c 'import json,sys; m=json.loads(sys.argv[1]); exp={"proof_calls":3,"proof_turns":2,"approved_entries":2,"approved_rejected":1}; sys.exit(0 if m==exp else f"{m} != {exp}")' "$f" \
   && ok "finalization metrics" || bad "finalization: $f"
+
+# cost (HarnessMM): all tokens, subagents included; result modelUsage wins, else per-message; omp turn_end
+c1="$(python3 -I "$HERE/cost.py" "$W/trace.jsonl")"
+printf '{"type":"result","total_cost_usd":0.5,"modelUsage":{"a":{"inputTokens":1,"outputTokens":2,"cacheReadInputTokens":3,"cacheCreationInputTokens":4},"b":{"inputTokens":10}}}\n' > "$W/c_res.jsonl"
+c2="$(python3 -I "$HERE/cost.py" "$W/c_res.jsonl")"
+printf '{"type":"turn_end","message":{"usage":{"totalTokens":100,"cost":{"total":0.25}}}}\n%.0s' 1 2 > "$W/c_omp.jsonl"
+c3="$(python3 -I "$HERE/cost.py" "$W/c_omp.jsonl")"
+[ "$c1|$c2|$c3" = '{"cost_usd": 0.0, "total_tokens": 1106}|{"cost_usd": 0.5, "total_tokens": 20}|{"cost_usd": 0.5, "total_tokens": 200}' ] \
+  && ok "cost: complete-trial tokens" || bad "cost: $c1|$c2|$c3"
+
+# accept: keep pass rate AND tokens <= 0.9 x parent
+rep() { printf '{"tasks":{"D05":{"trials":5,"passes":%s,"total_tokens":{"median":%s,"iqr":0}}}}' "$1" "$2" > "$W/$3.json"; }
+rep 4 1000 par; rep 4 900 ok1; rep 4 901 hi; rep 3 500 drop
+v=""; for c in ok1 hi drop; do python3 -I "$HERE/accept.py" "$W/par.json" "$W/$c.json" >/dev/null && v="${v}1" || v="${v}0"; done
+[ "$v" = 100 ] && ok "accept: quality kept and <=0.9x tokens" || bad "accept: got $v, want 100"
 
 echo "fails=$fails  (scratch: $W)"
 [ "$fails" -eq 0 ]

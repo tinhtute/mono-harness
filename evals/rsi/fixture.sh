@@ -3,7 +3,7 @@
 # evals/rsi/tasks.json. Restored from lean-fixture-generator-v1
 # (git show d8ed43e^:docs/evals/evidence/lean-fixture-generator-v1.txt);
 # plans moved to .harness/plans/, D04 dropped (no oracle), D05 added.
-# Usage: bash fixture.sh <D01|D02|D03|D05> <out-dir>
+# Usage: bash fixture.sh <D01|D02|D03|D05|D06> <out-dir>
 # The candidate overlay is applied afterwards by run.sh; this writes task code only.
 set -euo pipefail
 CASE="$1"; OUT="$2"
@@ -82,7 +82,7 @@ Word statistics. Test: `python3 -m unittest -q`.
 EOF
 
 case "$CASE" in
-D01) : ;;
+D01|D06) : ;;
 D02)
   cat > .harness/plans/active/tally-filters.md <<'EOF'
 ---

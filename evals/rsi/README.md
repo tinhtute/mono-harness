@@ -6,11 +6,13 @@ Fixture and oracle are restored from `git show d8ed43e^:docs/evals/evidence/`.
 | File | Role |
 |---|---|
 | `tasks.json` | task requests, split seed, and the **frozen** model/effort/tools/timeout |
-| `split.json` | train/val/test derived from the seed; `split.py --check` fails on drift |
+| `split.json` | train/val/test derived from the seed plus `pinned` tasks (D06 → val); `split.py --check` fails on drift |
 | `fixture.sh` | builds one task's `tally` repo (deterministic tree) |
 | `oracle.py` | frozen scorer; evaluator-only, never copied into the fixture |
 | `run.sh` | one headless trial against a candidate SHA; **paid** |
 | `finalization.sh` | #196 metrics: `proof_calls`, `proof_turns` (model turns that ran a proof), and `approved_entries`/`approved_rejected` (new APPROVED entries the R2 guard would reject on the final tree), scored with the evaluator's guard core |
+| `cost.py` | complete-trial cost: `total_tokens` (input + cache read/write + output, subagents included) and `cost_usd` |
+| `accept.py` | parent-vs-child rule on one split: every task keeps its pass rate and median `total_tokens` ≤ 0.9× parent |
 | `report.py` | per-split pass/fail plus median and IQR of the `session-digest.py --json` metrics |
 | `test.sh` | free self-test of everything above |
 
@@ -18,11 +20,12 @@ Fixture and oracle are restored from `git show d8ed43e^:docs/evals/evidence/`.
 
 ```bash
 bash evals/rsi/test.sh                                    # free
-for t in D01 D02 D03 D05; do for n in 1 2 3 4 5; do
+for t in D01 D02 D03 D05 D06; do for n in 1 2 3 4 5; do
   bash evals/rsi/run.sh "$OUT" "$t" "$CANDIDATE_SHA" "$n"
 done; done
 python3 evals/rsi/report.py "$OUT" train                  # the only report the proposer reads
-python3 evals/rsi/report.py "$OUT" val                    # selector picks one candidate, then freezes it
+python3 evals/rsi/report.py "$OUT" val > child.json      # selector picks one candidate, then freezes it
+python3 evals/rsi/accept.py parent.json child.json        # exit 0 only if quality kept and tokens <= 0.9x
 python3 evals/rsi/report.py "$OUT" test                   # once, on the frozen candidate
 ```
 

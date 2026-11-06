@@ -1,7 +1,7 @@
 # RSI oracle — frozen, evaluator-only scorer for evals/rsi/tasks.json.
-# Restored from lean-oracle-v1 (git show d8ed43e^:docs/evals/evidence/lean-oracle-v1.txt), D05 added.
+# Restored from lean-oracle-v1 (git show d8ed43e^:docs/evals/evidence/lean-oracle-v1.txt), D05, D06 added.
 # Never copied into the agent-visible fixture. Usage:
-#   python3 -I oracle.py <D01|D02|D03|D05> <final-tree>
+#   python3 -I oracle.py <D01|D02|D03|D05|D06> <final-tree>
 # Prints one "<predicate>\t<pass|fail>" row per check for predicates.tsv.
 import os
 import subprocess
@@ -62,6 +62,12 @@ elif case == "D05":
     check("longest_tie_first", lambda: core.longest("ab cd e") == "ab")
     check("longest_empty", lambda: core.longest("   ") is None)
     check("has_test", lambda: run("git", "grep", "-q", "longest", "--", "tests").returncode == 0)
+elif case == "D06":
+    from tally.fmt import render
+
+    check("count_desc", lambda: render({"a": 1, "b": 3, "c": 2}) == "b 3\nc 2\na 1")
+    check("ties_alpha", lambda: render({"b": 2, "a": 2, "c": 1}) == "a 2\nb 2\nc 1")
+    check("has_test", lambda: run("git", "grep", "-q", "render", "--", "tests").returncode == 0)
 else:
     sys.exit(f"unknown case {case}")
 
