@@ -25,7 +25,10 @@ claude-code add-dir /path/to/your/local/skill
 - `setup/` — machine setup: `CLAUDE.md`, `rules/` (source of truth for global Claude Code rules
   installed to `~/.claude/rules/`), `hooks/`, `settings.json`, `statusline/`, and `install.sh`.
 - `scripts/` — repository scripts: `install-git-hooks.sh` (pre-commit and pre-push
-  guards; run `bash scripts/install-git-hooks.sh --force`) and the CI gates under `scripts/ci/`.
+  guards; run `bash scripts/install-git-hooks.sh --force`), `install-agents.sh` (copies
+  `agents/*.md` to `~/.claude/agents/`), and the CI gates under `scripts/ci/`.
+- `agents/` — the harness agents `mono-lead`, `mono-worker`, `mono-verifier`; `models.json`
+  holds their model policy, checked by `scripts/ci/test-agent-models.sh`.
 - `cli/` — the Rust CLI (`zharness`) that backs the workflow harness.
 - `docs/` — repo-wide reference docs, including
   `docs/guides/prompt-engineering-principles.md`.

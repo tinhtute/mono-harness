@@ -1,0 +1,10 @@
+{
+  "tiers": { "fast": "haiku", "worker": "sonnet", "default": "opus", "strongest": "fable" },
+  "available": ["fable", "haiku", "opus", "sonnet"],
+  "readOnly": ["mono-verifier"],
+  "agents": [
+    { "agent": "mono-worker", "tier": "worker", "role": "mechanical edits, docs, bounded light tasks" },
+    { "agent": "mono-lead", "tier": "default", "role": "ordinary implementation, guards, contract changes" },
+    { "agent": "mono-verifier", "tier": "strongest", "role": "verifier, judge, cross-review of another agent's diff" }
+  ]
+}

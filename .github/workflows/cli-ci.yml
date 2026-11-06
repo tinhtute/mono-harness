@@ -9,8 +9,8 @@ on:
       - "skills/stages/**"
       - ".harness/WORKFLOW.md"
       - "scripts/install-git-hooks.sh"
-      - "setup/agents/**"
-      - "setup/models.json"
+      - "agents/**"
+      - "models.json"
       - "scripts/ci/test-agent-models.sh"
       - "setup/mods/**"
       - ".github/workflows/cli-ci.yml"
@@ -21,8 +21,8 @@ on:
       - "skills/stages/**"
       - ".harness/WORKFLOW.md"
       - "scripts/install-git-hooks.sh"
-      - "setup/agents/**"
-      - "setup/models.json"
+      - "agents/**"
+      - "models.json"
       - "scripts/ci/test-agent-models.sh"
       - "setup/mods/**"
       - ".github/workflows/cli-ci.yml"
@@ -86,7 +86,7 @@ jobs:
           test "$size" -le 1850000
 
   agent-models:
-    # setup/models.json role -> model policy matches setup/agents/*.md frontmatter.
+    # models.json role -> model policy matches agents/*.md frontmatter.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

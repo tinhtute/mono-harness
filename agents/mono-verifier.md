@@ -1,5 +1,5 @@
 ---
-name: verifier
+name: mono-verifier
 description: Independent verifier for a mono wave — reviews another agent's diff against its brief and acceptance output. Read-only; never edits the branch it judges.
 model: fable
 effort: xhigh
