@@ -30,7 +30,7 @@ shift $((OPTIND - 1))
 failed=0
 rc=0
 out=""
-# Same resolver as zharness_run_proof in setup/install-git-hooks.sh
+# Same resolver as zharness_run_proof in scripts/install-git-hooks.sh
 # (ZGUARD-CORE): GNU timeout, else coreutils gtimeout, else unbounded.
 zharness_run_proof() {
 	if command -v timeout >/dev/null 2>&1; then

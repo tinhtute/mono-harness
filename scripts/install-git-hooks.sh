@@ -573,21 +573,21 @@ function create_pre_commit_hook() {
 export ZHARNESS_HOOK_SOURCE
 ROOT="$(git rev-parse --show-toplevel)"
 export ROOT
-ZHARNESS_HOOK_SOURCE="$ROOT/setup/install-git-hooks.sh"
+ZHARNESS_HOOK_SOURCE="$ROOT/scripts/install-git-hooks.sh"
 # The guard core is re-extracted on every run, but this wrapper is baked in at
 # install time. Compare it with its template so a wrapper edit cannot stay
 # inert in an old install (failures.md, 2026-09-16).
 if [ -f "$ZHARNESS_HOOK_SOURCE" ] && ! awk '/^function create_pre_commit_hook/{f=1} f&&/<< .HOOK_EOF.$/{on=1;next} on&&$0=="HOOK_EOF"{exit} on' "$ZHARNESS_HOOK_SOURCE" | cmp -s - "$0"; then
-  echo "❌ installed pre-commit hook is stale against setup/install-git-hooks.sh"
-  echo "Re-install it: bash setup/install-git-hooks.sh --force"
+  echo "❌ installed pre-commit hook is stale against scripts/install-git-hooks.sh"
+  echo "Re-install it: bash scripts/install-git-hooks.sh --force"
   exit 1
 fi
 _zhtmp=$(mktemp -d)
 # Enforce from the staged installer bytes when the installer itself is part of
 # this commit; otherwise fall back to the worktree copy.
 GUARD_SRC="$ZHARNESS_HOOK_SOURCE"
-if git diff --cached --name-only -- setup/install-git-hooks.sh | grep -q . 2>/dev/null; then
-  git show ":setup/install-git-hooks.sh" > "$_zhtmp/src.sh" || {
+if git diff --cached --name-only -- scripts/install-git-hooks.sh | grep -q . 2>/dev/null; then
+  git show ":scripts/install-git-hooks.sh" > "$_zhtmp/src.sh" || {
     echo "❌ cannot resolve staged guard source"; exit 1;
   }
   GUARD_SRC="$_zhtmp/src.sh"
@@ -728,14 +728,14 @@ function create_pre_push_hook() {
 export ZHARNESS_HOOK_SOURCE
 ROOT="$(git rev-parse --show-toplevel)"
 export ROOT
-ZHARNESS_HOOK_SOURCE="$ROOT/setup/install-git-hooks.sh"
+ZHARNESS_HOOK_SOURCE="$ROOT/scripts/install-git-hooks.sh"
 refs=$(cat)
 zero=0000000000000000000000000000000000000000
 head_sha=$(git rev-parse HEAD)
 _zhtmp=$(mktemp -d)
 trap 'rm -rf "$_zhtmp"' EXIT
 # Enforce from the installer bytes being pushed, as CI does from its checkout.
-git show "$head_sha:setup/install-git-hooks.sh" > "$_zhtmp/src.sh" 2>/dev/null ||
+git show "$head_sha:scripts/install-git-hooks.sh" > "$_zhtmp/src.sh" 2>/dev/null ||
   cp "$ZHARNESS_HOOK_SOURCE" "$_zhtmp/src.sh" || { echo "❌ cannot resolve guard source"; exit 1; }
 awk '$0=="# ZGUARD-CORE-BEGIN"{on=1;next} $0=="# ZGUARD-CORE-END"{on=0} on' "$_zhtmp/src.sh" > "$_zhtmp/guard.sh" || {
   echo "❌ guard core extraction failed"; exit 1;

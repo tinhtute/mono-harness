@@ -10,7 +10,7 @@ This is the personal mono-harness repository for `therealtinhtute`: a `skills.sh
 
 Skills live in `skills/mono/` and `skills/{stages,reason,tools,extras}/<name>/`; the `zharness` crate in `cli/`; machine setup (global CLAUDE.md, rules, hooks, settings, installers, statusline) in `setup/`; protocol, ADRs, and plans in `docs/`; workflow procedures in each owning skill's `references/`. The workflow chain and its stage contracts: `skills/stages/README.md`.
 
-Plans are committed markdown (`.harness/plans/active/{slug}.md`); pre-commit guards (`setup/install-git-hooks.sh`) enforce proof re-execution, an independent judge on high-risk and `full` checks, and at most one active plan. Edit procedures in `skills/stages/<stage>/references/`. For the managed router, change `cli/docs/embedded/WORKFLOW.md` and copy the same bytes to `.harness/WORKFLOW.md`; `cd cli && cargo test --test projection_parity` checks this mirror. Editing a file under `skills/stages/*/references/` → run `cd cli && cargo test`: contracts in `cli/src/embedded.rs` and `cli/tests/skill_reference_resolution.rs` pin their text and companion files, which `validate-skill.sh` does not check.
+Plans are committed markdown (`.harness/plans/active/{slug}.md`); pre-commit guards (`scripts/install-git-hooks.sh`) enforce proof re-execution, an independent judge on high-risk and `full` checks, and at most one active plan. Edit procedures in `skills/stages/<stage>/references/`. For the managed router, change `cli/docs/embedded/WORKFLOW.md` and copy the same bytes to `.harness/WORKFLOW.md`; `cd cli && cargo test --test projection_parity` checks this mirror. Editing a file under `skills/stages/*/references/` → run `cd cli && cargo test`: contracts in `cli/src/embedded.rs` and `cli/tests/skill_reference_resolution.rs` pin their text and companion files, which `validate-skill.sh` does not check.
 
 ## Gate Commands
 
@@ -38,7 +38,7 @@ bash scripts/ci/validate-skills.sh
 ```
 
 The pre-commit hook also runs `scripts/ci/validate-skill.sh` on changed skills
-once installed with `bash setup/install-git-hooks.sh --force`.
+once installed with `bash scripts/install-git-hooks.sh --force`.
 
 Run a single Rust test: `cd cli && cargo test --lib installer::registry::tests::registry_update_registers`.
 
@@ -80,5 +80,5 @@ Start from the requested outcome; the repository is the system of record. Read `
 Read by the land step of `skills/mono/playbooks/ship.md` and the rubric in `skills/stages/check/references/check-risk.md`.
 
 - Auto-merge: low-risk
-- Always-review paths: setup/install-git-hooks.sh, scripts/ci/**, .github/**, cli/src/installer/**, cli/Cargo.toml, cli/Cargo.lock, setup/settings*.json
+- Always-review paths: scripts/install-git-hooks.sh, scripts/ci/**, .github/**, cli/src/installer/**, cli/Cargo.toml, cli/Cargo.lock, setup/settings*.json
 - Merge method: merge (the repo disables GitHub auto-merge, so wait for green with `gh pr checks --watch`, never `gh pr merge --auto`)

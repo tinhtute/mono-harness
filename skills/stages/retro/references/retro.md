@@ -122,7 +122,7 @@ authorizes that file separately.
 ### 1. [S1] Automated checks — work claimed `cargo test` green; it was never run (Next)
 - evidence: digest shows 0 `cargo test` calls; turn 14 says "all tests pass"
 - mechanical: a pre-commit guard can require a fresh proof line
-- smallest fix: extend the existing proof guard in `setup/install-git-hooks.sh`
+- smallest fix: extend the existing proof guard in `scripts/install-git-hooks.sh`
 - home: check
 - fix mode: guard
 </example>

@@ -4,7 +4,7 @@ Durable `gate` runs automated checks and records the verdict in `## Validation`;
 
 ## Lane Matrix
 
-This table is the single source of truth for lane → proof, review depth, and judge. The commit-time guard (`setup/install-git-hooks.sh`, R3/R4) and `scripts/ci/test-guards.sh` read the same rows; change all three together. The guard applies the rows at the effective lane: a diff that touches an always-review path from [check-risk.md](check-risk.md) raises the declared lane to `high-risk` (R6).
+This table is the single source of truth for lane → proof, review depth, and judge. The commit-time guard (`scripts/install-git-hooks.sh`, R3/R4) and `scripts/ci/test-guards.sh` read the same rows; change all three together. The guard applies the rows at the effective lane: a diff that touches an always-review path from [check-risk.md](check-risk.md) raises the declared lane to `high-risk` (R6).
 
 | Lane | Required proof | Final check mode | Review depth | Judge |
 |---|---|---|---|---|
