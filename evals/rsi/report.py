@@ -11,7 +11,8 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 METRICS = ("total_tokens", "cost_usd", "output_tokens", "peak_context", "compactions", "tool_use", "repeats",
-           "proof_calls", "proof_turns", "approved_entries", "approved_rejected")
+           "proof_calls", "proof_turns", "approved_entries", "approved_rejected",
+           "compacted", "summary_keeps_trash", "trash_survives_compact", "compact_total_tokens")
 
 
 def iqr(xs):

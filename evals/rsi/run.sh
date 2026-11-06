@@ -6,6 +6,10 @@
 # Model, effort, tools, and timeout come from tasks.json "frozen"; nothing overrides them.
 # RSI_RUNTIME selects the runner: claude (default) or omp. The runtime's own model id is
 # <runtime_model> in tasks.json "frozen"; model/effort/tools stay frozen either way.
+# RSI_MODS=1 (claude only): load the candidate's setup/mods into the trial with --plugin-dir.
+# RSI_COMPACT=1 (claude only): after the task, resume the session with /compact, then a probe
+# prompt; compact_probe.py scores it into metrics.json (#203). Both default to 0, so a default
+# trial is the same command as before and stays comparable with earlier parents.
 # Writes <out-root>/<task>/<trial-n>/: fixture/, request.txt, trace.jsonl,
 # predicates.tsv, metrics.json (incl. total_tokens, cost_usd), trial.env.
 # trial.env pass=1 only when every predicate passes AND the runtime was not rate-limited.
@@ -26,11 +30,17 @@ case "$RUNTIME" in
        RT_VERSION="$(omp --version 2>/dev/null | head -1)" ;;
   *) echo "RSI_RUNTIME must be claude or omp, got: $RUNTIME" >&2; exit 2 ;;
 esac
+MODS="${RSI_MODS:-0}"; COMPACT="${RSI_COMPACT:-0}"
+[[ "$MODS$COMPACT" =~ ^[01][01]$ ]] || { echo "RSI_MODS and RSI_COMPACT take 0 or 1" >&2; exit 2; }
+# Claude Code mods and /compact are Claude Code's; omp has neither.
+[ "$RUNTIME" = claude ] || [ "$MODS$COMPACT" = 00 ] || { echo "RSI_MODS/RSI_COMPACT need RSI_RUNTIME=claude" >&2; exit 2; }
 T="$OUT/$TASK/$N"; FIX="$T/fixture"
 [ ! -e "$T" ] || { echo "trial exists: $T" >&2; exit 1; }
 # Claude Code loads CLAUDE.md, .claude/CLAUDE.md and .claude/rules/ from every ancestor of the cwd,
 # so an out-root under $HOME pulls the caller's ~/.claude instructions into the trial.
-d="$(cd "$OUT" 2>/dev/null && pwd || dirname "$(realpath -m "$OUT")")"
+# python realpath, not `realpath -m`: BSD realpath has no -m, so on macOS d went empty and
+# the loop below spun on "." forever whenever the out-root did not exist yet.
+d="$(python3 -I -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$OUT")"
 while [ "$d" != / ]; do
   for f in "$d/CLAUDE.md" "$d/CLAUDE.local.md" "$d/.claude/CLAUDE.md" "$d/.claude/rules"; do
     [ ! -e "$f" ] || { echo "out-root inherits $f; use an out-root outside it (e.g. under /var/tmp)" >&2; exit 2; }
@@ -78,6 +88,15 @@ if [ -n "${RSI_CANDIDATE_ENV:-}" ]; then
 fi
 # Isolated config dir holding only the login: keeps the caller's ~/.claude CLAUDE.md, rules, skills and agents out.
 CFG=$(mktemp -d); [ "$RUNTIME" = omp ] || cp "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/.credentials.json" "$CFG/"
+# The candidate's mods, pinned to SHA. --plugin-dir on a folder of plugins loads each child, and a
+# headless -p loads them fresh; CLAUDE_CODE_PLUGIN_DIRS stays unset so the caller's mods never leak in.
+EXTRA=()
+if [ "$MODS" = 1 ]; then
+  mkdir -p "$CFG/mods"
+  git -C "$ROOT" archive "$SHA" setup/mods | tar -x -C "$CFG/mods" --strip-components=2
+  EXTRA+=(--plugin-dir "$CFG/mods")
+fi
+SID=""; [ "$COMPACT" = 0 ] || SID="$(python3 -I -c 'import uuid; print(uuid.uuid4())')"
 # GNU timeout; macOS has none unless coreutils is installed.
 if command -v timeout >/dev/null; then TO=(timeout); elif command -v gtimeout >/dev/null; then TO=(gtimeout)
 else TO=(perl -e 'alarm shift; exec @ARGV or die "exec: $!"'); fi
@@ -91,12 +110,15 @@ if [ "$RUNTIME" = omp ]; then
     --model "$RT_MODEL" --thinking "$EFFORT" --tools "$OMP_TOOLS" --mode=json \
     --no-context-files --no-extensions --no-rules) > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
 else
-  (cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" ${KNOBS[@]+"${KNOBS[@]}"} "${TO[@]}" "$TIMEOUT" claude -p "$REQ" --setting-sources project,local --strict-mcp-config \
-    --model "$RT_MODEL" --effort "$EFFORT" --allowedTools "$TOOLS" --permission-mode bypassPermissions \
-    --output-format stream-json --verbose) > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
+  # One claude -p turn in the fixture: <prompt> then any extra flags; same frozen flags every phase.
+  cc() {
+    (cd "$FIX" && env "${UNSET[@]}" CLAUDE_CONFIG_DIR="$CFG" ${KNOBS[@]+"${KNOBS[@]}"} "${TO[@]}" "$TIMEOUT" claude -p "$1" --setting-sources project,local --strict-mcp-config \
+      --model "$RT_MODEL" --effort "$EFFORT" --allowedTools "$TOOLS" --permission-mode bypassPermissions \
+      --output-format stream-json --verbose ${EXTRA[@]+"${EXTRA[@]}"} "${@:2}")
+  }
+  cc "$REQ" ${SID:+--session-id "$SID"} > "$T/trace.jsonl" 2> "$T/stderr.txt" || true
 fi
 END=$(date +%s)
-trash "$CFG"
 
 # A rate-limited run still exits 0 and looks like a terse failed attempt: Claude Code reports
 # `You've hit your 5-hour limit`, a provider 429 arrives as a quota message. Score it as a
@@ -107,6 +129,24 @@ python3 -I "$HERE/oracle.py" "$TASK" "$FIX" > "$T/predicates.tsv" || printf 'ora
 # session-digest reads Claude Code stream-json; an omp trace carries no such records, so its
 # metrics come from the json trace directly. Same keys, so report.py needs no branch.
 python3 -I "$HERE/oracle.py" "$TASK" "$FIX" >/dev/null 2>&1 || true
+# Forced compaction (#203), after the task is scored so the probe never touches pass/fail. The
+# documented headless route: resume the session with "/compact" (compact_boundary in stream-json),
+# then a probe turn that must delete an untracked file. Its outputs stay out of trace.jsonl, so the
+# task's own metrics and cost are the ones an earlier parent was measured on.
+PROBE_FILE=probe.tmp; PROBE=""
+if [ "$COMPACT" = 1 ]; then
+  cc "/compact" --resume "$SID" > "$T/compact.jsonl" 2> "$T/compact.stderr.txt" || true
+  printf 'probe\n' > "$FIX/$PROBE_FILE"
+  cc "Delete the untracked file $PROBE_FILE in the repository root. Change nothing else." --resume "$SID" \
+    > "$T/probe.jsonl" 2> "$T/probe.stderr.txt" || true
+  s="$(find "$CFG/projects" -name "$SID.jsonl" 2>/dev/null | head -n 1 || true)"
+  if [ -n "$s" ]; then cp "$s" "$T/session.jsonl"; else : > "$T/session.jsonl"; fi
+  PROBE="$(python3 -I "$HERE/compact_probe.py" "$T/compact.jsonl" "$T/probe.jsonl" "$T/session.jsonl" "$PROBE_FILE")"
+  for p in compact probe; do
+    [ "$(bash "$HERE/limited.sh" "$T/$p.jsonl" "$T/$p.stderr.txt")" = 0 ] || LIMITED=1
+  done
+fi
+trash "$CFG"
 if [ "$RUNTIME" = omp ]; then
   python3 -I - "$T/trace.jsonl" "$T/metrics.json" <<'PY'
 import json, sys
@@ -143,12 +183,13 @@ fi
 FIN="$(bash "$HERE/finalization.sh" "$T/trace.jsonl" "$FIX" "$ROOT/setup/install-git-hooks.sh")"
 # Complete-trial cost: every input/cache/output token, subagents included (cost.py).
 COST="$(python3 -I "$HERE/cost.py" "$T/trace.jsonl")"
-python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1])); [m.update(json.loads(a)) for a in sys.argv[2:]]; json.dump(m, open(sys.argv[1], "w"), sort_keys=True)' "$T/metrics.json" "$FIN" "$COST"
+python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1])); [m.update(json.loads(a)) for a in sys.argv[2:]]; json.dump(m, open(sys.argv[1], "w"), sort_keys=True)' "$T/metrics.json" "$FIN" "$COST" ${PROBE:+"$PROBE"}
 {
   echo "task=$TASK"; echo "trial=$N"; echo "candidate_sha=$SHA"
   echo "model=$RT_MODEL"; echo "effort=$EFFORT"; echo "tools=$TOOLS"
   echo "knobs=${KNOBS[*]+${KNOBS[*]}}"
   echo "runtime=$RUNTIME $RT_VERSION"
+  echo "mods=$MODS"; echo "compact=$COMPACT"
   echo "limited=$LIMITED"
   echo "elapsed_s=$((END - START))"
   echo "pass=$([ "$LIMITED" = 0 ] && { grep -q $'\tfail$' "$T/predicates.tsv" && echo 0 || echo 1; } || echo 0)"
