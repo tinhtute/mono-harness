@@ -29,7 +29,7 @@ Ask only when two modes would change the deliverable.
 2. **Digest** — read each source fully; keep a claim only if it recurs in the source, predicts new cases, or is specific to that source rather than generic wisdom. Summarizing is not digesting.
 3. **Outline** — every section names its sources; a section without one is cut or sent back to Collect.
 4. **Fill in** — section by section; a section that resists writing goes back to Digest for that sub-topic only.
-5. **Refine** — edits only: cut repetition, flag broken flow and unexplained terms, then run `write` to strip AI patterns.
+5. **Refine** — edits only: cut repetition, flag broken flow and unexplained terms, then run `mono-write` to strip AI patterns.
 6. **Self-review** — the user reads the draft linearly, twice; fix what they mark.
 
 ## Hard Rules
@@ -43,4 +43,4 @@ Ask only when two modes would change the deliverable.
 
 The mode's exit artifact, its saved path, and a Sources list (URL, tier, one-line why). Prose for conclusions, a diagram only when relationships carry the point.
 
-Defer to: `read` for every search and fetch; `write` for prose polish; `think` when the question is a decision, not a domain.
+Defer to: `read` for every search and fetch; `mono-write` for prose polish; `think` when the question is a decision, not a domain.

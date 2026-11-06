@@ -3,18 +3,11 @@
 # Every non-comment line MUST carry a `# reason`, or the gate exits 2.
 # Do not add an entry to silence a real broken link - fix the link.
 
-references/api-endpoints-auth.md      # illustrative example in create-skill/references/token-efficiency-criteria.md, not a file in this repo
-references/api-endpoints-payments.md  # illustrative example in create-skill/references/token-efficiency-criteria.md, not a file in this repo
-references/api-endpoints-users.md     # illustrative example in create-skill/references/token-efficiency-criteria.md, not a file in this repo
-references/api-patterns.md            # illustrative example in create-skill/references/writing-effective-instructions.md, not a file in this repo
-references/ffmpeg-encoding.md         # illustrative example in create-skill/SKILL.md showing a hypothetical skill layout
-
 docs/playbooks/git.md  # deliberately deprojected (docs-architecture R13); this repo correctly has no such file, but docs/guides/workflow-harness/migration.md must name the exact path so consumers upgrading past the deprojection can delete their stale copy. Permanent, not a deferral.
 
 CLAUDE.md  # global path `~/.claude/CLAUDE.md` cited by the monoclaudian README and skills/rules prose; not a repo file
 
 docs/research/cli-config-patterns.md  # illustrative example in librarian/references/examples.md showing where a cited research report is saved, not a file in this repo
-.harness/plans/active/cli-orkit.md        # illustrative example in create-cli/references/examples.md showing where a CLI spec plan is saved, not a file in this repo
 
 # Frozen ADR sections (Context/Consequences are immutable records — 0006 forbids
 # rewriting them). Each names a doc pruned in the historical-docs cleanup; the

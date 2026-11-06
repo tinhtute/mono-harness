@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 lane: high-risk
 ---
 # Split Claude Code setup into monoclaudian
@@ -35,7 +35,7 @@ lane: high-risk
 - constraints: no push, no GitHub repo creation, no `gh` writes without owner approval (NG1); deletes via `trash`; `scripts/ci/**`, `.github/**`, `setup/install-git-hooks.sh` are always-review paths → PR is never auto-merged; reinstall hooks with `bash scripts/install-git-hooks.sh --force` after the move.
 - recovery: tag `baseline/pre-split` is the restore point for both repos; plan Log records each phase commit SHA.
 - phase_slug: `extract`
-  status: checked
+  status: done
   - goal: R1, R2, R3, R4 | depends_on: none
   - surfaces: git tag `baseline/pre-split`; new `../monoclaudian/**` | avoided: every file in this repo
   - escalate_when: `../monoclaudian` already exists; filter-repo leaves no history for `mods`; mod tests fail at baseline.
@@ -48,7 +48,7 @@ lane: high-risk
     - T4 rewrite `../monoclaudian/README.md`: what it is, install, ninja-kit reads `.harness/plans/active` (zharness layout), harness skills/agents come from monoharness (`npx skills add`, `scripts/install-agents.sh`); fix `install.sh` paths (no `setup/` prefix, no agents it no longer has) (owner: worker, writes README.md, install.sh) — output: accurate docs — check: `grep -n ".harness/plans/active" ../monoclaudian/README.md && ! grep -rn "setup/\|install-git-hooks\|\bRSI\b" ../monoclaudian --exclude-dir=.git` — stop_if: none
   - phase check: `cd ../monoclaudian && bash scripts/test-agent-models.sh && (cd mods/ninja-kit && bun test) && (cd mods/cache-guard && bun test) && git log --oneline | wc -l` (> 1), then commit in monoclaudian
 - phase_slug: `drop-rsi`
-  status: checked
+  status: done
   - goal: R5 | depends_on: extract
   - surfaces: `evals/rsi/`, `.github/workflows/*` RSI jobs, RSI mentions in setup/mods plugin.json and live docs | avoided: evals/01–08, historical docs (phase docs)
   - escalate_when: a non-RSI eval or CI job imports from `evals/rsi`.
@@ -56,7 +56,7 @@ lane: high-risk
     - T5 `trash evals/rsi` on branch `split/monoclaudian`; remove RSI jobs/paths in workflows and RSI lines in README.md, AGENTS.md, evals/*/graders (owner: worker, writes those files only) — output: no RSI code — check: `git ls-files evals/rsi | wc -l` == 0 and `grep -rnE "evals/rsi|\bRSI\b" .github README.md AGENTS.md evals` empty — stop_if: escalate condition
   - phase check: `bash scripts/ci/verify-doc-links.sh && bash scripts/ci/test-guards.sh`
 - phase_slug: `rehome`
-  status: checked
+  status: done
   - goal: R6, R7, R8, R9 | depends_on: drop-rsi
   - surfaces: `agents/`, `models.json`, `scripts/install-agents.sh`, `scripts/install-git-hooks.sh`, `scripts/ci/test-agent-models.sh`, `scripts/ci/test-guards.sh`, `.github/workflows/cli-ci.yml`, skills naming agents (fanout.md, work-fanout.md, work-full.md, check-durable.md), AGENTS.md, `.harness/PROJECT.md`, `cli/docs/CONTRACT.md` | avoided: `cli/src/**` behavior, generic "worker/lead" prose
   - escalate_when: `cargo test` pins an agent name that must change in `cli/src/embedded.rs` (always-review path); a skill reference needs a new companion file.
@@ -68,7 +68,7 @@ lane: high-risk
     - T9 `trash setup` (remaining: CLAUDE.md, rules, settings, models.json, mods, statusline, install.sh, README, test-runner) after confirming each exists in ../monoclaudian; drop `setup/**` triggers and the `mods`/old `agent-models` setup paths from cli-ci.yml, keep agent-models job on new paths (owner: lead, writes setup/, .github/workflows/cli-ci.yml) — output: no setup/ — check: `git ls-files setup | wc -l` == 0 and `! grep -n "setup/" .github/workflows/*.yml` — stop_if: a setup file is missing from ../monoclaudian
   - phase check: `bash scripts/ci/test-guards.sh && bash scripts/ci/test-agent-models.sh && cd cli && cargo test`
 - phase_slug: `docs`
-  status: checked
+  status: done
   - goal: R10, R11 | depends_on: rehome
   - surfaces: README.md, CHANGELOG.md (Unreleased breaking entry), docs/** (ADRs, guides, research), `.harness/plans/completed/**`, site/**, memory note `install-git-hooks-needs-force` | avoided: code
   - escalate_when: a historical doc's claim becomes false (not just a path) after rewrite.
@@ -88,13 +88,15 @@ lane: high-risk
 - 2026-11-06 fixes (lead, opus): b624eba; history restored from baseline with "(now …)/(later moved…)" notes; install-agents retires legacy agents, CI-tested.
 - 2026-11-06 re-check (verifier, claude-fable-5-1, independent): APPROVE_WITH_REQUESTS — AGENTS.md monoclaudian wording, CHANGELOG unreleased-rsi line, README "private", site SSH URL: fixed by lead in final commit.
 - 2026-11-06 decision (lead): success_signal and T10 grep amended — truthful historical mentions in `.harness/plans/completed`, `docs/decisions`, `docs/research` and CHANGELOG are allowed; live files must be clean.
+- 2026-11-06 shipped: PR #241 merged to master at 5769342 after 9/9 CI checks passed; worktrees and split/rehome removed.
+- 2026-11-06 handoff — follow-up: owner asked to move non-ADLC skills to monoclaudian (next plan).
 
 ## Validation
 - 2026-11-06 independent judge claude-fable-5-1 — APPROVE_WITH_REQUESTS; requests applied. Gates on split/monoclaudian: `bash scripts/ci/verify-doc-links.sh` 0 findings; `bash scripts/ci/test-guards.sh` 106/0; `bash scripts/ci/test-agent-models.sh` OK (3 agents); `bash scripts/ci/validate-skills.sh` 22 valid; `cd cli && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test` pass; musl size gate not runnable on macOS (linker; fails identically on baseline) → CI `size-gate`. monoclaudian: test-agent-models OK (1), bun rules.spec 9/0 + 5/0, GitHub CI green.
 
 ## Current State and Next Action
-- active_phase: docs
-- lifecycle_status: checked
+- active_phase: none
+- lifecycle_status: completed
 - blockers: none
 - open_items: none
-- exact_next_action: merge PR after green CI, then handoff and move plan to completed
+- exact_next_action: none

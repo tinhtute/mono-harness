@@ -30,6 +30,6 @@ Read the matched playbook. Open a todo list whose first items are its steps copi
 
 Each step names a skill; that skill owns the procedure. Resolve it through the host's skill metadata. If a required skill is unavailable, report the missing dependency and stop.
 
-Gated skills — `retro`, `create-cli`, `turbo-mono-platform` — run only from a playbook step here or when the user names them. In `feature`, call `create-cli` for CLI design and `turbo-mono-platform` for that monorepo stack.
+Gated skill — `retro` — runs only from a playbook step here or when the user names it.
 
 Defer to: the skill each playbook step names; `git` only on the owner's explicit request.

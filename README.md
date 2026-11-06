@@ -97,7 +97,7 @@ its steps into a todo list, and calls the skill each step names.
 | prototype | throwaway variants → observe in the real app → decide |
 | fanout | separate → spawn sub-agents → aggregate → check |
 | investigation | think or hunt; read-only, changes nothing |
-| research | read (search, fetch) → learn → write; notes only |
+| research | read (search, fetch) → learn → mono-write; notes only |
 | ambition | ambition (depth, altitude or range) → lint the rewrite → route on request |
 | babysit | `/loop` over review threads and CI until the PR is ready |
 | ship | watzup → security-review → check → land → changelog → tag → verify → rollback |
@@ -177,12 +177,15 @@ skills and can read their installed references. A missing dependency is unsuppor
 for workflow execution; retained legacy files are not a fallback. Other skills
 are optional extensions.
 
-`mono` sits at `skills/mono`; the other skills live in four groups: `stages`
-(the six workflow skills plus retro), `reason` (think, hunt, arena, learn, ambition), `tools` (git,
-create-skill, librarian, prompt-leverage, read, tldraw-diagram, write) and `extras` (create-cli,
-turbo-mono-platform). `retro`, `create-cli` and
-`turbo-mono-platform` are gated: they run only from a mono playbook step or
-when the user names them.
+`mono` sits at `skills/mono`; the other skills live in three groups: `stages`
+(the six workflow skills plus retro), `reason` (think, hunt, arena, learn, ambition) and `tools` (git,
+librarian, mono-write, read). `retro` is gated: it runs only from a mono playbook
+step or when the user names it. `mono-write` covers only what the playbooks need:
+polishing a research draft and writing CHANGELOG entries and release notes.
+
+General-purpose skills outside the workflow (the full `write`, diagram, prompt,
+skill-authoring, CLI-design and monorepo skills) live in
+[monoclaudian](https://github.com/tinhtute/monoclaudian); install it for the full set.
 
 Skills are not part of `zharness install`. They live in this source repository,
 the stable release of the skills; the former `orkit-tui` incubator is archived

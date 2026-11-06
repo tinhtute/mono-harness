@@ -2,7 +2,7 @@
 
 Reference for writing effective prompts, skills (SKILL.md), and rules. Read this before creating or editing any skill or rule file.
 
-Complements: `skills/tools/create-skill/references/writing-effective-instructions.md` (HOW), `token-efficiency-criteria.md` (SIZE). This file covers WHY and SYNTAX.
+Complements: [writing-effective-instructions.md](https://github.com/tinhtute/monoclaudian/blob/master/skills/create-skill/references/writing-effective-instructions.md) (HOW) and [token-efficiency-criteria.md](https://github.com/tinhtute/monoclaudian/blob/master/skills/create-skill/references/token-efficiency-criteria.md) (SIZE) in monoclaudian's `create-skill`. This file covers WHY and SYNTAX.
 
 ## Core Principle: Context Engineering
 
