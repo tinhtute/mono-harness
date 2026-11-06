@@ -17,6 +17,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Run `bash scripts/install-agents.sh` to install the renamed agents; it retires the old
   `~/.claude/agents/{lead,worker,verifier}.md` by renaming each to
   `<name>.md.retired.<timestamp>`, so remove those once you no longer need them.
+- `tldraw-diagram`, `prompt-leverage`, `create-skill`, `create-cli`,
+  `turbo-mono-platform` and the full `write` skill (with its `evals/`) moved to
+  [monoclaudian](https://github.com/tinhtute/monoclaudian); `skills/extras/` is gone.
+  Install them with
+  `npx skills add git@github.com:tinhtute/monoclaudian.git -a claude-code -g -y`.
+- The `research` and `ship` playbooks and `learn` now call `mono-write`, a slim skill
+  that polishes a research draft and writes CHANGELOG entries and release notes. It
+  hands any other writing to monoclaudian's `write` when that skill is installed.
+  Reinstall this repo's skills to get `mono-write`.
 
 ### Added
 

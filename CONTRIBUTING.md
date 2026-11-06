@@ -20,7 +20,7 @@ claude-code add-dir /path/to/your/local/skill
 ## Repository layout
 
 - `skills/` — installable agent skills, top-level `mono/` plus groups `stages/`
-  (lifecycle chain), `reason/` (think, hunt), `tools/`, `extras/`. Each skill directory has a required `SKILL.md` and optional
+  (lifecycle chain), `reason/` (think, hunt), `tools/`. Each skill directory has a required `SKILL.md` and optional
   `references/` and `scripts/` subdirectories.
 - Machine setup (`CLAUDE.md`, `rules/`, `settings.json`, `statusline/`, `install.sh`) lives in the separate repo [monoclaudian](https://github.com/tinhtute/monoclaudian).
 - `scripts/` — repository scripts: `install-git-hooks.sh` (pre-commit and pre-push

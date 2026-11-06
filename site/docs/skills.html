@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Skills Catalog — mono-harness</title>
-  <meta name="description" content="The fourteen skills: eight workflow, four craft, two extras. Markdown-first AI agent skills compatible with skills.sh and Claude Code.">
+  <meta name="description" content="Workflow and craft skills: eight workflow, two craft. Markdown-first AI agent skills compatible with skills.sh and Claude Code.">
   <link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@
       <header class="page-head reveal">
         <p class="kicker">docs · skills</p>
         <h1>Skills Catalog<i>.</i></h1>
-        <p class="lede">Fourteen skills organized into three distinct groups: Workflow, Craft, and Shipping. Each skill is packaged as a standard <code>SKILL.md</code> directory with optional <code>references/</code> and <code>scripts/</code> for progressive detail.</p>
+        <p class="lede">Workflow and craft skills, in two groups. Each skill is packaged as a standard <code>SKILL.md</code> directory with optional <code>references/</code> and <code>scripts/</code> for progressive detail.</p>
       </header>
 
       <div class="prose reveal">
@@ -50,8 +50,8 @@
 
       <div class="strip reveal" style="margin: 28px 0;">
         <div><b>Stages (7)</b><span>Core lifecycle: brainstorm, to-plan, work, check, handoff, watzup, plus gated retro. Router: mono.</span></div>
-        <div><b>Craft (4)</b><span>Precision tools: write, librarian, create-skill, prompt-leverage.</span></div>
-        <div><b>Shipping (2)</b><span>Domain specialists: create-cli, turbo-mono-platform.</span></div>
+        <div><b>Craft (2)</b><span>Precision tools: mono-write, librarian.</span></div>
+        <div><b>monoclaudian</b><span>General-purpose skills (full writing, diagrams, prompts, skill authoring, CLI design, monorepo) install from <a href="https://github.com/tinhtute/monoclaudian" target="_blank" rel="noopener">monoclaudian</a>.</span></div>
         <div><b>100% Markdown</b><span>Plain text instructions with progressive reference loading.</span></div>
       </div>
 
@@ -175,22 +175,22 @@
       </div>
 
       <div class="prose reveal">
-        <h2>Craft Skills (4)<i>.</i></h2>
-        <p>Craft skills focus on authoring quality, external repository investigation, skill engineering, and prompt refinement.</p>
+        <h2>Craft Skills (2)<i>.</i></h2>
+        <p>Craft skills cover the prose the playbooks need and external repository investigation. The full writing skill and the other general-purpose skills live in <a href="https://github.com/tinhtute/monoclaudian" target="_blank" rel="noopener">monoclaudian</a>.</p>
       </div>
 
       <div class="card-grid reveal">
         <div class="card">
           <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-            <h3 style="margin:0; font-family:var(--mono); font-size:16px;">write</h3>
+            <h3 style="margin:0; font-family:var(--mono); font-size:16px;">mono-write</h3>
             <span class="badge">craft</span>
           </div>
           <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
-            Write and edit English and Vietnamese prose that sounds natural, concise, and audience-aware. Eliminates robotic AI filler.
+            Polish a research draft in English or Vietnamese without AI-report filler, and write CHANGELOG entries and release notes from a commit list.
           </p>
           <div style="font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);">
-            <strong>Trigger:</strong> <code>/write</code><br>
-            <strong>Output:</strong> Polished documentation or UI copy
+            <strong>Trigger:</strong> <code>research</code> and <code>ship</code> playbook steps<br>
+            <strong>Output:</strong> Polished draft or changelog entry
           </div>
         </div>
 
@@ -207,74 +207,11 @@
             <strong>Output:</strong> Evidence-backed code citations
           </div>
         </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-            <h3 style="margin:0; font-family:var(--mono); font-size:16px;">create-skill</h3>
-            <span class="badge">craft</span>
-          </div>
-          <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
-            Create or upgrade agent skills adhering to the skills.sh standard. Generates structured <code>SKILL.md</code>, references, and validation tests.
-          </p>
-          <div style="font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);">
-            <strong>Trigger:</strong> <code>/create-skill</code><br>
-            <strong>Output:</strong> Validated skill directory and metadata
-          </div>
-        </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-            <h3 style="margin:0; font-family:var(--mono); font-size:16px;">prompt-leverage</h3>
-            <span class="badge">craft</span>
-          </div>
-          <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
-            Strengthen raw, ambiguous prompts into execution-ready instruction sets with strict role boundaries, context, and criteria.
-          </p>
-          <div style="font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);">
-            <strong>Trigger:</strong> <code>/prompt-leverage</code><br>
-            <strong>Output:</strong> Structured prompt specification
-          </div>
-        </div>
-      </div>
-
-      <div class="prose reveal">
-        <h2>Shipping Skills (2)<i>.</i></h2>
-        <p>Shipping skills provide domain expertise for full-stack platforms and CLI tooling.</p>
-      </div>
-
-      <div class="card-grid reveal">
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-            <h3 style="margin:0; font-family:var(--mono); font-size:16px;">create-cli</h3>
-            <span class="badge">extras</span>
-          </div>
-          <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
-            Architect developer CLI tools: command hierarchies, flag naming, POSIX/GNU conventions, config loading, and packaging roadmaps.
-          </p>
-          <div style="font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);">
-            <strong>Trigger:</strong> <code>/create-cli</code><br>
-            <strong>Output:</strong> CLI specification and architecture roadmap
-          </div>
-        </div>
-
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
-            <h3 style="margin:0; font-family:var(--mono); font-size:16px;">turbo-mono-platform</h3>
-            <span class="badge">extras</span>
-          </div>
-          <p style="font-size:14px; color:var(--ink-soft); margin-bottom:14px;">
-            Full-stack TypeScript monorepo specialist: Turborepo, Next.js, Hono, tRPC, Drizzle ORM, Supabase, Tailwind CSS, and shadcn/ui.
-          </p>
-          <div style="font-family:var(--mono); font-size:11.5px; color:var(--ink-faint);">
-            <strong>Trigger:</strong> <code>/turbo-mono-platform</code><br>
-            <strong>Output:</strong> Scaffolded packages, schemas, and endpoints
-          </div>
-        </div>
       </div>
 
       <div class="prose reveal">
         <h2>Reference Table<i>.</i></h2>
-        <p>Summary of all 14 skills, their classification, and intended operational roles.</p>
+        <p>Summary of the 10 skills on this page, their classification, and intended operational roles.</p>
       </div>
 
       <div class="spec reveal">
@@ -325,9 +262,9 @@
         </div>
         <div class="spec-row">
           <div class="spec-idx">08</div>
-          <div class="spec-scene"><code>write</code></div>
+          <div class="spec-scene"><code>mono-write</code></div>
           <div class="spec-cell"><span class="badge">Craft</span></div>
-          <div class="spec-cell">Audience-aware, non-robotic English and Vietnamese prose</div>
+          <div class="spec-cell">Research-draft polish (EN/VI) and CHANGELOG or release notes</div>
         </div>
         <div class="spec-row">
           <div class="spec-idx">09</div>
@@ -337,30 +274,6 @@
         </div>
         <div class="spec-row">
           <div class="spec-idx">10</div>
-          <div class="spec-scene"><code>create-skill</code></div>
-          <div class="spec-cell"><span class="badge">Craft</span></div>
-          <div class="spec-cell">Authoring and validating skills.sh compliant skills</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-idx">11</div>
-          <div class="spec-scene"><code>prompt-leverage</code></div>
-          <div class="spec-cell"><span class="badge">Craft</span></div>
-          <div class="spec-cell">Prompt engineering and execution specification design</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-idx">12</div>
-          <div class="spec-scene"><code>create-cli</code></div>
-          <div class="spec-cell"><span class="badge">Shipping</span></div>
-          <div class="spec-cell">Command-line interface architecture and distribution design</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-idx">13</div>
-          <div class="spec-scene"><code>turbo-mono-platform</code></div>
-          <div class="spec-cell"><span class="badge">Shipping</span></div>
-          <div class="spec-cell">Turborepo and full-stack TypeScript monorepo architecture</div>
-        </div>
-        <div class="spec-row">
-          <div class="spec-idx">14</div>
           <div class="spec-scene"><code>retro</code></div>
           <div class="spec-cell"><span class="badge">Workflow</span></div>
           <div class="spec-cell">Session retrospective: ranked findings, then one guard or one rerun-gated experiment</div>

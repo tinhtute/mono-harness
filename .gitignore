@@ -12,6 +12,3 @@ __pycache__/
 
 # git skill local scratch (sidecar reports, never repo content)
 .kit/
-
-# claude plugin eval run output (per-run reports, regenerated each run)
-evals/results/

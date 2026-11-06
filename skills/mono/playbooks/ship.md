@@ -25,7 +25,7 @@ In the steps below, "bottom of the stack" and "contiguous run" collapse to the s
 4. Land only the contiguous verified run from the bottom: stop at the first PR without a pass; a verified PR above it waits.
 5. Re-check each verdict still describes the code: `git patch-id` at the verdict SHA equals the current head's, otherwise re-run step 3 for that PR.
 6. `git` — merge bottom-up, one PR at a time, guarded by the verified head: `gh pr merge <n> --<method> --match-head-commit <sha>`, `<method>` from `AGENTS.md` § Unattended Shipping `Merge method` (default `squash`); confirm the base right before. Touch no branch or base while the run lands.
-7. `write` — CHANGELOG entry and release notes from the commit list; breaking changes first, each with its migration step.
+7. `mono-write` — CHANGELOG entry and release notes from the commit list; breaking changes first, each with its migration step.
 8. `git` — bump the version, commit, tag and push; never force-push a published tag.
 9. Verify the delivery: the release CI run passes, the artifact or deploy is reachable, and its version output matches the tag.
 10. Name the rollback before closing: the previous tag, and the exact revert or redeploy command.
