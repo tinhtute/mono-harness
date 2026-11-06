@@ -186,8 +186,8 @@ when the user names them.
 
 Skills are not part of `zharness install`. They live in this source repository,
 the stable release of the skills; the former `orkit-tui` incubator is archived
-and no longer syncs here. The repository is private, so installing over SSH
-needs local SSH keys with access to it:
+and no longer syncs here. Installing over SSH
+needs local SSH keys:
 
 ```bash
 npx skills add git@github.com:tinhtute/monoharness.git --list   # list without installing

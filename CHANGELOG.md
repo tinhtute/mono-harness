@@ -14,7 +14,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `agents/` with model policy in `models.json`, and install via `scripts/install-agents.sh`.
 - The git hook installer moved to `scripts/install-git-hooks.sh`; rerun
   `bash scripts/install-git-hooks.sh --force`.
-- `evals/rsi/` was removed with no replacement.
 - Run `bash scripts/install-agents.sh` to install the renamed agents; it retires the old
   `~/.claude/agents/{lead,worker,verifier}.md` by renaming each to
   `<name>.md.retired.<timestamp>`, so remove those once you no longer need them.

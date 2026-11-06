@@ -8,7 +8,7 @@ This is the personal mono-harness repository for `therealtinhtute`: a `skills.sh
 
 ## Layout and Pipeline
 
-Skills live in `skills/mono/` and `skills/{stages,reason,tools,extras}/<name>/`; the `zharness` crate in `cli/`; the harness agents (`mono-lead`, `mono-worker`, `mono-verifier`) in `agents/`, their model policy in `models.json`, installed by `bash scripts/install-agents.sh`; machine setup (global CLAUDE.md, rules, hooks, settings, installers, statusline) lives in the separate repo https://github.com/tinhtute/monoclaudian; protocol, ADRs, and plans in `docs/`; workflow procedures in each owning skill's `references/`. The workflow chain and its stage contracts: `skills/stages/README.md`.
+Skills live in `skills/mono/` and `skills/{stages,reason,tools,extras}/<name>/`; the `zharness` crate in `cli/`; the harness agents (`mono-lead`, `mono-worker`, `mono-verifier`) in `agents/`, their model policy in `models.json`, installed by `bash scripts/install-agents.sh`; machine setup (global CLAUDE.md, rules, settings, mods, installer, statusline) lives in the separate repo https://github.com/tinhtute/monoclaudian; protocol, ADRs, and plans in `docs/`; workflow procedures in each owning skill's `references/`. The workflow chain and its stage contracts: `skills/stages/README.md`.
 
 Plans are committed markdown (`.harness/plans/active/{slug}.md`); pre-commit guards (`scripts/install-git-hooks.sh`) enforce proof re-execution, an independent judge on high-risk and `full` checks, and at most one active plan. Edit procedures in `skills/stages/<stage>/references/`. For the managed router, change `cli/docs/embedded/WORKFLOW.md` and copy the same bytes to `.harness/WORKFLOW.md`; `cd cli && cargo test --test projection_parity` checks this mirror. Editing a file under `skills/stages/*/references/` → run `cd cli && cargo test`: contracts in `cli/src/embedded.rs` and `cli/tests/skill_reference_resolution.rs` pin their text and companion files, which `validate-skill.sh` does not check.
 
@@ -56,9 +56,9 @@ T=$(mktemp -d) && cd "$T" && git init -q
 
 ## Architecture Notes
 
-- **Prompt engineering:** before writing or editing skills (SKILL.md), rules (monoclaudian/rules/*.md), or any agent instruction file, read `docs/guides/prompt-engineering-principles.md` — context engineering, formatting syntax, language rules, interfaces before examples, anti-patterns, cross-model awareness.
+- **Prompt engineering:** before writing or editing skills (SKILL.md), rules (`rules/*.md` in the monoclaudian repo), or any agent instruction file, read `docs/guides/prompt-engineering-principles.md` — context engineering, formatting syntax, language rules, interfaces before examples, anti-patterns, cross-model awareness.
 - **Skill format:** All skills follow the `skills.sh` standard — YAML frontmatter with `name` and `description`, imperative instructions, optional `references/` and `scripts/` directories.
-- **monoclaudian/rules/ directory:** Source-of-truth for rules installed to `~/.claude/rules/`. Keep in sync with installed versions.
+- **Rules live in monoclaudian:** `~/.claude/rules/` is installed from the monoclaudian repo; edit rules there, not here.
 - **`site/` is hand-authored, not generated.** A static GitHub Pages site (`.github/workflows/pages.yml` deploys on push to `site/**`) that narrates the same architecture/workflow story as `docs/`; it does not regenerate from `docs/*.md` and can drift — it was last brought in line with v0.24.0.
 
 <!-- ZHARNESS:BEGIN -->
