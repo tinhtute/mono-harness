@@ -7,7 +7,7 @@
 # RSI_RUNTIME selects the runner: claude (default) or omp. The runtime's own model id is
 # <runtime_model> in tasks.json "frozen"; model/effort/tools stay frozen either way.
 # Writes <out-root>/<task>/<trial-n>/: fixture/, request.txt, trace.jsonl,
-# predicates.tsv, metrics.json, trial.env.
+# predicates.tsv, metrics.json (incl. total_tokens, cost_usd), trial.env.
 # trial.env pass=1 only when every predicate passes AND the runtime was not rate-limited.
 # A rate-limited trial is scored pass=0 with `limited=1`, so report.py shows it as a failure
 # rather than hiding it; re-run it before trusting the split.
@@ -141,7 +141,9 @@ else
 fi
 # Finalization metrics (#196), scored with the evaluator's own guard core, never the candidate's.
 FIN="$(bash "$HERE/finalization.sh" "$T/trace.jsonl" "$FIX" "$ROOT/setup/install-git-hooks.sh")"
-python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1])); m.update(json.loads(sys.argv[2])); json.dump(m, open(sys.argv[1], "w"), sort_keys=True)' "$T/metrics.json" "$FIN"
+# Complete-trial cost: every input/cache/output token, subagents included (cost.py).
+COST="$(python3 -I "$HERE/cost.py" "$T/trace.jsonl")"
+python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1])); [m.update(json.loads(a)) for a in sys.argv[2:]]; json.dump(m, open(sys.argv[1], "w"), sort_keys=True)' "$T/metrics.json" "$FIN" "$COST"
 {
   echo "task=$TASK"; echo "trial=$N"; echo "candidate_sha=$SHA"
   echo "model=$RT_MODEL"; echo "effort=$EFFORT"; echo "tools=$TOOLS"

@@ -10,7 +10,7 @@ import statistics
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-METRICS = ("output_tokens", "peak_context", "compactions", "tool_use", "repeats",
+METRICS = ("total_tokens", "cost_usd", "output_tokens", "peak_context", "compactions", "tool_use", "repeats",
            "proof_calls", "proof_turns", "approved_entries", "approved_rejected")
 
 

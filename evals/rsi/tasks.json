@@ -11,6 +11,10 @@
     "D01": "Rename tally.core.count_words to word_count everywhere and keep the tests green.",
     "D02": "Implement the tally-filters plan.",
     "D03": "Resume the tally-unicode plan.",
-    "D05": "Add tally.core.longest(text): return the longest word, the first one on ties, None for blank text. Add a test."
+    "D05": "Add tally.core.longest(text): return the longest word, the first one on ties, None for blank text. Add a test.",
+    "D06": "Bug: tally.fmt.render lists words alphabetically, but it must list the most frequent first, ties alphabetical. Fix it, add a test, and keep the suite green."
+  },
+  "pinned": {
+    "D06": "val"
   }
 }
