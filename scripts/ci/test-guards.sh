@@ -11,7 +11,7 @@ unset $(git rev-parse --local-env-vars)
 
 GUARD=$(mktemp)
 awk '$0=="# ZGUARD-CORE-BEGIN"{on=1;next} $0=="# ZGUARD-CORE-END"{on=0} on' \
-	setup/install-git-hooks.sh > "$GUARD"
+	scripts/install-git-hooks.sh > "$GUARD"
 grep -q '^zharness_guard_entries_of_file()' "$GUARD" || {
 	echo "FAIL - guard core extraction failed"; exit 1; }
 grep -q '^zharness_guard_at_most_one_active_plan()' "$GUARD" || {
@@ -739,7 +739,7 @@ rm -rf "$rc_bin"
 # foreign one, and never swallows that refusal.
 hk=$(mktemp -d)
 gfix "$hk"
-hk_install() { ( cd "$hk" && bash "$OLDPWD/setup/install-git-hooks.sh" "$@" ) >/dev/null 2>&1; }
+hk_install() { ( cd "$hk" && bash "$OLDPWD/scripts/install-git-hooks.sh" "$@" ) >/dev/null 2>&1; }
 hk_install && [ -x "$hk/.git/hooks/pre-commit" ] &&
 	ok "R16 fresh install creates the pre-commit hook" ||
 	bad "R16 fresh install did not create the hook"
@@ -766,15 +766,15 @@ rm -rf "$hk"
 # plan, so each pre-commit accepts. The push must be rejected until it holds.
 pp=$(mktemp -d)
 git init -q --bare "$pp/remote.git"
-mkdir -p "$pp/w/setup"
+mkdir -p "$pp/w/scripts"
 gfix "$pp/w"
 git -C "$pp/w" symbolic-ref HEAD refs/heads/master
 git -C "$pp/w" config core.hooksPath "$pp/w/.git/hooks"
 git -C "$pp/w" remote add origin "$pp/remote.git"
-cp setup/install-git-hooks.sh "$pp/w/setup/"
+cp scripts/install-git-hooks.sh "$pp/w/scripts/"
 git -C "$pp/w" add -A >/dev/null && git -C "$pp/w" commit -qm "chore: seed"
 git -C "$pp/w" push -q origin master 2>/dev/null
-( cd "$pp/w" && bash setup/install-git-hooks.sh ) >/dev/null 2>&1
+( cd "$pp/w" && bash scripts/install-git-hooks.sh ) >/dev/null 2>&1
 [ -x "$pp/w/.git/hooks/pre-push" ] &&
 	ok "PP install creates the pre-push hook" ||
 	bad "PP install did not create the pre-push hook"
@@ -985,11 +985,11 @@ rm -rf "$stmp"
 # STALE: the installed pre-commit wrapper compares itself with its template
 # (failures.md, 2026-09-16). An edited install must block with a re-install hint.
 st=$(mktemp -d)
-mkdir -p "$st/setup"
+mkdir -p "$st/scripts"
 gfix "$st"
 git -C "$st" config core.hooksPath "$st/.git/hooks"
-cp setup/install-git-hooks.sh "$st/setup/"
-( cd "$st" && bash setup/install-git-hooks.sh ) >/dev/null 2>&1
+cp scripts/install-git-hooks.sh "$st/scripts/"
+( cd "$st" && bash scripts/install-git-hooks.sh ) >/dev/null 2>&1
 printf 'x\n' > "$st/a.txt"
 ( cd "$st" && git add -A && git commit -qm "chore: seed" ) >/dev/null 2>&1 &&
 	ok "STALE a current wrapper commits" ||
@@ -1006,7 +1006,7 @@ rm -rf "$st"
 # R6 LANE-RAISE: a diff touching an always-review path raises the declared
 # lane to high-risk, so R3/R4 judge it as high-risk (check-risk.md).
 lr=$(mktemp -d)
-printf '# x\n\n## Unattended Shipping\n\n- Always-review paths: setup/hooks/**, scripts/ci/**\n' > "$lr/AGENTS.md"
+printf '# x\n\n## Unattended Shipping\n\n- Always-review paths: tools/hooks/**, scripts/ci/**\n' > "$lr/AGENTS.md"
 l=$(printf '%s\n' docs/a.md .github/workflows/ci.yml | zharness_effective_lane normal "$lr/AGENTS.md")
 [ "$l" = "high-risk" ] && ok "R6 CI workflow raises normal to high-risk" ||
 	bad "R6 CI workflow expected high-risk, got '$l'"

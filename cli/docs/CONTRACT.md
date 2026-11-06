@@ -57,7 +57,7 @@ reads staged bytes and trusts no marker an agent writes:
 Handoff absorb is playbook protocol, not a hook: close cannot `git mv`
 without an `absorb:` line. Missing absorb is not a commit rejection.
 
-These guards are implemented once in `setup/install-git-hooks.sh` between
+These guards are implemented once in `scripts/install-git-hooks.sh` between
 the `# ZGUARD-CORE-BEGIN` / `# ZGUARD-CORE-END` markers; the local hook and
 the CI job both extract that block verbatim, so neither can drift from the
 other. `.github/workflows/cli-ci.yml` re-runs them against pushed commits,
@@ -72,7 +72,7 @@ clean Validation entries.
 
 Repository scripts:
 
-- `setup/install-git-hooks.sh` — installs the hooks (also embeds the guard core)
+- `scripts/install-git-hooks.sh` — installs the hooks (also embeds the guard core)
 - `scripts/workflow/record-check.sh` — optional convenience runner for proof commands;
   it holds no guarantee
 - `scripts/workflow/plan-slice.sh` — optional plan-section reader; holds no guarantee

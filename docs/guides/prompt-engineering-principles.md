@@ -132,7 +132,7 @@ Observations as of 2026-10-21, not product policy; recheck against the vendor's 
 
 ## Application to Skills & Rules
 
-When writing SKILL.md or setup/rules/*.md in this repo:
+When writing SKILL.md in this repo or `rules/*.md` in the [monoclaudian](https://github.com/tinhtute/monoclaudian) repo:
 
 - SKILL.md body < 150 lines — move detail to `references/`
 - Write instructions in English, imperative form

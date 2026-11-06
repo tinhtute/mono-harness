@@ -44,7 +44,7 @@
   ledger), plus the repo registry `~/.config/zharness/repos` — no SQLite anywhere.
 - entrypoints: `cli/src/cli.rs`; embedded doc set under
   `cli/docs/embedded/` projected to `docs/`; hooks via
-  `setup/install-git-hooks.sh`.
+  `scripts/install-git-hooks.sh`.
 
 ## What are we working on right now?
 - plan: none active; last completed `git show 3bab3c0:docs/plans/completed/zharness-slim.md`

@@ -186,8 +186,8 @@ when the user names them.
 
 Skills are not part of `zharness install`. They live in this source repository,
 the stable release of the skills; the former `orkit-tui` incubator is archived
-and no longer syncs here. The repository is private, so installing over SSH
-needs local SSH keys with access to it:
+and no longer syncs here. Installing over SSH
+needs local SSH keys:
 
 ```bash
 npx skills add git@github.com:tinhtute/monoharness.git --list   # list without installing
@@ -196,15 +196,30 @@ npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 
 No skill runs during installation.
 
-To reinstall rules and skills from scratch, from this repository:
+The harness agents (`mono-lead`, `mono-worker`, `mono-verifier`) install from a
+clone of this repository; the installer retires old `lead`/`worker`/`verifier`
+agent files as `<name>.md.retired.<timestamp>`:
 
 ```bash
-cp setup/CLAUDE.md ~/.claude/CLAUDE.md
-cp setup/rules/*.md ~/.claude/rules/
+bash scripts/install-agents.sh
+```
+
+The Claude Code setup (global `CLAUDE.md`, rules, settings, statusline) lives in the
+separate [monoclaudian](https://github.com/tinhtute/monoclaudian) repository:
+
+```bash
+git clone https://github.com/tinhtute/monoclaudian ~/monoclaudian && bash ~/monoclaudian/install.sh
+```
+
+To reinstall rules and skills from scratch, from a monoclaudian clone:
+
+```bash
+cp CLAUDE.md ~/.claude/CLAUDE.md
+cp rules/*.md ~/.claude/rules/
 npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
 ```
 
-`cp` never removes a rule that was dropped from `setup/rules/`; `bash setup/install.sh`
+`cp` never removes a rule that was dropped from `rules/`; `bash install.sh` in that repository
 retires the known ones. `npx skills add` never removes a skill that was dropped from this repository.
 Trash each dropped skill by name from `~/.claude/skills/` and `~/.agents/skills/`
 before reinstalling.
@@ -234,7 +249,7 @@ bash scripts/ci/test-guards.sh
 
 This repository is the source of the binary and skills. Edit workflow procedures
 in `skills/stages/<stage>/references/`. Edit the managed router in
-`cli/docs/embedded/WORKFLOW.md`, then copy it to `.harness/WORKFLOW.md`. Machine-wide Claude Code bootstrap is `setup/install.sh`;
+`cli/docs/embedded/WORKFLOW.md`, then copy it to `.harness/WORKFLOW.md`. Machine-wide Claude Code bootstrap is `install.sh` in [monoclaudian](https://github.com/tinhtute/monoclaudian);
 that is not how a consumer app repo receives zharness.
 
 ## Contributing and security

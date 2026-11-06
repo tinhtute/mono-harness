@@ -29,14 +29,14 @@ Bar for a recommendation: it must fix a problem mono-harness has already recorde
 | Multi-agent coordination | `check-review.md`: sub-agents only for `full` and only when asked; `design-it-twice.md` step 2 | `swarm/SKILL.md` Phase C: drop any result missing the SHAs or method its brief named; `poteto-mode` "Fresh subagents by default" | Partial. The transfer brief requires the SHA | No rule that rejects a worker report missing its SHA | More procedure text | None. No recorded incident |
 | Architecture exploration | `skills/reason/think/references/design-it-twice.md` (3+ designs, compared on depth and seams) | `architect/SKILL.md` Phases A–D: sketch with `not implemented` bodies, arena synthesis, red-flag screen, contract deviations recorded | Covered for design. Implementing against the sketch is not covered | Phase D (sketch-as-contract) has no counterpart | Needs multi-model runners | None |
 | Adversarial review | `check-review.md` (spec and standards axes); `check.md` step 7 judge declaration | `interrogate/SKILL.md` Steps 3–4 (one reviewer per model, merge cross-model agreement); `thermo-nuclear-review` (audit diff first, read bot comments after) | Partial | No model diversity, no "fresh eyes before bot comments" rule | Costs N× tokens per review | None now (HYPOTHESIS value only) |
-| Verification | `setup/install-git-hooks.sh` ZGUARD-CORE R2 (proof re-execution), R3, PHASE-DONE; CI `hook-guard` | `check-plan.mjs` (structure only); `principle-prove-it-works`; CI `generated` job | **mono-harness ahead** | — | — | Keep |
+| Verification | setup/install-git-hooks.sh (now `scripts/install-git-hooks.sh`) ZGUARD-CORE R2 (proof re-execution), R3, PHASE-DONE; CI `hook-guard` | `check-plan.mjs` (structure only); `principle-prove-it-works`; CI `generated` job | **mono-harness ahead** | — | — | Keep |
 | Failure learning | `docs/evals/failures.md` (class, source SHA, `coverage`); ADR 0010; `skills/stages/retro/references/retro.md` + `session-digest.py` | `reflect/SKILL.md` (3 reviewer lenses + synthesizer, then a step that moves enforceable items to Backlog); `recall` | **mono-harness ahead** (ledger is durable, reflect output is not) | — | — | Keep |
 | Enforcement | Hooks: pre-commit, pre-push; CI `cli-ci.yml` (build-test, size-gate, hook-guard), `docs-ci.yml`; `cli/tests/projection_parity.rs` (has drift tests) | `.pre-commit-config.yaml` → tracked `tools/generate.mjs --check`; `tests/invariants.test.mjs`; CI `skills-only` (install, then `diff -qr`) | Strong | (a) installed wrapper can go stale (ledger, `uncovered`); (b) two checkers have no failing fixture | Small | **Adopt (a) and (b)** |
 
 ## 3. Evidence-backed findings
 
 **F1. The installed hook wrapper can go stale. VERIFIED.**
-- mono-harness: `create_pre_commit_hook` in `setup/install-git-hooks.sh` writes a heredoc wrapper that extracts ZGUARD-CORE at run time. The wrapper's own call sequence is baked in at install time.
+- mono-harness: `create_pre_commit_hook` in setup/install-git-hooks.sh (now `scripts/install-git-hooks.sh`) writes a heredoc wrapper that extracts ZGUARD-CORE at run time. The wrapper's own call sequence is baked in at install time.
 - `install_hook_file` does replace a stale zharness hook, but only when someone re-runs the installer. `scripts/test-guards.sh` case R16 covers that replacement. Nothing runs the installer after the template changes.
 - Ledger: `docs/evals/failures.md` "2026-09-16 — an installed pre-commit wrapper can go stale against its own template", `coverage: uncovered`.
 - Mitigation: CI `hook-guard` re-runs the guard core on push, so a stale local wrapper delays rejection until CI. It does not bypass the guard.
@@ -56,7 +56,7 @@ Bar for a recommendation: it must fix a problem mono-harness has already recorde
 
 **F4. Routing by session injection. VERIFIED. Not adopted.**
 - pstack: `session-start.sh` cats `session-start-context.md` on `startup|resume|clear|compact`, so the router text is paid every session.
-- mono-harness: `git grep SessionStart` returns no matches. Its global `PreToolUse` hooks exist only in `setup/settings.json` (privacy guard, `rm` block).
+- mono-harness: `git grep SessionStart` returns no matches. Its global `PreToolUse` hooks exist only in setup/settings.json (setup/ later moved to monoclaudian) (privacy guard, `rm` block).
 - ADR 0003 Decision: *"every mandatory playbook step is paid on every invocation, forever, by every consumer repo."*
 
 **F5. Multi-model review. VERIFIED absent, HYPOTHESIS value.**
@@ -91,8 +91,8 @@ Bar for a recommendation: it must fix a problem mono-harness has already recorde
 ## 5. Improvement roadmap
 
 **1. Self-checking pre-commit wrapper.** Adapted from pstack's tracked-script hook.
-- Integration point: the `create_pre_commit_hook` heredoc in `setup/install-git-hooks.sh`.
-- Behavior change: on each run, the wrapper regenerates its own template from the tracked installer (staged blob if staged, else worktree) and compares it with its own bytes using `cmp`. If they differ, it prints `stale pre-commit wrapper: run bash setup/install-git-hooks.sh` and exits non-zero. The alternative is to shrink the wrapper to one line that `exec`s a tracked entry script, which removes the class entirely.
+- Integration point: the `create_pre_commit_hook` heredoc in setup/install-git-hooks.sh (now `scripts/install-git-hooks.sh`).
+- Behavior change: on each run, the wrapper regenerates its own template from the tracked installer (staged blob if staged, else worktree) and compares it with its own bytes using `cmp`. If they differ, it prints `stale pre-commit wrapper: run bash setup/install-git-hooks.sh` (now `scripts/install-git-hooks.sh`) and exits non-zero. The alternative is to shrink the wrapper to one line that `exec`s a tracked entry script, which removes the class entirely.
 - Validation:
   - A new `scripts/test-guards.sh` case: install, edit the template in a fixture repo, commit, and expect a rejection naming the reinstall command. A control commit without the edit passes.
   - Then append a ledger follow-up row marking the 2026-09-16 class covered.

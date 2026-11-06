@@ -17,7 +17,7 @@ of size, and a closed plan kept every start/done line forever.
 The pre-commit guard parses three headings verbatim (`## Validation`,
 `## Phases and Verification`, `## Current State and Next Action`) and the
 fields `lane:`, `phase_slug:`, `status:` and `lifecycle_status:`
-(`setup/install-git-hooks.sh:45`, `setup/install-git-hooks.sh:51`,
+(`setup/install-git-hooks.sh:45` (now `scripts/install-git-hooks.sh`), `setup/install-git-hooks.sh:51`,
 `setup/install-git-hooks.sh:244`, `setup/install-git-hooks.sh:251`). The guard core is frozen: it must
 stay byte-identical so CI and installed hooks agree.
 
@@ -77,6 +77,6 @@ Rejected:
 
 - `git show 3bab3c0:docs/plans/completed/zharness-slim.md` — R8–R13; owner approval 2026-09-19;
   the `migrate.go` transitional-code decision in `### Decisions`.
-- `setup/install-git-hooks.sh` — the guard core this format must satisfy.
+- setup/install-git-hooks.sh (now `scripts/install-git-hooks.sh`) — the guard core this format must satisfy.
 - `docs/decisions/0011-update-without-three-way-merge.md` — the `update` shape
   the migration runs inside.

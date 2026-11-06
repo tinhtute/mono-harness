@@ -627,7 +627,7 @@ mod tests {
         for rel in [
             "skills",
             "scripts",
-            "setup",
+            "agents",
             "site",
             "README.md",
             "AGENTS.md",

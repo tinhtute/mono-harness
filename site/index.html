@@ -242,7 +242,8 @@
       <div class="cmd-row"><div class="c">zharness <span class="blue">update</span></div><div class="d">Refresh WORKFLOW.md and retire legacy playbook copies; replace the AGENTS.md block (refusing if it was edited); never overwrite PROJECT.md or plans</div></div>
       <div class="cmd-row"><div class="c">zharness <span class="blue">uninstall</span></div><div class="d">Cleanly remove the managed doc set and restore clean repository state</div></div>
       <div class="cmd-row"><div class="c">npx skills add <span class="blue">tinhtute/monoharness</span></div><div class="d">Mount all 14 mono-harness skills into your current AI agent workspace</div></div>
-      <div class="cmd-row"><div class="c">bash <span class="blue">setup/install.sh</span></div><div class="d">Run the complete global Claude Code bootstrap (CLAUDE.md, rules, statusline, skills)</div></div>
+      <div class="cmd-row"><div class="c">bash <span class="blue">scripts/install-agents.sh</span></div><div class="d">Install the mono-lead, mono-worker, and mono-verifier harness agents from a monoharness clone</div></div>
+      <div class="cmd-row"><div class="c">bash <span class="blue">~/monoclaudian/install.sh</span></div><div class="d">Run the global Claude Code bootstrap from a <code>git clone https://github.com/tinhtute/monoclaudian ~/monoclaudian</code> (CLAUDE.md, rules, settings, statusline, skills)</div></div>
       <div class="cmd-row"><div class="c">bash <span class="blue">scripts/ci/test-guards.sh</span></div><div class="d">Execute the fail-closed pre-commit guard fixture suite</div></div>
     </div>
   </div>

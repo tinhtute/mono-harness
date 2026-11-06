@@ -6,10 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### BREAKING
+
+- `setup/` moved to the separate repo [monoclaudian](https://github.com/tinhtute/monoclaudian)
+  (global `CLAUDE.md`, rules, settings, mods, statusline, `install.sh`).
+- The harness agents are renamed `mono-lead`, `mono-worker`, `mono-verifier`, live in
+  `agents/` with model policy in `models.json`, and install via `scripts/install-agents.sh`.
+- The git hook installer moved to `scripts/install-git-hooks.sh`; rerun
+  `bash scripts/install-git-hooks.sh --force`.
+- Run `bash scripts/install-agents.sh` to install the renamed agents; it retires the old
+  `~/.claude/agents/{lead,worker,verifier}.md` by renaming each to
+  `<name>.md.retired.<timestamp>`, so remove those once you no longer need them.
+
 ### Added
 
-- `evals/rsi/`: reproducible RSI eval harness (seeded train/val/test split,
-  frozen headless runner, restored lean fixture and oracle, split report).
 - `session-digest.py --json`; token usage now counts each API message once and
   skips sub-agent records in stream-json traces.
 

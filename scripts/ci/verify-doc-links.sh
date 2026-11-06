@@ -51,7 +51,7 @@ trap 'rm -f "$LIST"' EXIT
 # able to name a file it will create, and a completed plan is an immutable record
 # of paths as they were. Neither is a live cross-reference.
 # .harness/ exists only once zharness has installed the managed set.
-roots="docs cli skills setup"
+roots="docs cli skills"
 [ -d .harness ] && roots=".harness $roots"
 # shellcheck disable=SC2086 # word-split on purpose: fixed directory names
 find $roots -name '*.md' -type f \

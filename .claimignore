@@ -11,7 +11,7 @@ references/ffmpeg-encoding.md         # illustrative example in create-skill/SKI
 
 docs/playbooks/git.md  # deliberately deprojected (docs-architecture R13); this repo correctly has no such file, but docs/guides/workflow-harness/migration.md must name the exact path so consumers upgrading past the deprojection can delete their stale copy. Permanent, not a deferral.
 
-CLAUDE.md  # global path `~/.claude/CLAUDE.md` cited by setup/README.md and skills/rules prose; not a repo file
+CLAUDE.md  # global path `~/.claude/CLAUDE.md` cited by the monoclaudian README and skills/rules prose; not a repo file
 
 docs/research/cli-config-patterns.md  # illustrative example in librarian/references/examples.md showing where a cited research report is saved, not a file in this repo
 .harness/plans/active/cli-orkit.md        # illustrative example in create-cli/references/examples.md showing where a CLI spec plan is saved, not a file in this repo

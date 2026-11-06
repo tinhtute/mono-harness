@@ -31,7 +31,7 @@ The installer is also the onboarding probe: `install` prints a deterministic, re
 
 ## The fail-closed guards
 
-Fail-closed guarantees live in the pre-commit hook (`setup/install-git-hooks.sh`, shared core between the `# ZGUARD-CORE` markers):
+Fail-closed guarantees live in the pre-commit hook (`scripts/install-git-hooks.sh`, shared core between the `# ZGUARD-CORE` markers):
 
 1. **Proof re-execution** — a newly added `## Validation` entry with verdict `APPROVED` (or `APPROVE_WITH_REQUESTS`) has every nested proof command re-executed by the hook; any non-zero exit rejects the commit.
 2. **Independent judge (high-risk)** — on a `lane: high-risk` plan, a new Validation entry carrying `judge: same-session` is rejected.

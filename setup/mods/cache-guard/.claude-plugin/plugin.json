@@ -1,9 +1,0 @@
-{
-  "name": "cache-guard",
-  "version": "0.1.0",
-  "description": "Warn with a Compact button when model/effort changes mid-session over a context threshold",
-  "types": "./types/index.d.ts",
-  "userConfig": {
-    "threshold": { "type": "number", "title": "Context % threshold", "description": "Warn only when context usage is at or above this percent", "default": 40, "min": 1, "max": 100 }
-  }
-}

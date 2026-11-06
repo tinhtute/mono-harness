@@ -8,11 +8,11 @@ on:
       - ".harness/plans/**"
       - "skills/stages/**"
       - ".harness/WORKFLOW.md"
-      - "setup/install-git-hooks.sh"
-      - "setup/agents/**"
-      - "setup/models.json"
+      - "scripts/install-git-hooks.sh"
+      - "agents/**"
+      - "models.json"
       - "scripts/ci/test-agent-models.sh"
-      - "setup/mods/**"
+      - "scripts/install-agents.sh"
       - ".github/workflows/cli-ci.yml"
   pull_request:
     paths:
@@ -20,11 +20,11 @@ on:
       - ".harness/plans/**"
       - "skills/stages/**"
       - ".harness/WORKFLOW.md"
-      - "setup/install-git-hooks.sh"
-      - "setup/agents/**"
-      - "setup/models.json"
+      - "scripts/install-git-hooks.sh"
+      - "agents/**"
+      - "models.json"
       - "scripts/ci/test-agent-models.sh"
-      - "setup/mods/**"
+      - "scripts/install-agents.sh"
       - ".github/workflows/cli-ci.yml"
 
 jobs:
@@ -86,34 +86,21 @@ jobs:
           test "$size" -le 1850000
 
   agent-models:
-    # setup/models.json role -> model policy matches setup/agents/*.md frontmatter.
+    # models.json role -> model policy matches agents/*.md frontmatter.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Check agent model policy
         run: bash scripts/ci/test-agent-models.sh
-
-  mod-tests:
-    # Pure guard logic of the setup/mods (rm block, secret/private-URL guard,
-    # compaction rules, cache-guard threshold) runs under plain `bun test`.
-    # Only the explicit rules.spec.ts files run: register.test.ts and
-    # band.test.tsx need the private claude-code/testing kit and run via
-    # `claude plugin test`, not here.
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: oven-sh/setup-bun@v2.2.0
-        with:
-          bun-version: 1.4.1
-
-      - name: ninja-kit pure tests
-        working-directory: setup/mods/ninja-kit
-        run: bun test hooks/rules.spec.ts
-
-      - name: cache-guard pure tests
-        working-directory: setup/mods/cache-guard
-        run: bun test hooks/rules.spec.ts
+      - name: Install agents into a temp CLAUDE_DIR and retire legacy ones
+        run: |
+          d=$(mktemp -d)
+          mkdir -p "$d/agents"
+          echo legacy > "$d/agents/lead.md"
+          CLAUDE_DIR="$d" bash scripts/install-agents.sh
+          test "$(ls "$d"/agents/mono-*.md | wc -l)" -eq 3
+          test ! -e "$d/agents/lead.md"
+          test "$(ls "$d"/agents/lead.md.retired.* | wc -l)" -eq 1
 
   hook-guard:
     # R4: re-run the v0.15 fail-closed guards (R2 proof re-execution + R3
@@ -129,7 +116,7 @@ jobs:
 
       - name: Extract guard core from installer
         run: |
-          awk '$0=="# ZGUARD-CORE-BEGIN"{on=1;next} $0=="# ZGUARD-CORE-END"{on=0} on' setup/install-git-hooks.sh > /tmp/guard.sh
+          awk '$0=="# ZGUARD-CORE-BEGIN"{on=1;next} $0=="# ZGUARD-CORE-END"{on=0} on' scripts/install-git-hooks.sh > /tmp/guard.sh
           grep -q '^zharness_guard_entries_of_file()' /tmp/guard.sh
           grep -q '^zharness_guard_at_most_one_active_plan()' /tmp/guard.sh
           grep -q '^zharness_guard_completed_plan_phases_done()' /tmp/guard.sh

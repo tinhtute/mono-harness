@@ -51,7 +51,7 @@
           <li><strong>jq</strong> — Required for terminal statusline processing.</li>
           <li><strong>Git</strong> — Version control for repository tracking and hooks.</li>
           <li><strong>Rust (stable)</strong> (Optional) — Required only if compiling the <code>zharness</code> binary from source.</li>
-          <li><strong>SSH Access</strong> — Valid key configured for <code>git@github.com:therealtinhtute/mono-harness.git</code>.</li>
+          <li><strong>SSH Access</strong> — Valid key configured for <code>git@github.com:tinhtute/monoharness.git</code>.</li>
         </ul>
         <p>After installation, review <code>~/.claude/settings.json</code> and ensure <code>ANTHROPIC_AUTH_TOKEN</code> or relevant provider tokens are set in your shell environment.</p>
       </div>
@@ -74,7 +74,7 @@
 
       <div class="prose reveal">
         <h2>Option A: Full Claude Code bootstrap<i>.</i></h2>
-        <p>The recommended approach for setting up a full agent workstation. The bootstrap script deploys global agent instructions (<code>CLAUDE.md</code>), core rules, validation hooks, a settings template, the statusline script, and installs all 16 skills globally.</p>
+        <p>The recommended approach for setting up a full agent workstation. Skills and the harness agents (<code>mono-lead</code>, <code>mono-worker</code>, <code>mono-verifier</code>) come from this repository; the Claude Code setup lives in the separate <a href="https://github.com/tinhtute/monoclaudian">monoclaudian</a> repository, whose <code>install.sh</code> deploys global agent instructions (<code>CLAUDE.md</code>), core rules, a settings template, and the statusline script.</p>
       </div>
 
       <div class="terminal-block reveal">
@@ -83,14 +83,16 @@
             <span class="terminal-dot"></span>
           </div>
           <span class="terminal-title">bash — bootstrap installer</span>
-          <button class="copy-btn" data-copy data-cmd="bash setup/install.sh">COPY</button>
+          <button class="copy-btn" data-copy data-cmd="git clone git@github.com:tinhtute/monoharness.git ~/monoharness &amp;&amp; cd ~/monoharness &amp;&amp; npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y &amp;&amp; bash scripts/install-agents.sh &amp;&amp; git clone https://github.com/tinhtute/monoclaudian ~/monoclaudian &amp;&amp; bash ~/monoclaudian/install.sh">COPY</button>
         </div>
-        <pre><code><span class="tok-cmt"># Clone repository to local workstation</span>
-<span class="tok-prm">$</span><span class="tok-cmd">git</span> clone git@github.com:therealtinhtute/mono-harness.git <span class="tok-path">~/mono-harness</span>
-<span class="tok-prm">$</span><span class="tok-cmd">cd</span> <span class="tok-path">~/mono-harness</span>
+        <pre><code><span class="tok-cmt"># Skills and harness agents: clone monoharness</span>
+<span class="tok-prm">$</span><span class="tok-cmd">git</span> clone git@github.com:tinhtute/monoharness.git <span class="tok-path">~/monoharness</span>
+<span class="tok-prm">$</span><span class="tok-cmd">cd</span> <span class="tok-path">~/monoharness</span>
+<span class="tok-prm">$</span><span class="tok-cmd">npx</span> skills add git@github.com:tinhtute/monoharness.git <span class="tok-kw">-a</span> claude-code <span class="tok-kw">-g</span> <span class="tok-kw">-y</span>
+<span class="tok-prm">$</span><span class="tok-cmd">bash</span> <span class="tok-path">scripts/install-agents.sh</span>
 
-<span class="tok-cmt"># Execute bootstrap installer</span>
-<span class="tok-prm">$</span><span class="tok-cmd">bash</span> <span class="tok-path">setup/install.sh</span></code></pre>
+<span class="tok-cmt"># Claude Code setup (CLAUDE.md, rules, settings, statusline): monoclaudian</span>
+<span class="tok-prm">$</span><span class="tok-cmd">git</span> clone https://github.com/tinhtute/monoclaudian <span class="tok-path">~/monoclaudian</span> &amp;&amp; <span class="tok-cmd">bash</span> <span class="tok-path">~/monoclaudian/install.sh</span></code></pre>
       </div>
 
       <div class="prose reveal">
@@ -111,10 +113,10 @@
           <button class="copy-btn" data-copy data-cmd="npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y">COPY</button>
         </div>
         <pre><code><span class="tok-cmt"># Inspect published skills in repository without installing</span>
-<span class="tok-prm">$</span><span class="tok-cmd">npx</span> skills add git@github.com:therealtinhtute/mono-harness.git <span class="tok-kw">--list</span>
+<span class="tok-prm">$</span><span class="tok-cmd">npx</span> skills add git@github.com:tinhtute/monoharness.git <span class="tok-kw">--list</span>
 
 <span class="tok-cmt"># Install all skills globally for Claude Code</span>
-<span class="tok-prm">$</span><span class="tok-cmd">npx</span> skills add git@github.com:therealtinhtute/mono-harness.git <span class="tok-kw">-a</span> claude-code <span class="tok-kw">-g</span> <span class="tok-kw">-y</span></code></pre>
+<span class="tok-prm">$</span><span class="tok-cmd">npx</span> skills add git@github.com:tinhtute/monoharness.git <span class="tok-kw">-a</span> claude-code <span class="tok-kw">-g</span> <span class="tok-kw">-y</span></code></pre>
       </div>
 
       <div class="prose reveal">
@@ -172,7 +174,7 @@
         <div class="spec-row">
           <div class="spec-idx">02</div>
           <div class="spec-scene">Install Hooks</div>
-          <div class="spec-cell"><code>bash setup/install-git-hooks.sh</code></div>
+          <div class="spec-cell"><code>bash scripts/install-git-hooks.sh</code></div>
           <div class="spec-cell">Installs repository pre-commit hook to enforce fail-closed proof re-execution and independent judge separation.</div>
         </div>
       </div>
@@ -200,7 +202,7 @@
 <span class="tok-prm">$</span><span class="tok-cmd">zharness</span> <span class="tok-kw">uninstall</span> <span class="tok-kw">--help</span>
 
 <span class="tok-cmt"># 3. Test pre-commit hook enforcement</span>
-<span class="tok-prm">$</span><span class="tok-cmd">bash</span> <span class="tok-path">setup/install-git-hooks.sh</span>
+<span class="tok-prm">$</span><span class="tok-cmd">bash</span> <span class="tok-path">scripts/install-git-hooks.sh</span>
 <span class="tok-out">installed .git/hooks/pre-commit with fail-closed proof re-execution</span></code></pre>
       </div>
     </article>
