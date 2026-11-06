@@ -19,7 +19,7 @@ Instructions are not concurrency control; a fence in the brief's prose is not a 
 
 ## Models per role
 
-Pass `model` explicitly on every dispatch and name it in the brief; never rely on the parent default. On Claude Code with the setup installed, dispatch the role's agent instead of `general-purpose` so the role and model show in the agent list: `worker` (`sonnet`), `lead` (`opus`), `verifier` (`fable`, read-only), `test-runner` (`haiku`, read-only: runs a suite and returns only failures). `setup/models.json` is the policy for these; `scripts/ci/test-agent-models.sh` fails when an agent's `model:` disagrees with it.
+Pass `model` explicitly on every dispatch and name it in the brief; never rely on the parent default. On Claude Code with the harness agents installed (`bash scripts/install-agents.sh`), dispatch the role's agent instead of `general-purpose` so the role and model show in the agent list: `mono-worker` (`sonnet`), `mono-lead` (`opus`), `mono-verifier` (`fable`, read-only); the Claude Code setup adds `test-runner` (`haiku`, read-only: runs a suite and returns only failures). `models.json` is the policy for these; `scripts/ci/test-agent-models.sh` fails when an agent's `model:` disagrees with it.
 
 | Role | Model |
 |---|---|
