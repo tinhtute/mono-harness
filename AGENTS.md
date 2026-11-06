@@ -26,6 +26,9 @@ cd cli && cargo fmt --check && cargo clippy --all-targets -- -D warnings && carg
 # [CI] Rust CLI size target — .github/workflows/cli-ci.yml, job `size-gate`
 cd cli && cargo build --release --target x86_64-unknown-linux-musl && test "$(wc -c < target/x86_64-unknown-linux-musl/release/zharness)" -le 1850000
 
+# [CI] Agent model policy (agents/*.md vs models.json) — .github/workflows/cli-ci.yml, job `agent-models`
+bash scripts/ci/test-agent-models.sh
+
 # [CI] Guard fixture tests for the pre-commit hook's ZGUARD-CORE block — .github/workflows/cli-ci.yml, job `hook-guard`
 bash scripts/ci/test-guards.sh
 
@@ -35,6 +38,9 @@ bash scripts/ci/verify-doc-links.sh
 
 # [CI] Skill frontmatter (every tracked SKILL.md; warnings never fail) — .github/workflows/skills-ci.yml, job `validate-skills`, on any SKILL.md change.
 bash scripts/ci/validate-skills.sh
+
+# [CI] Skill script and check-panel tests — .github/workflows/skills-ci.yml, jobs `skill-scripts`, `risk-facts`, `panel-merge`
+bash scripts/ci/test-skill-scripts.sh && bash scripts/ci/test-risk-facts.sh && python3 -I scripts/ci/test-panel-merge.py
 ```
 
 The pre-commit hook also runs `scripts/ci/validate-skill.sh` on changed skills

@@ -112,6 +112,8 @@ stops before mutation and asks.
 ![zharness installs the doc set; skills are installed separately and read it](site/assets/architecture.png)
 
 Diagram sources are tldraw files in [`site/assets/diagrams/`](site/assets/diagrams/).
+To edit or regenerate them, install the `tldraw-diagram` skill from
+[monoclaudian](https://github.com/tinhtute/monoclaudian).
 
 ## What gets installed
 
@@ -220,27 +222,22 @@ To reinstall rules and skills from scratch, from a monoclaudian clone:
 cp CLAUDE.md ~/.claude/CLAUDE.md
 cp rules/*.md ~/.claude/rules/
 npx skills add git@github.com:tinhtute/monoharness.git -a claude-code -g -y
+npx skills add git@github.com:tinhtute/monoclaudian.git -a claude-code -g -y
 ```
 
 `cp` never removes a rule that was dropped from `rules/`; `bash install.sh` in that repository
-retires the known ones. `npx skills add` never removes a skill that was dropped from this repository.
+retires the known ones. `npx skills add` never removes a skill that was dropped from either repository.
 Trash each dropped skill by name from `~/.claude/skills/` and `~/.agents/skills/`
 before reinstalling.
 
-## v0.16
+## Versions
 
-Protocol on the v0.15 three-verb binary: absorb at handoff close, at most
-one active plan, independent judge for `full` checks. Pin `v0.14.x` to keep
-the old lifecycle CLI. Existing `harness.db` files are consumer-owned;
-nothing here deletes them.
+Current release: v0.33.0; see [`CHANGELOG.md`](CHANGELOG.md). Since v0.15 the
+binary has three verbs and no lifecycle CLI or SQLite; pin `v0.14.x` for the old
+binary. Existing `harness.db` files are consumer-owned; nothing here deletes them.
 
 See [`cli/docs/CONTRACT.md`](cli/docs/CONTRACT.md) and
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
-
-## v0.15
-
-Breaking cut: the lifecycle CLI and SQLite were deleted. The three verbs
-remain. Pin `v0.14.x` if you still need that binary.
 
 ## Development
 
