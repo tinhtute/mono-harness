@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `turbo-mono-platform` and the full `write` skill (with its `evals/`) moved to
   [monoclaudian](https://github.com/tinhtute/monoclaudian); `skills/extras/` is gone.
   Install them with
-  `npx skills add git@github.com:tinhtute/monoclaudian.git -a claude-code -g -y`.
+  `npx skills add git@github.com:tinhtute/monoclaudian.git -a claude-code -g -y`; otherwise trash the old copies from `~/.claude/skills/` and `~/.agents/skills/`.
 - The `research` and `ship` playbooks and `learn` now call `mono-write`, a slim skill
   that polishes a research draft and writes CHANGELOG entries and release notes. It
   hands any other writing to monoclaudian's `write` when that skill is installed.

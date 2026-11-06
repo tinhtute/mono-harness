@@ -21,18 +21,21 @@ lane: normal
 ## Phases and Verification
 - approach: copy to monoclaudian from master `5769342` and delete here in one PR each; rejected: keep `write` here and import from monoclaudian (reverse dependency).
 - phase_slug: `main`
-  status: planned
+  status: done
   - goal: R1, R2, R3, R4 | depends_on: none
   - surfaces: monoclaudian `skills/`, `evals/`, `install.sh`, README, CI; monoharness `skills/`, `evals/`, `scripts/ci/test-skill-scripts.sh`, docs, site | avoided: `cli/src/installer/**`
   - phase check: `bash scripts/ci/validate-skills.sh && bash scripts/ci/verify-doc-links.sh && bash scripts/ci/test-guards.sh && bash scripts/ci/test-skill-scripts.sh && (cd cli && cargo test)` plus the success_signal grep; monoclaudian CI green
 
 ## Log
+- 2026-11-06: R1 monoclaudian PR #1 merged 2c8e946, CI green (agent-models, mods, skills). R2-R4 committed e2adba3; verifier fixes (site skill count 17, CHANGELOG trash step, mono-write trigger) in follow-up commit. Deferred: tldraw diagrams still show `extras` group (PNGs already stale pre-change).
 
 ## Validation
+- APPROVE_WITH_REQUESTS (judge: independent, claude-fable-5-1) on e2adba3; requests addressed except diagrams (deferred, low).
+  - proof: `bash scripts/ci/validate-skills.sh && bash scripts/ci/verify-doc-links.sh && bash scripts/ci/test-guards.sh && bash scripts/ci/test-skill-scripts.sh`
 
 ## Current State and Next Action
 - active_phase: none
-- lifecycle_status: planned
+- lifecycle_status: validated
 - blockers: none
 - open_items: none
-- exact_next_action: work full phase main
+- exact_next_action: open PR, merge after green, handoff
