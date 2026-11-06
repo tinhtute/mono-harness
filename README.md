@@ -112,6 +112,8 @@ stops before mutation and asks.
 ![zharness installs the doc set; skills are installed separately and read it](site/assets/architecture.png)
 
 Diagram sources are tldraw files in [`site/assets/diagrams/`](site/assets/diagrams/).
+To edit or regenerate them, install the `tldraw-diagram` skill from
+[monoclaudian](https://github.com/tinhtute/monoclaudian).
 
 ## What gets installed
 
