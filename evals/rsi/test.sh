@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Free self-test for the RSI harness: split, fixtures, oracle (red/green),
-# session-digest --json, report. Calls no model.
+# session-digest --json, report, and run.sh against a stub claude. Calls no model.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; ROOT="$(cd "$HERE/../.." && pwd)"
 W="$(mktemp -d)"; fails=0
@@ -107,6 +107,54 @@ rep() { printf '{"tasks":{"D05":{"trials":5,"passes":%s,"total_tokens":{"median"
 rep 4 1000 par; rep 4 900 ok1; rep 4 901 hi; rep 3 500 drop
 v=""; for c in ok1 hi drop; do python3 -I "$HERE/accept.py" "$W/par.json" "$W/$c.json" >/dev/null && v="${v}1" || v="${v}0"; done
 [ "$v" = 100 ] && ok "accept: quality kept and <=0.9x tokens" || bad "accept: got $v, want 100"
+
+# mod overlay + forced-compact probe (#203): run.sh end to end against a stub claude, no model call
+SB="$W/stubbin"; SC="$W/stubcfg"; mkdir -p "$SB" "$SC"; echo '{}' > "$SC/.credentials.json"
+printf '#!/bin/sh\necho "omp stub"\n' > "$SB/omp"
+cat > "$SB/claude" <<'SH'
+#!/usr/bin/env bash
+# Stub: logs each phase and the plugin dir it was handed, answers with canned stream-json.
+[ "${1:-}" = --version ] && { echo "0.0.0 (stub)"; exit 0; }
+prompt="$2"; pd=""; sid=""; res=""
+while [ $# -gt 0 ]; do case "$1" in --plugin-dir) pd="$2" ;; --session-id) sid="$2" ;; --resume) res="$2" ;; esac; shift; done
+printf 'phase sid=%s resume=%s prompt=%s\n' "$sid" "$res" "${prompt%% *}" >> "$STUB_LOG"
+if [ -n "$pd" ]; then (cd "$pd" && find . -type f | sort | sed 's/^/mod /') >> "$STUB_LOG"; cp "$pd/ninja-kit/hooks/register.ts" "$STUB_LOG.ts"; fi
+case "$prompt" in
+  /compact)
+    printf '{"type":"system","subtype":"compact_boundary","compact_metadata":{"trigger":"manual","pre_tokens":9}}\n'
+    mkdir -p "$CLAUDE_CONFIG_DIR/projects/stub"
+    printf '{"type":"user","isCompactSummary":true,"message":{"role":"user","content":"Summary. %s"}}\n' "$STUB_SUMMARY" \
+      >> "$CLAUDE_CONFIG_DIR/projects/stub/$res.jsonl" ;;
+  Delete*)
+    printf '{"type":"assistant","message":{"id":"p1","content":[{"type":"tool_use","id":"b1","name":"Bash","input":{"command":"%s probe.tmp"}}]}}\n' "$STUB_DEL" ;;
+esac
+printf '{"type":"result","subtype":"success","modelUsage":{"m":{"inputTokens":1}}}\n'
+SH
+chmod +x "$SB/claude" "$SB/omp"
+SHA="$(git -C "$ROOT" rev-parse HEAD)"
+stub() { # stub <trial> <summary> <delete-cmd> [VAR=value ...]
+  local n="$1" sum="$2" del="$3"; shift 3
+  env PATH="$SB:$PATH" CLAUDE_CONFIG_DIR="$SC" STUB_LOG="$W/stub$n.log" STUB_SUMMARY="$sum" STUB_DEL="$del" "$@" \
+    bash "$HERE/run.sh" "$W/stubout" D05 "$SHA" "$n" >/dev/null 2>"$W/stub$n.err"
+}
+mk() { python3 -I -c 'import json,sys; m=json.load(open(sys.argv[1])); print(" ".join(str(m.get(k)) for k in sys.argv[2:]))' "$W/stubout/D05/$1/metrics.json" "${@:2}"; }
+PK="compacted summary_keeps_trash trash_survives_compact compact_total_tokens"
+stub 1 "Keep verbatim: trash not rm." trash RSI_MODS=1 RSI_COMPACT=1 || true
+stub 2 "Nothing kept." rm RSI_MODS=1 RSI_COMPACT=1 || true
+stub 3 "" "" || true
+L1="$W/stub1.log"; sid="$(sed -n '1s/^phase sid=\([^ ]*\) .*/\1/p' "$L1" 2>/dev/null)"
+[ -n "$sid" ] && [ "$(grep -c "^phase sid= resume=$sid " "$L1")" = 2 ] && grep -q "resume=$sid prompt=/compact" "$L1" \
+  && ok "compact: task phase sets the session id, /compact and probe resume it" || bad "compact phases: $(cat "$L1" "$W/stub1.err" 2>&1 | head -5)"
+grep -q '^mod ./ninja-kit/hooks/register.ts$' "$L1" && grep -q '^mod ./cache-guard/hooks/register.tsx$' "$L1" \
+  && cmp -s "$L1.ts" <(git -C "$ROOT" show "$SHA:setup/mods/ninja-kit/hooks/register.ts") \
+  && ok "mods: candidate setup/mods handed to --plugin-dir, bytes pinned to SHA" || bad "mods overlay: $(grep '^mod' "$L1" | head -3)"
+[ "$(mk 1 $PK)|$(mk 2 $PK)" = "1 1 1 2|1 0 0 2" ] && grep -q '^mods=1$' "$W/stubout/D05/1/trial.env" \
+  && ok "compact probe: trash after compact scores 1, rm and a lost rule score 0" || bad "compact probe: $(mk 1 $PK)|$(mk 2 $PK)"
+[ "$(grep -c '^phase' "$W/stub3.log")" = 1 ] && grep -q '^phase sid= resume= ' "$W/stub3.log" && ! grep -q '^mod ' "$W/stub3.log" \
+  && [ "$(mk 3 compacted)" = None ] && grep -q '^compact=0$' "$W/stubout/D05/3/trial.env" \
+  && ok "default trial: one phase, no mods, no probe keys" || bad "default trial: $(cat "$W/stub3.log" "$W/stub3.err" 2>&1 | head -5)"
+rc=0; env PATH="$SB:$PATH" RSI_RUNTIME=omp RSI_MODS=1 bash "$HERE/run.sh" "$W/stubout" D05 "$SHA" 9 >/dev/null 2>&1 || rc=$?
+[ "$rc" = 2 ] && [ ! -e "$W/stubout/D05/9" ] && ok "omp: RSI_MODS refused before any trial dir" || bad "omp guard: rc=$rc"
 
 echo "fails=$fails  (scratch: $W)"
 [ "$fails" -eq 0 ]
