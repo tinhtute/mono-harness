@@ -22,18 +22,6 @@ on:
       - "skills/**/scripts/**"
       - ".github/workflows/skills-ci.yml"
   pull_request:
-    paths:
-      - "**/SKILL.md"
-      - "scripts/ci/validate-skill.sh"
-      - "scripts/ci/validate-skills.sh"
-      - "scripts/ci/fixtures/bad-skill/**"
-      - "skills/stages/check/scripts/**"
-      - "scripts/ci/test-panel-merge.py"
-      - "scripts/ci/test-skill-scripts.sh"
-      - "scripts/ci/test-risk-facts.sh"
-      - "scripts/ci/fixtures/skill-scripts/**"
-      - "skills/**/scripts/**"
-      - ".github/workflows/skills-ci.yml"
 
 jobs:
   validate-skills:

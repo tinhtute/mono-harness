@@ -16,11 +16,6 @@ on:
       - "scripts/ci/verify-doc-links.sh"
       - ".github/workflows/docs-ci.yml"
   pull_request:
-    paths:
-      - "**.md"
-      - ".claimignore"
-      - "scripts/ci/verify-doc-links.sh"
-      - ".github/workflows/docs-ci.yml"
 
 jobs:
   doc-links:
