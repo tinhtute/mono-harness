@@ -29,6 +29,9 @@ cd cli && cargo build --release --target x86_64-unknown-linux-musl && test "$(wc
 # [CI] Agent model policy (agents/*.md vs models.json) — .github/workflows/cli-ci.yml, job `agent-models`
 bash scripts/ci/test-agent-models.sh
 
+# [CI] zharness installer script fixtures — .github/workflows/cli-ci.yml, job `install-script`
+bash scripts/ci/test-install-zharness.sh
+
 # [CI] Guard fixture tests for the pre-commit hook's ZGUARD-CORE block — .github/workflows/cli-ci.yml, job `hook-guard`
 bash scripts/ci/test-guards.sh
 

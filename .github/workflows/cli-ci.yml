@@ -15,17 +15,6 @@ on:
       - "scripts/install-agents.sh"
       - ".github/workflows/cli-ci.yml"
   pull_request:
-    paths:
-      - "cli/**"
-      - ".harness/plans/**"
-      - "skills/stages/**"
-      - ".harness/WORKFLOW.md"
-      - "scripts/install-git-hooks.sh"
-      - "agents/**"
-      - "models.json"
-      - "scripts/ci/test-agent-models.sh"
-      - "scripts/install-agents.sh"
-      - ".github/workflows/cli-ci.yml"
 
 jobs:
   build-test:
@@ -101,6 +90,14 @@ jobs:
           test "$(ls "$d"/agents/mono-*.md | wc -l)" -eq 3
           test ! -e "$d/agents/lead.md"
           test "$(ls "$d"/agents/lead.md.retired.* | wc -l)" -eq 1
+
+  install-script:
+    # Issue #209: scripts/install-zharness.sh against a stubbed gh.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Installer fixtures
+        run: bash scripts/ci/test-install-zharness.sh
 
   hook-guard:
     # R4: re-run the v0.15 fail-closed guards (R2 proof re-execution + R3
